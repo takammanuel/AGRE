@@ -44,6 +44,8 @@ project-name/
 ```bash
 git clone https://github.com/SteveTetchoup26/AGRE.git
 cd AGRE
+git checkout develop
+git checkout -b feature/nom-de-la-fonctionnalite
 ```
 
 ## Backend (Laravel)
