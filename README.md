@@ -3,11 +3,13 @@ Application de gestion de requête d'étudiants au sein d'une institution univer
 
 ## Structure du projet
 
+```
 project-name/
 ├── frontend/ # Application Angular
 ├── backend/ # API REST Laravel
 ├── README.md
 └── .gitignore
+```
 
 ## Technologies utilisées
 
@@ -78,7 +80,7 @@ php artisan serve
 ```
 
 
-## Backend (Laravel)
+## Frontend (Angular)
 
 ### Installation
 ```bash
