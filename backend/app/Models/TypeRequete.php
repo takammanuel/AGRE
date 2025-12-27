@@ -10,7 +10,7 @@ class TypeRequete extends Model
     use HasFactory;
 
     protected $fillable = [
-        'libelle',
+        'nom',
         'description',
         'necessite_approbation',
         'delai_traitement_estime',

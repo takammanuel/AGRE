@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('type_requetes', function (Blueprint $table) {
             $table->id();
-            $table->string("libelle");
+            $table->string("nom");
             $table->text("description")->nullable();
             $table->boolean('necessite_approbation')->default(false);
             $table->integer('delai_traitement_estime')->nullable();

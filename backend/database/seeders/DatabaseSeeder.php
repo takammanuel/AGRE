@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             ServicesSeeder::class,
             TypeRequeteSeeder::class,  // Types de requêtes
             UsersAndRolesSeeder::class,
-            ProfilSeeder::class,
+            // ProfilSeeder::class,
         ]);
     }
 }

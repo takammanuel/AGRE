@@ -32,4 +32,32 @@ class Role extends Model
         return $this->belongsToMany(Utilisateur::class, 'utilisateur_roles', 'role_id', 'utilisateur_id')
                     ->withTimestamps();
     }
+
+     /**
+     * Attribuer une permission au rôle
+     */
+    public function givePermissionTo(string $permissionName): void
+    {
+        $permission = Permission::where('libelle', $permissionName)->firstOrFail();
+        $this->permissions()->syncWithoutDetaching($permission->id);
+    }
+
+    /**
+     * Retirer une permission du rôle
+     */
+    public function revokePermissionTo(string $permissionName): void
+    {
+        $permission = Permission::where('libelle', $permissionName)->first();
+        if ($permission) {
+            $this->permissions()->detach($permission->id);
+        }
+    }
+
+    /**
+     * Vérifier si le rôle a une permission
+     */
+    public function hasPermission(string $permissionName): bool
+    {
+        return $this->permissions()->where('libelle', $permissionName)->exists();
+    }
 }

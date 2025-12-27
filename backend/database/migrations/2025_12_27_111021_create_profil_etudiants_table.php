@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('profil_etudiants', function (Blueprint $table) {
             $table->id();
-            $table->string("matricule")->unique();
-            $table->integer("niveau");
-            $table->string("filiere");
+            $table->string("matricule")->unique()->nullable();
+            $table->integer("niveau")->nullable();
+            $table->string("filiere")->nullable();
 
             $table->foreignId('utilisateur_id')
                 ->unique()
