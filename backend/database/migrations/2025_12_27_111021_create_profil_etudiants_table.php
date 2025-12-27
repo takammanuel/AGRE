@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('profil_etudiants', function (Blueprint $table) {
             $table->id();
-            $table->string("matricule");
+            $table->string("matricule")->unique();
             $table->integer("niveau");
             $table->string("filiere");
 
@@ -21,7 +21,7 @@ return new class extends Migration
                 ->unique()
                 ->constrained('utilisateurs')
                 ->cascadeOnDelete();
-            
+
             $table->timestamps();
         });
     }

@@ -13,11 +13,27 @@ class RolesSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::insert([
-            ['libelle' => 'ETUDIANT', 'description' => 'Rôle d\'un étudiant'],
-            ['libelle' => 'AGENT_ACADEMIQUE', 'description' => 'Rôle d\'un agent académique'],
-            ['libelle' => 'RESPONSABLE_PEDAGOGIQUE', 'description' => 'Rôle d\'un responsable pédagogique'],
-            ['libelle' => 'ADMINISTRATEUR', 'description' => 'Rôle d\'un administrateur'],
+         Role::insert([
+            [
+                'nom' => 'Étudiant',
+                'libelle' => 'ETUDIANT',
+                'description' => 'Rôle d\'un étudiant'
+            ],
+            [
+                'nom' => 'Agent Académique',
+                'libelle' => 'AGENT_ACADEMIQUE',
+                'description' => 'Rôle d\'un agent académique'
+            ],
+            [
+                'nom' => 'Responsable Pédagogique',
+                'libelle' => 'RESPONSABLE_PEDAGOGIQUE',
+                'description' => 'Rôle d\'un responsable pédagogique'
+            ],
+            [
+                'nom' => 'Administrateur',
+                'libelle' => 'ADMINISTRATEUR',
+                'description' => 'Rôle d\'un administrateur'
+            ],
         ]);
     }
 }

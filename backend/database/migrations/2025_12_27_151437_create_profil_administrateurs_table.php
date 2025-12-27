@@ -6,34 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('profil_agent_administratifs', function (Blueprint $table) {
+        Schema::create('profil_administrateurs', function (Blueprint $table) {
             $table->id();
-            $table->string("poste");
+            $table->enum('niveau_acces', ['super_admin', 'admin'])->default('admin');
 
             $table->foreignId('utilisateur_id')
                 ->unique()
                 ->constrained('utilisateurs')
                 ->cascadeOnDelete();
 
-            $table->foreignId('service_id')
-                ->nullable()
-                ->constrained('services')
-                ->nullOnDelete();
-
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('profil_agent_administratifs');
+        Schema::dropIfExists('profil_administrateurs');
     }
 };

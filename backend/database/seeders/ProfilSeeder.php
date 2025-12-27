@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\ProfilAgentAdministratif;
 use App\Models\ProfilEtudiant;
 use App\Models\ProfilResponsablePedagogique;
+use App\Models\Service;
 use App\Models\Utilisateur;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,6 +17,8 @@ class ProfilSeeder extends Seeder
      */
     public function run(): void
     {
+        $services = Service::all();
+
         // ====== Profils Étudiants ======
         $etudiants = Utilisateur::whereHas('roles', function($q) {
             $q->where('libelle', 'ETUDIANT');
@@ -36,9 +39,12 @@ class ProfilSeeder extends Seeder
         })->get();
 
         foreach ($agents as $agent) {
+            $service = $services->random();
+
             ProfilAgentAdministratif::create([
                 'utilisateur_id' => $agent->id,
                 'poste' => 'Agent académique',
+                'service_id' => $service->id,
             ]);
         }
 

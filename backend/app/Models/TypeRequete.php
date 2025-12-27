@@ -12,6 +12,10 @@ class TypeRequete extends Model
     protected $fillable = [
         'libelle',
         'description',
+        'necessite_approbation',
+        'delai_traitement_estime',
+        'est_actif',
+        'service_id'
     ];
 
     /**
@@ -20,5 +24,10 @@ class TypeRequete extends Model
     public function requetes()
     {
         return $this->hasMany(Requete::class, 'type_requete_id');
+    }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
     }
 }

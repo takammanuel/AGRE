@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             PermissionsSeeder::class,  // Permissions
             RolePermissionSeeder::class, // Lier rôles et permissions
             EtatsSeeder::class,        // États des requêtes
+            ServicesSeeder::class,
             TypeRequeteSeeder::class,  // Types de requêtes
             UsersAndRolesSeeder::class,
             ProfilSeeder::class,
