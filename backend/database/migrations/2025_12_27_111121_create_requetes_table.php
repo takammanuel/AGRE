@@ -26,6 +26,11 @@ return new class extends Migration
                 ->constrained('utilisateurs')
                 ->nullOnDelete();
 
+            $table->foreignId('responsable_id')
+                ->nullable()
+                ->constrained('utilisateurs')
+                ->nullOnDelete();
+
             $table->foreignId('type_requete_id')
                 ->constrained('type_requetes')
                 ->restrictOnDelete();
