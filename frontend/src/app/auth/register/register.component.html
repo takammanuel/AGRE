@@ -1,0 +1,215 @@
+<div class="register-container min-vh-100 d-flex">
+  <!-- Section gauche (Bannière) -->
+  <div class="register-left d-none d-md-flex align-items-center justify-content-center gradient-primary">
+    <div class="register-banner p-4 p-lg-5">
+      <h1 class="text-white fw-bold mb-4">
+        Devenez étudiant<br>
+        <span class="text-accent-custom">de notre plateforme</span>
+      </h1>
+
+      <div class="features-list mt-5">
+        <div class="feature-item d-flex align-items-center mb-3">
+          <div class="feature-icon d-flex align-items-center justify-content-center rounded-circle bg-white text-primary-custom me-3" style="width: 40px; height: 40px;">
+            <i class="bi bi-check-lg"></i>
+          </div>
+          <span class="text-white">Soumettez vos requêtes en ligne</span>
+        </div>
+
+        <div class="feature-item d-flex align-items-center mb-3">
+          <div class="feature-icon d-flex align-items-center justify-content-center rounded-circle bg-white text-primary-custom me-3" style="width: 40px; height: 40px;">
+            <i class="bi bi-check-lg"></i>
+          </div>
+          <span class="text-white">Suivez l'avancement en temps réel</span>
+        </div>
+
+        <div class="feature-item d-flex align-items-center">
+          <div class="feature-icon d-flex align-items-center justify-content-center rounded-circle bg-white text-primary-custom me-3" style="width: 40px; height: 40px;">
+            <i class="bi bi-check-lg"></i>
+          </div>
+          <span class="text-white">Recevez vos documents rapidement</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section droite (Formulaire) -->
+  <div class="register-right d-flex align-items-center justify-content-center p-3 p-md-4">
+    <div class="register-form-container w-100" style="max-width: 450px;">
+      <!-- En-tête -->
+      <div class="text-center mb-4">
+
+        <h2 class="fw-bold text-neutral-800 mb-2">Inscription</h2>
+        <p class="text-neutral-600">Remplissez le formulaire pour créer votre compte</p>
+      </div>
+
+      <!-- Messages -->
+      <div *ngIf="successMessage" class="alert alert-success py-2 mb-3">
+        <i class="bi bi-check-circle me-2"></i>
+        {{ successMessage }}
+      </div>
+
+      <div *ngIf="errorMessage" class="alert alert-danger py-2 mb-3">
+        <i class="bi bi-exclamation-circle me-2"></i>
+        {{ errorMessage }}
+      </div>
+
+      <!-- Formulaire d'inscription -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <!-- Nom et Prénom -->
+        <div class="row mb-3">
+          <div class="col-md-6 mb-3 mb-md-0">
+            <label class="form-label fw-medium text-neutral-700">Nom *</label>
+            <input
+              type="text"
+              formControlName="nom"
+              class="form-control"
+              [class.is-invalid]="nom?.invalid && (nom?.touched || nom?.dirty)"
+              placeholder="Votre nom"
+            >
+            <div *ngIf="nom?.invalid && (nom?.touched || nom?.dirty)" class="invalid-feedback">
+              <div *ngIf="nom?.errors?.['required']">Le nom est requis</div>
+              <div *ngIf="nom?.errors?.['minlength']">Minimum 2 caractères</div>
+              <div *ngIf="nom?.errors?.['maxlength']">Maximum 50 caractères</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-medium text-neutral-700">Prénom *</label>
+            <input
+              type="text"
+              formControlName="prenom"
+              class="form-control"
+              [class.is-invalid]="prenom?.invalid && (prenom?.touched || prenom?.dirty)"
+              placeholder="Votre prénom"
+            >
+            <div *ngIf="prenom?.invalid && (prenom?.touched || prenom?.dirty)" class="invalid-feedback">
+              <div *ngIf="prenom?.errors?.['required']">Le prénom est requis</div>
+              <div *ngIf="prenom?.errors?.['minlength']">Minimum 2 caractères</div>
+              <div *ngIf="prenom?.errors?.['maxlength']">Maximum 50 caractères</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label class="form-label fw-medium text-neutral-700">Email *</label>
+          <input
+            type="email"
+            formControlName="email"
+            class="form-control"
+            [class.is-invalid]="email?.invalid && (email?.touched || email?.dirty)"
+            placeholder="exemple@etudiant.com"
+          >
+          <div *ngIf="email?.invalid && (email?.touched || email?.dirty)" class="invalid-feedback">
+            <div *ngIf="email?.errors?.['required']">L'email est requis</div>
+            <div *ngIf="email?.errors?.['email']">Format d'email invalide</div>
+          </div>
+        </div>
+
+        <!-- Téléphone (Optionnel) -->
+        <div class="mb-3">
+          <label class="form-label fw-medium text-neutral-700">
+            Téléphone <span class="text-neutral-500">(optionnel)</span>
+          </label>
+          <input
+            type="tel"
+            formControlName="telephone"
+            class="form-control"
+            [class.is-invalid]="telephone?.invalid && (telephone?.touched || telephone?.dirty)"
+            placeholder="+237 6XX XX XX XX"
+          >
+          <div *ngIf="telephone?.invalid && (telephone?.touched || telephone?.dirty)" class="invalid-feedback">
+            Format de téléphone invalide
+          </div>
+        </div>
+
+        <!-- Mot de passe -->
+        <div class="mb-3">
+          <label class="form-label fw-medium text-neutral-700">Mot de passe *</label>
+          <div class="input-group">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              class="form-control"
+              [class.is-invalid]="password?.invalid && (password?.touched || password?.dirty)"
+              placeholder="Minimum 6 caractères"
+            >
+            <!-- <button type="button" class="btn btn-outline-secondary" (click)="togglePasswordVisibility()">
+              <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+            </button> -->
+          </div>
+          <div *ngIf="password?.invalid && (password?.touched || password?.dirty)" class="invalid-feedback">
+            <div *ngIf="password?.errors?.['required']">Le mot de passe est requis</div>
+            <div *ngIf="password?.errors?.['minlength']">Minimum 6 caractères</div>
+          </div>
+        </div>
+
+        <!-- Confirmation mot de passe -->
+        <div class="mb-4">
+          <label class="form-label fw-medium text-neutral-700">Confirmez le mot de passe *</label>
+          <div class="input-group">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              formControlName="password_confirmation"
+              class="form-control"
+              [class.is-invalid]="password_confirmation?.invalid && (password_confirmation?.touched || password_confirmation?.dirty)"
+              placeholder="Confirmez votre mot de passe"
+            >
+            <!-- <button type="button" class="btn btn-outline-secondary" (click)="toggleConfirmPasswordVisibility()">
+              <i class="bi" [class.bi-eye]="!showConfirmPassword" [class.bi-eye-slash]="showConfirmPassword"></i>
+            </button> -->
+          </div>
+          <div *ngIf="password_confirmation?.invalid && (password_confirmation?.touched || password_confirmation?.dirty)" class="invalid-feedback">
+            <div *ngIf="password_confirmation?.errors?.['required']">La confirmation est requise</div>
+          </div>
+        </div>
+
+        <!-- Conditions d'utilisation -->
+        <!-- <div class="mb-4">
+          <div class="form-check">
+            <input
+              type="checkbox"
+              formControlName="acceptTerms"
+              class="form-check-input"
+              id="acceptTerms"
+              [class.is-invalid]="acceptTerms?.invalid && acceptTerms?.touched"
+            >
+            <label class="form-check-label text-neutral-700" for="acceptTerms">
+              J'accepte les
+              <a href="#" class="text-primary-custom text-decoration-none">Conditions d'utilisation</a>
+              *
+            </label>
+            <div *ngIf="acceptTerms?.invalid && acceptTerms?.touched" class="invalid-feedback d-block">
+              Vous devez accepter les conditions
+            </div>
+          </div>
+        </div> -->
+
+        <!-- Bouton d'inscription -->
+        <button
+          type="submit"
+          class="btn btn-primary-custom w-100 py-2 mb-3 fw-medium"
+          [disabled]="isLoading || registerForm.invalid"
+        >
+          <span *ngIf="!isLoading">
+            Créer mon compte
+          </span>
+          <span *ngIf="isLoading">
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            Inscription...
+          </span>
+        </button>
+
+        <!-- Lien vers connexion -->
+        <div class="text-center">
+          <p class="text-neutral-600 mb-0">
+            Vous avez déjà un compte ?
+            <a [routerLink]="['/login']" class="text-decoration-none text-accent-custom fw-medium ms-1">
+              Connectez-vous
+            </a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

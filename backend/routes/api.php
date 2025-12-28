@@ -16,12 +16,12 @@ Route::prefix('auth')->group(function () {
     Route::post('/register', RegisterController::class);
     Route::post('/login', LoginController::class);
 
-    Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-        ->middleware('signed')
-        ->name('verification.verify');
+    // Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+    //     ->middleware('signed')
+    //     ->name('verification.verify');
 
-    Route::post('/email/resend/{userId}', [VerificationController::class, 'resend'])
-        ->name('verification.resend');
+    // Route::post('/email/resend/{userId}', [VerificationController::class, 'resend'])
+    //     ->name('verification.resend');
 });
 
 

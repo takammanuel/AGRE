@@ -1,0 +1,196 @@
+.header-etudiant {
+  background-color: var(--primary-dark);
+  border-bottom: 3px solid var(--accent-color);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  .header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+
+  .logo-ministere {
+    height: 50px;
+    width: auto;
+  }
+
+  .logo-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+  }
+
+  .logo-subtitle {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+  }
+
+  .logo-campus {
+    height: 40px;
+  }
+
+  .user-info {
+    .user-name {
+      color: #fff;
+      font-size: 15px;
+    }
+
+    .user-id {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+    }
+  }
+
+  #navbarNav {
+    padding-left: 120px;
+  }
+
+  .btn-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    &:hover, &.active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .notification-badge {
+      font-size: 10px;
+      padding: 3px 6px;
+      min-width: 20px;
+    }
+  }
+
+  .btn-user {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    color: #fff;
+    transition: all 0.3s ease;
+
+    &:hover, &.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3) !important;
+    }
+
+    img {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  .dropdown-menu {
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    margin-top: 10px;
+    animation: slideDown 0.2s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .profile-dropdown {
+    width: 280px;
+    position: absolute;
+    left: -150px !important;
+
+    .dropdown-header {
+      padding: 15px;
+      background-color: #f8f9fa;
+    }
+
+    .dropdown-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      &.active {
+        background-color: #e9ecef;
+        font-weight: 500;
+      }
+
+      i {
+        width: 20px;
+      }
+    }
+  }
+
+  .notifications-dropdown {
+    position: absolute;
+    left: -150px !important;
+    .notification-item {
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+    }
+
+    .icon-wrapper {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f8f9fa;
+      border-radius: 50%;
+    }
+  }
+
+  .menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 999;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .header-etudiant {
+    .logo-text {
+      display: none !important;
+    }
+
+    .user-info {
+      display: none !important;
+    }
+
+    .btn-user span {
+      display: none !important;
+    }
+  }
+}
