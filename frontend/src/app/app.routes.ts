@@ -3,6 +3,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { authGuard } from './guards/auth-guard';
 import { DashboardEtudiant } from './pages/etudiant/dashboard-etudiant/dashboard-etudiant';
+import { roleGuard } from './guards/role-guard';
 // import { authGuard } from './guards/auth.guard';
 // import { roleGuard } from './guards/role.guard';
 
@@ -40,33 +41,54 @@ export const routes: Routes = [
   //   data: { title: 'Mot de passe oublié' }
   // },
   // {
-  //   path: 'admin',
-  //   canActivate: [authGuard, roleGuard],
-  //   data: { roles: ['ADMINISTRATEUR'] },
-  //   loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
-  //   data: { title: 'Admin Dashboard' }
-  // },
-  // {
   //   path: 'etudiant',
+  //   loadComponent: () => import('./pages/etudiant/dashboard-etudiant/dashboard-etudiant.component').then(m => m.DashboardEtudiantComponent),
   //   canActivate: [authGuard, roleGuard],
   //   data: { roles: ['ETUDIANT'] },
-  //   loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
-  //   data: { title: 'Tableau de bord Étudiant' }
+  //   children: [
+  //     {
+  //       path: '',
+  //       loadComponent: () => import('./pages/etudiant/accueil/accueil.component').then(m => m.AccueilComponent)
+  //     },
+  //     // ... autres routes étudiant
+  //   ]
   // },
-  // {
-  //   path: 'agent',
-  //   canActivate: [authGuard, roleGuard],
-  //   data: { roles: ['AGENT_ACADEMIQUE'] },
-  //   loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
-  //   data: { title: 'Tableau de bord Agent' }
-  // },
-  // {
-  //   path: 'responsable',
-  //   canActivate: [authGuard, roleGuard],
-  //   data: { roles: ['RESPONSABLE_PEDAGOGIQUE'] },
-  //   loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
-  //   data: { title: 'Tableau de bord Responsable' }
-  // },
+
+  // Dashboards Admin, Agent, Responsable (layout unifié)
+  {
+    path: 'admin',
+    loadComponent: () => import('./pages/shared/dashboard/dashboard').then(m => m.DashboardComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMINISTRATEUR'] },
+    children: [
+      {
+        path: 'services',
+        loadComponent: () => import('./pages/admin/services/services').then(m => m.ServicesComponent)
+      },
+      {
+        path: 'types-requetes',
+        loadComponent: () => import('./pages/admin/type-requetes/type-requetes').then(m => m.TypeRequetesComponent)
+      },
+    ]
+  },
+
+  {
+    path: 'agent',
+    loadComponent: () => import('./pages/shared/dashboard/dashboard').then(m => m.DashboardComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['AGENT_ACADEMIQUE'] },
+    children: [
+    ]
+  },
+
+  {
+    path: 'responsable',
+    loadComponent: () => import('./pages/shared/dashboard/dashboard').then(m => m.DashboardComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['RESPONSABLE_PEDAGOGIQUE'] },
+    children: [
+    ]
+  },
   {
     path: '',
     redirectTo: '/login',

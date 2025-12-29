@@ -16,11 +16,11 @@ class TypeRequeteController extends Controller
      */
     public function index(): JsonResponse
     {
-        $types = TypeRequete::with('service')->orderBy('nom')->get();
+        $types = TypeRequete::with('service')->paginate(10);
 
         return response()->json([
             'success' => true,
-            'data' => $types
+            'types_requetes' => $types
         ]);
     }
 

@@ -110,7 +110,13 @@ export class AuthService {
   private storeAuthData(response: LoginResponse): void {
     localStorage.setItem('access_token', response.access_token);
     localStorage.setItem('token_type', response.token_type);
-    localStorage.setItem('user', JSON.stringify(response.user));
+    localStorage.setItem('user', JSON.stringify({
+      id: response.user.id,
+      nom: response.user.nom,
+      prenom: response.user.prenom,
+      email: response.user.email,
+      telephone: response.user.telephone
+    }));
     this.currentUserSubject.next(response.user);
   }
 

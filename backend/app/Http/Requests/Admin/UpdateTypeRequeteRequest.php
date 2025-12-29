@@ -14,7 +14,7 @@ class UpdateTypeRequeteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'libelle' => ['sometimes', 'string', 'max:255'],
+            'nom' => ['sometimes', 'string', 'max:255'],
             'description' => ['sometimes', 'string'],
             'service_id' => ['nullable', 'exists:services,id'],
         ];

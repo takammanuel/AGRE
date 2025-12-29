@@ -16,11 +16,11 @@ class ServiceController extends Controller
      */
     public function index(): JsonResponse
     {
-        $services = Service::orderBy('nom')->get();
+        $services = Service::paginate(10);
 
         return response()->json([
             'success' => true,
-            'data' => $services
+            'services' => $services
         ]);
     }
 
@@ -66,21 +66,39 @@ class ServiceController extends Controller
     /**
      * Supprimer un service
      */
-    public function destroy(Service $service): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        // Vérifier si le service est utilisé
-        if ($service->agents()->count() > 0) {
+        try {
+            // Récupérer le service par son ID
+            $service = Service::findOrFail($id);
+
+            // Vérifier si le service est utilisé
+            if ($service->profilsAgentsAdministratifs()->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Impossible de supprimer ce service car il est attribué à des agents.'
+                ], 422);
+            }
+
+            $service->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Service supprimé avec succès.'
+            ]);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Impossible de supprimer ce service car il est attribué à des agents.'
-            ], 422);
+                'message' => 'Service non trouvé.'
+            ], 404);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la suppression.',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
         }
-
-        $service->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Service supprimé avec succès.'
-        ]);
     }
 }
