@@ -36,7 +36,7 @@ class ProfileController extends Controller
             // 'photo_url' => $user->photo_url,
             'is_active' => $user->is_active,
             'email_verified_at' => $user->email_verified_at,
-            'roles' => $user->roles->pluck('nom'),
+            'roles' => $user->roles->pluck('libelle'),
         ];
 
         // Ajouter le profil spécifique selon le rôle
