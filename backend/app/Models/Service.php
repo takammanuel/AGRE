@@ -22,4 +22,9 @@ class Service extends Model
     {
         return $this->hasMany(ProfilAgentAdministratif::class);
     }
+
+    public function typesRequetes()
+    {
+        return $this->hasMany(TypeRequete::class);
+    }
 }

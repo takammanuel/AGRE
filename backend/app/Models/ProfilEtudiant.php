@@ -31,4 +31,9 @@ class ProfilEtudiant extends Model
     {
         return $this->hasMany(Requete::class, 'etudiant_id');
     }
+
+    public function isComplete(): bool
+    {
+        return !empty($this->matricule) && !empty($this->niveau) && !empty($this->filiere);
+    }
 }

@@ -26,9 +26,11 @@
               }
             ],
             "styles": [
+               "node_modules/bootstrap-icons/font/bootstrap-icons.css",
+              "src/styles/variables.css",
+              "src/styles/styles.css",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
-              "src/styles.css"
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ],
             "scripts": [
               "node_modules/@popperjs/core/dist/umd/popper.min.js",
@@ -91,9 +93,11 @@
               }
             ],
             "styles": [
+               "node_modules/bootstrap-icons/font/bootstrap-icons.css",
+              "src/styles/variables.css",
+              "src/styles/styles.css",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
-              "src/styles.css"
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
             ],
             "scripts": [
               "node_modules/@popperjs/core/dist/umd/popper.min.js",
@@ -104,5 +108,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "c7a6173d-3779-4001-826b-4a7ae6e8ba69"
   }
 }

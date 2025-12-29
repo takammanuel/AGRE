@@ -1,0 +1,175 @@
+/* Import des variables */
+@import './variables.css';
+
+/* Personnalisation de Bootstrap avec nos variables */
+:root {
+  /* Surcharger les variables Bootstrap */
+  --bs-primary: var(--primary-color);
+  --bs-secondary: var(--secondary-color);
+  --bs-success: var(--success-color);
+  --bs-warning: var(--warning-color);
+  --bs-danger: var(--error-color);
+  --bs-info: var(--info-color);
+  --bs-light: var(--neutral-100);
+  --bs-dark: var(--neutral-800);
+
+  /* Typographie */
+  --bs-font-sans-serif: var(--font-family-base);
+  --bs-body-font-family: var(--font-family-base);
+  --bs-heading-font-family: var(--font-family-heading);
+
+  /* Bordures */
+  --bs-border-radius: var(--border-radius-md);
+  --bs-border-radius-sm: var(--border-radius-sm);
+  --bs-border-radius-lg: var(--border-radius-lg);
+
+  /* Ombres */
+  --bs-box-shadow: var(--shadow-md);
+  --bs-box-shadow-sm: var(--shadow-sm);
+  --bs-box-shadow-lg: var(--shadow-lg);
+}
+
+/* Réappliquer les couleurs Bootstrap */
+.bg-primary {
+  background-color: var(--bs-primary) !important;
+}
+
+.bg-secondary {
+  background-color: var(--bs-secondary) !important;
+}
+
+.bg-success {
+  background-color: var(--bs-success) !important;
+}
+
+.bg-warning {
+  background-color: var(--bs-warning) !important;
+}
+
+.bg-danger {
+  background-color: var(--bs-danger) !important;
+}
+
+.bg-info {
+  background-color: var(--bs-info) !important;
+}
+
+/* Personnalisation des boutons */
+.btn-primary {
+  --bs-btn-bg: var(--primary-color);
+  --bs-btn-border-color: var(--primary-color);
+  --bs-btn-hover-bg: var(--primary-dark);
+  --bs-btn-hover-border-color: var(--primary-dark);
+  --bs-btn-active-bg: var(--primary-dark);
+  --bs-btn-active-border-color: var(--primary-dark);
+}
+
+.btn-secondary {
+  --bs-btn-bg: var(--secondary-color);
+  --bs-btn-border-color: var(--secondary-color);
+  --bs-btn-hover-bg: var(--secondary-dark);
+  --bs-btn-hover-border-color: var(--secondary-dark);
+  --bs-btn-active-bg: var(--secondary-dark);
+  --bs-btn-active-border-color: var(--secondary-dark);
+}
+
+.btn-accent {
+  --bs-btn-bg: var(--accent-color);
+  --bs-btn-border-color: var(--accent-color);
+  --bs-btn-hover-bg: var(--accent-dark);
+  --bs-btn-hover-border-color: var(--accent-dark);
+  --bs-btn-active-bg: var(--accent-dark);
+  --bs-btn-active-border-color: var(--accent-dark);
+  color: white;
+}
+
+/* Classes utilitaires personnalisées */
+.text-neutral-800 {
+  color: var(--neutral-800);
+}
+
+.text-neutral-600 {
+  color: var(--neutral-600);
+}
+
+.bg-neutral-50 {
+  background-color: var(--neutral-50);
+}
+
+.bg-neutral-100 {
+  background-color: var(--neutral-100);
+}
+
+.border-neutral-200 {
+  border-color: var(--neutral-200);
+}
+
+/* Style global */
+body {
+  font-family: var(--font-family-base);
+  color: var(--neutral-800);
+  background-color: var(--neutral-50);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading);
+  color: var(--neutral-900);
+}
+
+/* Styles pour les cartes */
+.card-custom {
+  background-color: white;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-fast);
+}
+
+.card-custom:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Styles pour les badges */
+.badge-custom {
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--border-radius-xl);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+/* Styles pour les avatars */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+}
+
+.avatar-lg {
+  width: 60px;
+  height: 60px;
+  font-size: 1.25rem;
+}
+
+.avatar-xl {
+  width: 80px;
+  height: 80px;
+  font-size: 1.5rem;
+}
+
+/* Classes pour les dégradés */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  color: white;
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
+  color: white;
+}

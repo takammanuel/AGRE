@@ -1,0 +1,29 @@
+<div class="dashboard-layout" [attr.data-role]="config.role">
+  <!-- Sidebar -->
+  <app-sidebar-dashboard
+    [class.show]="isSidebarVisible"
+  ></app-sidebar-dashboard>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-wrapper">
+    <!-- Header -->
+    <app-header-dashboard
+      (toggleSidebar)="toggleSidebar()"
+    ></app-header-dashboard>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+
+    <!-- Footer -->
+    <!-- <app-footer-dashboard></app-footer-dashboard> -->
+  </div>
+
+  <!-- Mobile Overlay -->
+  <div
+    class="sidebar-overlay d-lg-none"
+    [class.show]="isSidebarVisible"
+    (click)="toggleSidebar()"
+  ></div>
+</div>

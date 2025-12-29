@@ -12,6 +12,7 @@ class ProfilAgentAdministratif extends Model
     protected $fillable = [
         'poste',
         'utilisateur_id',
+        'service_id'
     ];
 
     /**

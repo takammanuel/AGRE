@@ -20,6 +20,11 @@ return new class extends Migration
                 ->constrained('utilisateurs')
                 ->cascadeOnDelete();
 
+            $table->foreignId('service_id')
+                ->nullable()
+                ->constrained('services')
+                ->nullOnDelete();
+
             $table->timestamps();
         });
     }
