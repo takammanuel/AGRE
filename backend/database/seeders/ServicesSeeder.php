@@ -72,8 +72,7 @@ class ServicesSeeder extends Seeder
             ],
         ];
 
-        foreach ($services as $service) {
-            Service::insert($services);
-        }
+
+        Service::insert($services);
     }
 }

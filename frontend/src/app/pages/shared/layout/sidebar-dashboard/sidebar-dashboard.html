@@ -1,0 +1,43 @@
+<aside
+  class="sidebar-dashboard"
+  [class.collapsed]="isSidebarCollapsed"
+  [style.--role-color]="config.primaryColor"
+  [style.--role-bg]="config.backgroundColor"
+>
+  <!-- Header Sidebar -->
+  <div class="sidebar-header">
+    <div class="logo-container">
+      <span class="app-name" *ngIf="!isSidebarCollapsed">AGRE</span>
+    </div>
+    <button class="btn-toggle" (click)="toggleSidebar()">
+      <i class="bi" [class.bi-chevron-left]="!isSidebarCollapsed" [class.bi-chevron-right]="isSidebarCollapsed"></i>
+    </button>
+  </div>
+
+  <!-- Role Badge -->
+  <div class="role-badge" *ngIf="!isSidebarCollapsed">
+    <div class="badge-content">
+      <i class="bi bi-shield-check"></i>
+      <span>{{ config.roleLabel }}</span>
+    </div>
+  </div>
+
+  <!-- Menu Items -->
+  <nav class="sidebar-menu">
+    <ul class="menu-list">
+      <li *ngFor="let item of config.menuItems" class="menu-item">
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="menu-link"
+          [title]="item.label"
+        >
+          <i class="menu-icon bi {{ item.icon }}"></i>
+          <span class="menu-label" *ngIf="!isSidebarCollapsed">{{ item.label }}</span>
+          <span class="badge-count" *ngIf="item.badge && !isSidebarCollapsed">{{ item.badge }}</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</aside>

@@ -14,7 +14,7 @@ class TypeRequeteSeeder extends Seeder
      */
     public function run(): void
     {
-         $serviceScolarite = Service::where('nom', 'Service de la Scolarité')->first();
+        $serviceScolarite = Service::where('nom', 'Service de la Scolarité')->first();
         $serviceExamens = Service::where('nom', 'Service des Examens et Concours')->first();
 
         TypeRequete::insert([

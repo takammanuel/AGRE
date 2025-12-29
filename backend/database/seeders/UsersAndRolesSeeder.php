@@ -28,7 +28,7 @@ class UsersAndRolesSeeder extends Seeder
                 'telephone' => '697932976',
                 'email_verified_at' => now(),
                 'is_active' => true,
-                'role' => 'etudiant',
+                'role' => 'ETUDIANT',
                 'profil_data' => [
                     'matricule' => 'ETU2024001',
                     'filiere' => 'Informatique',
@@ -43,7 +43,7 @@ class UsersAndRolesSeeder extends Seeder
                 'telephone' => '697932977',
                 'email_verified_at' => now(),
                 'is_active' => true,
-                'role' => 'etudiant',
+                'role' => 'ETUDIANT',
                 'profil_data' => [
                     'matricule' => 'ETU2024002',
                     'filiere' => 'Génie Civil',
@@ -58,10 +58,10 @@ class UsersAndRolesSeeder extends Seeder
                 'telephone' => '697932978',
                 'email_verified_at' => now(),
                 'is_active' => true,
-                'role' => 'agent_academique',
+                'role' => 'AGENT_ACADEMIQUE',
                 'profil_data' => [
                     'poste' => 'Agent de Scolarité',
-                    'date_embauche' => '2020-01-15',
+                    // 'date_embauche' => '2020-01-15',
                     // service_id sera ajouté dynamiquement
                 ]
             ],
@@ -73,7 +73,7 @@ class UsersAndRolesSeeder extends Seeder
                 'telephone' => '697932979',
                 'email_verified_at' => now(),
                 'is_active' => true,
-                'role' => 'responsable_pedagogique',
+                'role' => 'RESPONSABLE_PEDAGOGIQUE',
                 'profil_data' => [
                     'departement' => 'Département Informatique',
                 ]
@@ -86,7 +86,7 @@ class UsersAndRolesSeeder extends Seeder
                 'telephone' => '697932980',
                 'email_verified_at' => now(),
                 'is_active' => true,
-                'role' => 'administrateur',
+                'role' => 'ADMINISTRATEUR',
                 'profil_data' => [
                     'niveau_acces' => 'super_admin',
                 ]
@@ -118,7 +118,9 @@ class UsersAndRolesSeeder extends Seeder
      */
     private function createProfil(Utilisateur $utilisateur, string $role, array $profilData): void
     {
-        switch ($role) {
+        $roleLower = strtolower($role);
+
+        switch ($roleLower) {
             case 'etudiant':
                 ProfilEtudiant::create([
                     'utilisateur_id' => $utilisateur->id,

@@ -23,13 +23,13 @@ export const roleGuard = (route: ActivatedRouteSnapshot) => {
   // Rediriger selon le rôle de l'utilisateur
   const user = authService.getCurrentUser();
 
-  if (user?.roles.includes('ADMINISTRATEUR')) {
+  if (user?.roles?.includes('ADMINISTRATEUR')) {
     return router.parseUrl('/admin');
-  } else if (user?.roles.includes('ETUDIANT')) {
+  } else if (user?.roles?.includes('ETUDIANT')) {
     return router.parseUrl('/etudiant');
-  } else if (user?.roles.includes('AGENT_ACADEMIQUE')) {
+  } else if (user?.roles?.includes('AGENT_ACADEMIQUE')) {
     return router.parseUrl('/agent');
-  } else if (user?.roles.includes('RESPONSABLE_PEDAGOGIQUE')) {
+  } else if (user?.roles?.includes('RESPONSABLE_PEDAGOGIQUE')) {
     return router.parseUrl('/responsable');
   }
 

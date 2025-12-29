@@ -88,7 +88,12 @@ class Utilisateur extends Authenticatable implements MustVerifyEmail
      */
     public function hasRole(string $roleName): bool
     {
-        return $this->roles()->where('nom', $roleName)->exists();
+         return $this->roles()
+                    ->where(function($query) use ($roleName) {
+                        $query->where('libelle', strtoupper($roleName))
+                              ->orWhere('nom', strtolower($roleName));
+                    })
+                    ->exists();
     }
 
     /**
@@ -96,7 +101,12 @@ class Utilisateur extends Authenticatable implements MustVerifyEmail
      */
     public function assignRole(string $roleName): void
     {
-        $role = Role::where('nom', $roleName)->first();
+         $role = Role::where('libelle', strtoupper($roleName))->first();
+
+        // Alternative: rechercher par nom en minuscule
+        if (!$role) {
+            $role = Role::where('nom', strtolower($roleName))->first();
+        }
 
         if ($role && !$this->hasRole($roleName)) {
             $this->roles()->attach($role->id);

@@ -14,7 +14,7 @@ class StoreTypeRequeteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'libelle' => ['required', 'string', 'max:255', 'unique:type_requetes,libelle'],
+            'nom' => ['required', 'string', 'max:255', 'unique:type_requetes,nom'],
             'description' => ['required', 'string'],
             'service_id' => ['nullable', 'exists:services,id'],
         ];
