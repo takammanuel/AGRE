@@ -1,0 +1,152 @@
+<div class="container-fluid py-4">
+  <!-- En-tête -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0">
+        <i class="bi bi-file-earmark-text me-2"></i>
+        Types de Requêtes
+      </h1>
+      <p class="text-muted mb-0">Gestion des différents types de requêtes</p>
+    </div>
+    <button class="btn btn-primary" (click)="openAddModal()">
+      <i class="bi bi-plus-circle me-1"></i>
+      Ajouter un type
+    </button>
+  </div>
+
+  <!-- Alertes -->
+  @if (error) {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ error }}
+      <button type="button" class="btn-close" (click)="error = ''"></button>
+    </div>
+  }
+
+  <!-- Tableau -->
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Libellé</th>
+              <th>Description</th>
+              <th>Service associé</th>
+              <th>Créé le</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (loading) {
+              <tr>
+                <td colspan="6" class="text-center py-5">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                  </div>
+                </td>
+              </tr>
+            } @else {
+              @if (typeRequetes.length === 0) {
+                <tr>
+                  <td colspan="6" class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox display-6 d-block mb-2"></i>
+                    Aucun type de requête trouvé
+                  </td>
+                </tr>
+              } @else {
+                @for (typeRequete of typeRequetes; track typeRequete.id; let i = $index) {
+                  <tr>
+                    <td>{{ typeRequete.id }}</td>
+                    <td class="fw-semibold">{{ typeRequete.nom }}</td> <!-- Changé de 'nom' à 'libelle' -->
+                    <td>
+                      <div class="text-truncate" style="max-width: 300px;">
+                        {{ typeRequete.description }}
+                      </div>
+                    </td>
+                    <td>
+                      @if (typeRequete.service) {
+                        <span class="badge bg-info">
+                          {{ typeRequete.service.nom }}
+                        </span>
+                      } @else {
+                        <span class="badge bg-secondary">
+                          Aucun service
+                        </span>
+                      }
+                    </td>
+                    <td>
+                      <span class="badge bg-light text-dark">
+                        {{ typeRequete.created_at | date:'dd/MM/yyyy' }}
+                      </span>
+                    </td>
+                    <td class="text-end">
+                      <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-outline-info"
+                                (click)="openDetailModal(typeRequete)"
+                                title="Voir détails">
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning"
+                                (click)="openEditModal(typeRequete)"
+                                title="Modifier">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger"
+                                (click)="openDeleteModal(typeRequete)"
+                                title="Supprimer">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination avec query parameters -->
+      @if (pagination && pagination.last_page > 1) {
+        <div class="d-flex justify-content-center align-items-center gap-3 my-4">
+          <button
+            class="btn btn-outline-primary px-4"
+            (click)="goToPreviousPage()"
+            [disabled]="currentPage === 1 || loading">
+            <i class="bi bi-chevron-left me-2"></i> Précédent
+          </button>
+
+          <span class="fw-semibold">
+            Page <span class="text-primary">{{ currentPage }}</span>
+            / {{ pagination.last_page }}
+          </span>
+
+          <button
+            class="btn btn-outline-primary px-4"
+            (click)="goToNextPage()"
+            [disabled]="currentPage === pagination.last_page || loading">
+            Suivant <i class="bi bi-chevron-right ms-2"></i>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Modal d'ajout/modification -->
+<app-type-requete-modal
+  [typeRequete]="selectedTypeRequete"
+  [isEdit]="isEditMode"
+  (save)="onTypeRequeteSaved($event)">
+</app-type-requete-modal>
+
+<!-- Modal de détails -->
+<app-type-requete-detail-modal
+  [typeRequete]="selectedTypeRequete">
+</app-type-requete-detail-modal>
+
+<!-- Modal de confirmation -->
+<app-confirm-modal
+  (confirm)="onDeleteConfirmed()">
+</app-confirm-modal>

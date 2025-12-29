@@ -1,0 +1,182 @@
+/* ============================================
+   PALETTE DE COULEURS - Plateforme Éducative
+   Palette 4 : Calme & Institutionnel
+   ============================================ */
+
+:root {
+  /* ========= COULEURS PRIMAIRES ========= */
+  --primary-color: #1e40af;       /* Bleu marine institutionnel */
+  --primary-dark: #1e3a8a;
+  --primary-light: #3b82f6;
+  --primary-rgb: 30, 64, 175;     /* Pour utilisation avec rgba() */
+
+  /* ========= COULEURS SECONDAIRES ========= */
+  --secondary-color: #0d9488;     /* Teal professionnel */
+  --secondary-dark: #0f766e;
+  --secondary-light: #14b8a6;
+  --secondary-rgb: 13, 148, 136;
+
+  /* ========= COULEURS D'ACCENT ========= */
+  --accent-color: #ea580c;        /* Orange foncé pour appels à l'action */
+  --accent-dark: #c2410c;
+  --accent-light: #fb923c;
+  --accent-rgb: 234, 88, 12;
+
+  /* ========= NEUTRES ========= */
+  --neutral-50: #f9fafb;
+  --neutral-100: #f3f4f6;
+  --neutral-200: #e5e7eb;
+  --neutral-300: #d1d5db;
+  --neutral-400: #9ca3af;
+  --neutral-500: #6b7280;
+  --neutral-600: #4b5563;
+  --neutral-700: #374151;
+  --neutral-800: #1f2937;
+  --neutral-900: #111827;
+
+  /* ========= COULEURS D'ÉTAT ========= */
+  --success-color: #10b981;       /* Vert */
+  --success-dark: #059669;
+  --success-light: #34d399;
+
+  --warning-color: #f59e0b;       /* Orange */
+  --warning-dark: #d97706;
+  --warning-light: #fbbf24;
+
+  --error-color: #ef4444;         /* Rouge */
+  --error-dark: #dc2626;
+  --error-light: #f87171;
+
+  --info-color: #3b82f6;          /* Bleu info */
+  --info-dark: #2563eb;
+  --info-light: #60a5fa;
+
+  /* ========= COULEURS PAR RÔLE ========= */
+  --etudiant-color: #3b82f6;      /* Bleu */
+  --etudiant-dark: #2563eb;
+
+  --agent-color: #10b981;         /* Vert */
+  --agent-dark: #059669;
+
+  --responsable-color: #8b5cf6;   /* Violet */
+  --responsable-dark: #7c3aed;
+
+  --admin-color: #ef4444;         /* Rouge */
+  --admin-dark: #dc2626;
+
+  /* ========= COULEURS DE STATUT REQUÊTE ========= */
+  --status-pending: #f59e0b;      /* En attente */
+  --status-in-progress: #3b82f6;  /* En cours */
+  --status-completed: #10b981;    /* Traitée */
+  --status-rejected: #ef4444;     /* Rejetée */
+  --status-cancelled: #6b7280;    /* Annulée */
+
+  /* ========= TYPOGRAPHIE ========= */
+  --font-family-base: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --font-family-heading: 'Roboto', 'Segoe UI', sans-serif;
+
+  /* ========= OMBRES ========= */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* ========= BORDURES ========= */
+  --border-radius-sm: 0.25rem;
+  --border-radius-md: 0.375rem;
+  --border-radius-lg: 0.5rem;
+  --border-radius-xl: 1rem;
+
+  /* ========= TRANSITIONS ========= */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 300ms ease-in-out;
+  --transition-slow: 500ms ease-in-out;
+}
+
+/* ============================================
+   CLASSES UTILITAIRES POUR BOOTSTRAP
+   ============================================ */
+
+/* Classes pour modifier les couleurs de Bootstrap */
+.bg-primary-custom {
+  background-color: var(--primary-color) !important;
+}
+
+.bg-secondary-custom {
+  background-color: var(--secondary-color) !important;
+}
+
+.bg-accent-custom {
+  background-color: var(--accent-color) !important;
+}
+
+.text-primary-custom {
+  color: var(--primary-color) !important;
+}
+
+.text-secondary-custom {
+  color: var(--secondary-color) !important;
+}
+
+.text-accent-custom {
+  color: var(--accent-color) !important;
+}
+
+/* Classes pour les rôles */
+.bg-etudiant {
+  background-color: var(--etudiant-color) !important;
+  color: white !important;
+}
+
+.bg-agent {
+  background-color: var(--agent-color) !important;
+  color: white !important;
+}
+
+.bg-responsable {
+  background-color: var(--responsable-color) !important;
+  color: white !important;
+}
+
+.bg-admin {
+  background-color: var(--admin-color) !important;
+  color: white !important;
+}
+
+/* Classes pour les statuts */
+.bg-status-pending {
+  background-color: var(--status-pending) !important;
+  color: white !important;
+}
+
+.bg-status-in-progress {
+  background-color: var(--status-in-progress) !important;
+  color: white !important;
+}
+
+.bg-status-completed {
+  background-color: var(--status-completed) !important;
+  color: white !important;
+}
+
+.bg-status-rejected {
+  background-color: var(--status-rejected) !important;
+  color: white !important;
+}
+
+/* Classes pour les bordures */
+.border-primary-custom {
+  border-color: var(--primary-color) !important;
+}
+
+.border-secondary-custom {
+  border-color: var(--secondary-color) !important;
+}
+
+.border-accent-custom {
+  border-color: var(--accent-color) !important;
+}
+
+/* Classes pour les ombres */
+.shadow-custom {
+  box-shadow: var(--shadow-lg) !important;
+}

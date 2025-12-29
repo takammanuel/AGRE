@@ -1,0 +1,46 @@
+<footer class="footer-etudiant">
+  <div class="container-fluid">
+    <div class="footer-content py-4">
+      <div class="row align-items-center">
+
+        <!-- Colonne gauche : Copyright -->
+        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+          <p class="mb-0 text-muted small">
+            © {{ currentYear }} <strong>AGRE</strong>. Tous droits réservés.
+          </p>
+          <p class="mb-0 text-muted small">
+            Plateforme de gestion des requêtes étudiantes
+          </p>
+        </div>
+
+        <!-- Colonne droite : Liens rapides -->
+        <div class="col-md-6">
+          <div class="footer-links d-flex justify-content-center justify-content-md-end gap-4">
+            <a routerLink="/etudiant/aide" class="footer-link">
+              <i class="bi bi-question-circle me-1"></i> Aide
+            </a>
+            <a routerLink="/conditions" class="footer-link">
+              <i class="bi bi-file-text me-1"></i> Conditions d'utilisation
+            </a>
+            <a routerLink="/confidentialite" class="footer-link">
+              <i class="bi bi-shield-check me-1"></i> Confidentialité
+            </a>
+            <a routerLink="/contact" class="footer-link">
+              <i class="bi bi-envelope me-1"></i> Contact
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barre de statut (optionnel) -->
+      <div class="row mt-3 pt-3 border-top">
+        <div class="col-12 text-center">
+          <p class="mb-0 text-muted small">
+            <i class="bi bi-check-circle text-success me-1"></i>
+            Système opérationnel | Version 1.0.0
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
