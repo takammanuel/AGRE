@@ -18,6 +18,7 @@ export class HeaderEtudiant implements OnInit {
   showProfileMenu = false;
   showNotifications = false;
   notificationCount = 3; // À remplacer par vraies données
+  showMobileMenu = false;
 
   ngOnInit(): void {
     this.loadCurrentUser();
@@ -32,17 +33,24 @@ export class HeaderEtudiant implements OnInit {
 
   toggleProfileMenu(): void {
     this.showProfileMenu = !this.showProfileMenu;
-    this.showNotifications = false; // Fermer notifications si ouvert
+  if (this.showProfileMenu) {
+    this.showNotifications = false;
+    this.showMobileMenu = false;
+  }
   }
 
   toggleNotifications(): void {
     this.showNotifications = !this.showNotifications;
-    this.showProfileMenu = false; // Fermer menu profil si ouvert
+  if (this.showNotifications) {
+    this.showProfileMenu = false;
+    this.showMobileMenu = false;
+  }
   }
 
   closeMenus(): void {
     this.showProfileMenu = false;
     this.showNotifications = false;
+    this.showMobileMenu = false;
   }
 
   logout(): void {
@@ -67,4 +75,10 @@ export class HeaderEtudiant implements OnInit {
     this.router.navigate(['/etudiant/parametres']);
     this.closeMenus();
   }
+
+  toggleMobileMenu(): void {
+    this.showMobileMenu = !this.showMobileMenu;
+  }
+
+
 }

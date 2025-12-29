@@ -60,7 +60,12 @@ export class HeaderDashboardComponent implements OnInit {
   }
 
   goToProfile(): void {
-    const role = this.config.role.toLowerCase().replace('_', '-');
+    const role = this.config.role.toLowerCase().replace('_', ' ').split(' ')[0];
+    if(role === 'administrateur') {
+      this.router.navigate([`/admin/profil`]);
+      this.closeMenus();
+      return;
+    }
     this.router.navigate([`/${role}/profil`]);
     this.closeMenus();
   }

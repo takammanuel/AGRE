@@ -23,38 +23,17 @@ export const routes: Routes = [
     component: DashboardEtudiant,
     canActivate: [authGuard],
     children: [
-      // {
-      //   path: '',
-      //   redirectTo: 'accueil',
-      //   pathMatch: 'full'
-      // },
-      // {
-      //   path: 'accueil',
-      //   loadComponent: () => import('./pages/etudiant/accueil/accueil.component').then(m => m.AccueilComponent)
-      // },
-      // Autres routes enfants à venir...
+      {
+        path: '',
+        redirectTo: 'accueil',
+        pathMatch: 'full'
+      },
+      {
+        path: 'profil',
+        loadComponent: () => import('./pages/shared/profile/profile').then(m => m.ProfileComponent)
+      },
     ]
   },
-  // {
-  //   path: 'forgot-password',
-  //   loadComponent: () => import('./auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
-  //   data: { title: 'Mot de passe oublié' }
-  // },
-  // {
-  //   path: 'etudiant',
-  //   loadComponent: () => import('./pages/etudiant/dashboard-etudiant/dashboard-etudiant.component').then(m => m.DashboardEtudiantComponent),
-  //   canActivate: [authGuard, roleGuard],
-  //   data: { roles: ['ETUDIANT'] },
-  //   children: [
-  //     {
-  //       path: '',
-  //       loadComponent: () => import('./pages/etudiant/accueil/accueil.component').then(m => m.AccueilComponent)
-  //     },
-  //     // ... autres routes étudiant
-  //   ]
-  // },
-
-  // Dashboards Admin, Agent, Responsable (layout unifié)
   {
     path: 'admin',
     loadComponent: () => import('./pages/shared/dashboard/dashboard').then(m => m.DashboardComponent),
@@ -69,6 +48,10 @@ export const routes: Routes = [
         path: 'types-requetes',
         loadComponent: () => import('./pages/admin/type-requetes/type-requetes').then(m => m.TypeRequetesComponent)
       },
+      {
+        path: 'profil',
+        loadComponent: () => import('./pages/shared/profile/profile').then(m => m.ProfileComponent)
+      },
     ]
   },
 
@@ -78,6 +61,10 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['AGENT_ACADEMIQUE'] },
     children: [
+      {
+        path: 'profil',
+        loadComponent: () => import('./pages/shared/profile/profile').then(m => m.ProfileComponent)
+      },
     ]
   },
 
@@ -87,6 +74,10 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['RESPONSABLE_PEDAGOGIQUE'] },
     children: [
+      {
+        path: 'profil',
+        loadComponent: () => import('./pages/shared/profile/profile').then(m => m.ProfileComponent)
+      },
     ]
   },
   {

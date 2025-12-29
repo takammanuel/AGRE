@@ -240,4 +240,12 @@ export class AuthService {
     const user = this.getCurrentUser();
     return user?.roles?.[0] || null;
   }
+
+  updateUserInfo(userInfo: any): void {
+  if (this.currentUserSubject.value) {
+    const updatedUser = { ...this.currentUserSubject.value, ...userInfo };
+    this.currentUserSubject.next(updatedUser);
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  }
+}
 }

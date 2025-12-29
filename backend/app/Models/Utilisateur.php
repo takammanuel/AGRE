@@ -141,6 +141,39 @@ class Utilisateur extends Authenticatable implements MustVerifyEmail
         return ! is_null($this->email_verified_at);
     }
 
+    public function getProfil()
+    {
+        if ($this->isEtudiant() && $this->profilEtudiant) {
+            return [
+                'type' => 'etudiant',
+                'data' => $this->profilEtudiant
+            ];
+        }
+
+        if ($this->isAgent() && $this->profilAgentAdministratif) {
+            return [
+                'type' => 'agent',
+                'data' => $this->profilAgentAdministratif->load('service')
+            ];
+        }
+
+        if ($this->isResponsable() && $this->profilResponsablePedagogique) {
+            return [
+                'type' => 'responsable',
+                'data' => $this->profilResponsablePedagogique
+            ];
+        }
+
+        if ($this->isAdmin() && $this->profilAdministrateur) {
+            return [
+                'type' => 'admin',
+                'data' => $this->profilAdministrateur
+            ];
+        }
+
+        return null;
+    }
+
     /**
      * Marque l'adresse email comme vérifiée.
      */
