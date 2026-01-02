@@ -110,13 +110,7 @@ export class AuthService {
   private storeAuthData(response: LoginResponse): void {
     localStorage.setItem('access_token', response.access_token);
     localStorage.setItem('token_type', response.token_type);
-    localStorage.setItem('user', JSON.stringify({
-      id: response.user.id,
-      nom: response.user.nom,
-      prenom: response.user.prenom,
-      email: response.user.email,
-      telephone: response.user.telephone
-    }));
+    localStorage.setItem('user', JSON.stringify(response.user));
     this.currentUserSubject.next(response.user);
   }
 
@@ -240,12 +234,4 @@ export class AuthService {
     const user = this.getCurrentUser();
     return user?.roles?.[0] || null;
   }
-
-  updateUserInfo(userInfo: any): void {
-  if (this.currentUserSubject.value) {
-    const updatedUser = { ...this.currentUserSubject.value, ...userInfo };
-    this.currentUserSubject.next(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-  }
-}
 }

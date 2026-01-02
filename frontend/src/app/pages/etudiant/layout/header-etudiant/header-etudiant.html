@@ -1,150 +1,102 @@
 <header class="header-etudiant shadow-sm">
   <div class="container-fluid">
-    <div class="header-content d-flex align-items-center justify-content-between py-2 py-md-3">
+    <div class="header-content d-flex align-items-center justify-content-between py-3">
 
-      <!-- Logo et Menu Hamburger -->
-      <div class="header-left d-flex align-items-center gap-3">
-        <!-- Menu Hamburger (visible sur mobile) -->
-        <button class="btn btn-icon d-lg-none" (click)="toggleMobileMenu()">
-          <i class="bi bi-list fs-4"></i>
-        </button>
-
-        <!-- Logo (votre contenu inchangé) -->
+      <div class="header-left d-flex align-items-center">
         <div class="logo-section d-flex align-items-center me-4">
-          <h1 class="logo-title mb-0 fw-bold">
-            AGRE
-          </h1>
+          <div class="logo-text">
+            <h1 class="logo-title mb-0">AGRE</h1>
+            <p class="logo-subtitle mb-0">Gestion des requêtes étudiantes</p>
+          </div>
         </div>
       </div>
 
-      <!-- Informations Étudiant & Actions -->
-      <div class="header-right d-flex align-items-center gap-2 gap-md-3">
+      <div class="header-right d-flex align-items-center gap-3">
 
-        <!-- Nom et Identifiant Étudiant (inchangé) -->
         <div class="user-info text-end d-none d-md-block">
-          <p class="user-name mb-1 fw-bold text-white">
+          <p class="user-name mb-1 fw-bold">
             {{ currentUser?.prenom }} {{ currentUser?.nom }}
           </p>
-          <p class="user-id mb-0 text-muted" *ngIf="currentUser?.roles?.length">
-            <span class="text-white">{{ currentUser?.roles[0] }}</span>
+          <p class="user-id mb-0">
+            <span>Matricule: {{ currentUser?.profil?.matricule || 'Non renseigné' }}</span>
           </p>
         </div>
 
-        <!-- Notifications (inchangé) -->
         <div class="notifications-wrapper position-relative">
           <button
-            class="btn btn-icon position-relative"
+            class="btn-icon position-relative"
             (click)="toggleNotifications()"
             [class.active]="showNotifications"
           >
             <i class="bi bi-bell fs-5"></i>
             <span
-              *ngIf="notificationCount > 0"
+              *ngIf="(notificationService.unreadCount$ | async) ?? 0 > 0"
               class="notification-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
             >
-              {{ notificationCount > 9 ? '9+' : notificationCount }}
+              {{ notificationService.unreadCount$ | async }}
             </span>
           </button>
 
-          <!-- Dropdown Notifications (inchangé) -->
           <div
             *ngIf="showNotifications"
-            class="dropdown-menu dropdown-menu-end show notifications-dropdown p-0"
+            class="dropdown-menu notifications-dropdown show p-0"
             style="width: 350px; max-height: 400px; overflow-y: auto;"
           >
-            <div class="dropdown-header bg-light fw-bold border-bottom">
-              Notifications ({{ notificationCount }})
+            <div class="dropdown-header fw-bold border-bottom">
+              Notifications ({{ (notificationService.unreadCount$ | async) }})
             </div>
 
-            <div class="notification-item border-bottom p-3">
+            <div *ngFor="let notif of notifications"
+                 (click)="markAsRead(notif.id)"
+                 class="notification-item border-bottom p-3">
               <div class="d-flex">
                 <div class="icon-wrapper me-3">
-                  <i class="bi bi-check-circle text-success fs-4"></i>
+                  <i [class]="notif.is_read ? 'bi bi-bell text-muted' : 'bi bi-bell-fill text-primary'" class="fs-4"></i>
                 </div>
                 <div class="flex-grow-1">
-                  <p class="mb-1 fw-medium">Requête approuvée</p>
-                  <p class="mb-1 small text-muted">Votre demande d'attestation a été traitée</p>
-                  <span class="small text-muted">Il y a 2 heures</span>
+                  <p class="mb-1 fw-medium" [class.text-primary]="!notif.is_read">{{ notif.titre }}</p>
+                  <p class="mb-1 small text-muted">{{ notif.message }}</p>
+                  <span class="small text-muted">{{ notif.created_at | date:'short' }}</span>
                 </div>
               </div>
             </div>
 
-            <div class="notification-item border-bottom p-3">
-              <div class="d-flex">
-                <div class="icon-wrapper me-3">
-                  <i class="bi bi-info-circle text-primary fs-4"></i>
-                </div>
-                <div class="flex-grow-1">
-                  <p class="mb-1 fw-medium">Nouvelle information</p>
-                  <p class="mb-1 small text-muted">Mise à jour du règlement intérieur</p>
-                  <span class="small text-muted">Il y a 1 jour</span>
-                </div>
-              </div>
+            <div *ngIf="notifications.length === 0" class="p-4 text-center text-muted">
+              Aucune notification
             </div>
 
-            <div class="dropdown-footer text-center border-top p-2">
-              <a href="#" class="text-decoration-none small">Voir toutes les notifications</a>
+            <div class="dropdown-footer text-center border-top p-2 bg-light">
+              <a routerLink="/etudiant/notifications" class="text-decoration-none small">Tout voir</a>
             </div>
           </div>
         </div>
 
-        <!-- Menu Profil (légèrement modifié pour mobile) -->
         <div class="profile-menu position-relative">
           <button
-            class="btn btn-user d-flex align-items-center gap-2 border rounded-pill px-3"
+            class="btn-user d-flex align-items-center gap-2 border rounded-pill px-3 py-1"
             (click)="toggleProfileMenu()"
             [class.active]="showProfileMenu"
           >
-            <ng-container *ngIf="currentUser?.photo_url; else defaultIcon">
-              <img
-                [src]="currentUser.photo_url"
-                alt="Photo profil"
-                class="rounded-circle"
-                style="width: 35px; height: 35px; object-fit: cover;"
-              >
-            </ng-container>
-
-            <!-- Icône par défaut -->
-            <ng-template #defaultIcon>
-              <i class="bi bi-person-circle fs-4"></i>
-            </ng-template>
-
-            <!-- Cache le chevron sur mobile -->
-            <i class="bi bi-chevron-down small d-none d-md-inline"></i>
+            <i class="bi bi-person-circle fs-4"></i>
+            <i class="bi bi-chevron-down small"></i>
           </button>
 
-          <!-- Dropdown Menu (inchangé) -->
           <div
             *ngIf="showProfileMenu"
-            class="dropdown-menu dropdown-menu-end show profile-dropdown"
+            class="dropdown-menu profile-dropdown show"
           >
             <div class="dropdown-header">
               <p class="mb-0 fw-bold">{{ currentUser?.prenom }} {{ currentUser?.nom }}</p>
               <small class="text-muted">{{ currentUser?.email }}</small>
             </div>
-            <div class="dropdown-divider"></div>
-
+            <div class="dropdown-divider m-0"></div>
             <a class="dropdown-item" (click)="goToProfile()">
               <i class="bi bi-person me-2"></i> Mon profil
             </a>
             <a class="dropdown-item" (click)="goToSettings()">
               <i class="bi bi-gear me-2"></i> Paramètres
             </a>
-            <a class="dropdown-item" routerLink="/etudiant/aide">
-              <i class="bi bi-question-circle me-2"></i> Aide
-            </a>
-
-            <div class="dropdown-divider"></div>
-
-            <!-- Sélecteur de langue -->
-            <div class="dropdown-header small">Langue</div>
-            <a class="dropdown-item active">
-              <i class="bi bi-check2 me-2"></i> FR - Français
-            </a>
-            <a class="dropdown-item">EN - English</a>
-
-            <div class="dropdown-divider"></div>
-
+            <div class="dropdown-divider m-0"></div>
             <a class="dropdown-item text-danger" (click)="logout()">
               <i class="bi bi-box-arrow-right me-2"></i> Déconnexion
             </a>
@@ -154,46 +106,20 @@
     </div>
   </div>
 
-  <!-- Ligne de séparation (inchangée) -->
-  <hr class="text-white my-0 d-none d-lg-block">
-
-  <!-- Navigation principale (cachée sur mobile, montrée avec hamburger) -->
-  <nav class="navbar navbar-expand-lg d-none d-lg-block ms-lg-5">
+  <nav class="navbar navbar-expand-lg py-0">
     <div class="container-fluid">
-      <div class="navbar-nav">
-        <a class="nav-link active text-white" aria-current="page" routerLink="/etudiant">Mes requêtes</a>
-        <a class="nav-link text-white" routerLink="/etudiant/messagerie">Ma messagerie</a>
-        <a class="nav-link text-white" routerLink="/etudiant/account">Mon compte</a>
+      <div class="collapse navbar-collapse show" id="navbarNav">
+        <ul class="navbar-nav flex-row">
+          <li class="nav-item">
+            <a class="nav-link text-white px-4 py-3" routerLink="/etudiant/requetes" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Mes requêtes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white px-4 py-3" routerLink="/etudiant/messagerie" routerLinkActive="active">Ma messagerie</a>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>
 
-  <!-- Menu mobile (nouveau) -->
-  <div *ngIf="showMobileMenu" class="mobile-menu d-lg-none">
-    <div class="mobile-menu-items">
-      <a class="mobile-menu-item active" routerLink="/etudiant" (click)="toggleMobileMenu()">
-        <i class="bi bi-inbox me-3"></i> Mes requêtes
-      </a>
-      <a class="mobile-menu-item" routerLink="/etudiant/messagerie" (click)="toggleMobileMenu()">
-        <i class="bi bi-chat-text me-3"></i> Ma messagerie
-      </a>
-      <a class="mobile-menu-item" (click)="goToProfile(); toggleMobileMenu()">
-        <i class="bi bi-person me-3"></i> Mon profil
-      </a>
-      <a class="mobile-menu-item" (click)="goToSettings(); toggleMobileMenu()">
-        <i class="bi bi-gear me-3"></i> Paramètres
-      </a>
-      <hr class="mx-3 my-2 text-white opacity-25">
-      <a class="mobile-menu-item text-danger" (click)="logout(); toggleMobileMenu()">
-        <i class="bi bi-box-arrow-right me-3"></i> Déconnexion
-      </a>
-    </div>
-  </div>
-
-  <!-- Overlay pour fermer les menus (étendu pour mobile) -->
-  <div
-    *ngIf="showProfileMenu || showNotifications || showMobileMenu"
-    class="menu-overlay"
-    (click)="closeMenus()"
-  ></div>
+  <div *ngIf="showProfileMenu || showNotifications" class="menu-overlay" (click)="closeMenus()"></div>
 </header>

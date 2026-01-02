@@ -14,6 +14,7 @@ class Notification extends Model
         'message',
         'requete_id',
         'utilisateur_id',
+        'is_read', // champ ajouté
     ];
 
     /**
@@ -30,5 +31,13 @@ class Notification extends Model
     public function utilisateur()
     {
         return $this->belongsTo(Utilisateur::class);
+    }
+
+    /**
+     * Vérifie si la notification est lue
+     */
+    public function estLue(): bool
+    {
+        return (bool) $this->is_read;
     }
 }

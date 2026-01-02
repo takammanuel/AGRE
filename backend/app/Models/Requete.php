@@ -17,6 +17,8 @@ class Requete extends Model
         'agent_id',
         'responsable_id',
         'type_requete_id',
+        'utilisateur_id', // ajouté
+        'statut',         // ajouté
     ];
 
     /**
@@ -95,5 +97,13 @@ class Requete extends Model
             'etat_id'
         )->withPivot('date_etat')
          ->withTimestamps();
+    }
+
+    /**
+     * Relation pratique vers l'utilisateur concerné (ici l'étudiant)
+     */
+    public function utilisateur()
+    {
+        return $this->etudiant();
     }
 }

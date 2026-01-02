@@ -1,27 +1,32 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+
+// Chemins relatifs (4 niveaux pour atteindre services/models depuis pages/etudiant/layout/header-etudiant)
 import { AuthService } from '../../../../services/auth.service';
+import { NotificationService } from '../../../../services/notification';
+import { Notification } from '../../../../models/communication';
 
 @Component({
   selector: 'app-header-etudiant',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterModule],
   templateUrl: './header-etudiant.html',
   styleUrls: ['./header-etudiant.scss']
 })
 export class HeaderEtudiant implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
+  public notificationService = inject(NotificationService);
 
   currentUser: any = null;
   showProfileMenu = false;
   showNotifications = false;
-  notificationCount = 3; // À remplacer par vraies données
-  showMobileMenu = false;
+  notifications: Notification[] = [];
 
   ngOnInit(): void {
     this.loadCurrentUser();
+    this.loadNotifications();
   }
 
   loadCurrentUser(): void {
@@ -31,41 +36,41 @@ export class HeaderEtudiant implements OnInit {
     }
   }
 
+  loadNotifications(): void {
+    this.notificationService.getNotifications().subscribe({
+      next: (data: Notification[]) => {
+        this.notifications = data;
+      },
+      error: (err: any) => {
+        console.error('Erreur notifications:', err);
+      }
+    });
+  }
+
+  markAsRead(id: number): void {
+    this.notificationService.markAsRead(id).subscribe({
+      next: () => this.loadNotifications(),
+      error: (err: any) => console.error(err)
+    });
+  }
+
+  // --- GESTION DES MENUS ---
   toggleProfileMenu(): void {
     this.showProfileMenu = !this.showProfileMenu;
-  if (this.showProfileMenu) {
     this.showNotifications = false;
-    this.showMobileMenu = false;
-  }
   }
 
   toggleNotifications(): void {
     this.showNotifications = !this.showNotifications;
-  if (this.showNotifications) {
     this.showProfileMenu = false;
-    this.showMobileMenu = false;
-  }
   }
 
   closeMenus(): void {
     this.showProfileMenu = false;
     this.showNotifications = false;
-    this.showMobileMenu = false;
   }
 
-  logout(): void {
-    this.authService.logout().subscribe({
-      next: () => {
-        this.router.navigate(['/login']);
-      },
-      error: (error) => {
-        console.error('Erreur lors de la déconnexion', error);
-        localStorage.removeItem('auth_token');
-        this.router.navigate(['/login']);
-      }
-    });
-  }
-
+  // --- NAVIGATION (Les fonctions qui manquaient) ---
   goToProfile(): void {
     this.router.navigate(['/etudiant/profil']);
     this.closeMenus();
@@ -76,9 +81,16 @@ export class HeaderEtudiant implements OnInit {
     this.closeMenus();
   }
 
-  toggleMobileMenu(): void {
-    this.showMobileMenu = !this.showMobileMenu;
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: (err: any) => {
+        console.error(err);
+        localStorage.removeItem('auth_token');
+        this.router.navigate(['/login']);
+      }
+    });
   }
-
-
 }

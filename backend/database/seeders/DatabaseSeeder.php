@@ -13,17 +13,17 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-    public function run(): void
-    {
-         $this->call([
-            RolesSeeder::class,        // Rôles de base
-            PermissionsSeeder::class,  // Permissions
-            RolePermissionSeeder::class, // Lier rôles et permissions
-            EtatsSeeder::class,        // États des requêtes
-            ServicesSeeder::class,
-            TypeRequeteSeeder::class,  // Types de requêtes
-            UsersAndRolesSeeder::class,
-            // ProfilSeeder::class,
-        ]);
-    }
+ public function run(): void
+{
+    $this->call([
+        RolesSeeder::class,
+        PermissionsSeeder::class,
+        RolePermissionSeeder::class,
+        EtatsSeeder::class,
+        ServicesSeeder::class,
+        TypeRequeteSeeder::class,
+        UsersAndRolesSeeder::class,
+        RequeteSeeder::class, // ajouté
+    ]);
+}
 }

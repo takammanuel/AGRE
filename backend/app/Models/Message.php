@@ -13,6 +13,7 @@ class Message extends Model
         'contenu',
         'emetteur_id',
         'recepteur_id',
+        'read_at', // champ ajouté
     ];
 
     /**
@@ -29,5 +30,13 @@ class Message extends Model
     public function recepteur()
     {
         return $this->belongsTo(Utilisateur::class, 'recepteur_id');
+    }
+
+    /**
+     * Vérifie si le message est lu
+     */
+    public function estLu(): bool
+    {
+        return !is_null($this->read_at);
     }
 }

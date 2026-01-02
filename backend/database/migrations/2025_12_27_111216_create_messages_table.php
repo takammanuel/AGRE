@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -13,8 +12,7 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->string("contenu");
-
+            $table->text("contenu"); // contenu long
             $table->foreignId('emetteur_id')
                 ->constrained('utilisateurs')
                 ->cascadeOnDelete();
@@ -24,6 +22,7 @@ return new class extends Migration
                 ->constrained('utilisateurs')
                 ->nullOnDelete();
 
+            $table->timestamp("read_at")->nullable(); // date de lecture
             $table->timestamps();
         });
     }
