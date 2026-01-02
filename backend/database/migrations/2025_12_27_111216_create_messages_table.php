@@ -24,6 +24,11 @@ return new class extends Migration
                 ->constrained('utilisateurs')
                 ->nullOnDelete();
 
+            $table->foreignId('requete_id')
+                ->nullable()
+                ->constrained('requetes')
+                ->nullOnDelete();
+
             $table->timestamps();
         });
     }

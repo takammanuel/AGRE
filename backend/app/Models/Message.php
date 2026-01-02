@@ -30,4 +30,12 @@ class Message extends Model
     {
         return $this->belongsTo(Utilisateur::class, 'recepteur_id');
     }
+
+    /**
+     * Relation vers la requête associée (nullable)
+     */
+    public function requete()
+    {
+        return $this->belongsTo(Requete::class, 'requete_id');
+    }
 }
