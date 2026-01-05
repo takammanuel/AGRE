@@ -13,28 +13,29 @@ class Message extends Model
         'contenu',
         'emetteur_id',
         'recepteur_id',
-        'read_at', // champ ajouté
+        'requete_id', // On garde l'ID de la requête
+        'read_at',    // On garde ton système de notification
     ];
 
-    /**
-     * Relation vers l'utilisateur émetteur
-     */
+    /** Relation vers l'émetteur */
     public function emetteur()
     {
-        return $this->belongsTo(Utilisateur::class, 'emetteur_id');
+        return $this->belongsTo(User::class, 'emetteur_id');
     }
 
-    /**
-     * Relation vers l'utilisateur récepteur (nullable)
-     */
+    /** Relation vers le récepteur */
     public function recepteur()
     {
-        return $this->belongsTo(Utilisateur::class, 'recepteur_id');
+        return $this->belongsTo(User::class, 'recepteur_id');
     }
 
-    /**
-     * Vérifie si le message est lu
-     */
+    /** Relation vers la requête associée (Ton travail) */
+    public function requete()
+    {
+        return $this->belongsTo(Requete::class, 'requete_id');
+    }
+
+    /** Vérifie si le message est lu (Ton travail) */
     public function estLu(): bool
     {
         return !is_null($this->read_at);

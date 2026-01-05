@@ -22,7 +22,15 @@ return new class extends Migration {
                 ->constrained('utilisateurs')
                 ->nullOnDelete();
 
+<<<<<<< HEAD
             $table->timestamp("read_at")->nullable(); // date de lecture
+=======
+            $table->foreignId('requete_id')
+                ->nullable()
+                ->constrained('requetes')
+                ->nullOnDelete();
+
+>>>>>>> 4d88cd1013aa43e270b199e9c2303d76379c9c4a
             $table->timestamps();
         });
     }
