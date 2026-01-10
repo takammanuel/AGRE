@@ -9,6 +9,11 @@ use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\VerificationController;
 use App\Http\Controllers\Api\Auth\ProfileController;
+use App\Http\Controllers\Api\Etudiant\EtudiantRequestController;
+use App\Http\Controllers\Api\Agent\AgentRequestController;
+use App\Http\Controllers\Api\Responsable\ResponsableRequestController;
+use App\Http\Controllers\Api\AttachmentController;
+use App\Http\Controllers\Api\RequestHistoryController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -129,6 +134,48 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/permissions', [RolePermissionController::class, 'permissions']);
         });
 
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Routes pour les REQUÊTES (Module 2)
+    |--------------------------------------------------------------------------
+    */
+
+    // Routes Étudiant - Requêtes
+    Route::middleware('role:ETUDIANT')->prefix('my-requests')->group(function () {
+        Route::get('/', [EtudiantRequestController::class, 'index']);
+        Route::post('/', [EtudiantRequestController::class, 'store']);
+        Route::get('/{requete}', [EtudiantRequestController::class, 'show']);
+        Route::put('/{requete}', [EtudiantRequestController::class, 'update']);
+        Route::delete('/{requete}', [EtudiantRequestController::class, 'destroy']);
+    });
+
+    // Routes Agent - Requêtes
+    Route::middleware('role:AGENT_ACADEMIQUE')->prefix('assigned-requests')->group(function () {
+        Route::get('/', [AgentRequestController::class, 'index']);
+        Route::get('/{requete}', [AgentRequestController::class, 'show']);
+        Route::post('/{requete}/take-charge', [AgentRequestController::class, 'takeCharge']);
+        Route::post('/{requete}/process', [AgentRequestController::class, 'process']);
+        Route::post('/{requete}/reassign', [AgentRequestController::class, 'reassign']);
+    });
+
+    // Routes Responsable Pédagogique - Requêtes
+    Route::middleware('role:RESPONSABLE_PEDAGOGIQUE')->prefix('pending-approvals')->group(function () {
+        Route::get('/', [ResponsableRequestController::class, 'index']);
+        Route::get('/{requete}', [ResponsableRequestController::class, 'show']);
+        Route::post('/{requete}/approve', [ResponsableRequestController::class, 'approve']);
+    });
+
+    // Routes communes - Pièces jointes et Historique
+    Route::prefix('requests')->group(function () {
+        Route::get('/{requete}/history', [RequestHistoryController::class, 'index']);
+        Route::post('/{requete}/attachments', [AttachmentController::class, 'store']);
+    });
+
+    Route::prefix('attachments')->group(function () {
+        Route::get('/{attachment}/download', [AttachmentController::class, 'download']);
+        Route::delete('/{attachment}', [AttachmentController::class, 'destroy']);
     });
 });
 

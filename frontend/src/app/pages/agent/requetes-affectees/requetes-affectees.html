@@ -1,0 +1,29 @@
+<div class="container mt-4">
+  <h2>Requêtes Affectées</h2>
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border"></div>
+  </div>
+  <div *ngIf="!loading && requetes.length > 0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Numéro</th>
+          <th>Type</th>
+          <th>Priorité</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let req of requetes">
+          <td>{{ req.code_requete }}</td>
+          <td>{{ req.typeRequete?.nom }}</td>
+          <td><span [class]="req.priorite === 'URGENTE' ? 'badge bg-danger' : 'badge bg-secondary'">{{ req.priorite | priority }}</span></td>
+          <td><span>{{ req.etat_actuel?.libelle | requestStatus }}</span></td>
+          <td><button class="btn btn-sm btn-primary" (click)="viewDetails(req.id)">Voir</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

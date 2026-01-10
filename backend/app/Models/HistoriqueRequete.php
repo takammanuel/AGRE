@@ -13,6 +13,7 @@ class HistoriqueRequete extends Model
         'date_etat',
         'etat_id',
         'requete_id',
+        'utilisateur_id',
     ];
 
     /**
@@ -29,5 +30,13 @@ class HistoriqueRequete extends Model
     public function requete()
     {
         return $this->belongsTo(Requete::class);
+    }
+
+    /**
+     * Relation vers l'utilisateur qui a effectué l'action
+     */
+    public function utilisateur()
+    {
+        return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
     }
 }

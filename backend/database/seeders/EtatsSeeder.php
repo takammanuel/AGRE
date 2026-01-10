@@ -15,9 +15,12 @@ class EtatsSeeder extends Seeder
     {
         Etat::insert([
             ['libelle' => 'EN_ATTENTE'],
+            ['libelle' => 'AFFECTEE'],
             ['libelle' => 'EN_COURS'],
             ['libelle' => 'TRAITEE'],
             ['libelle' => 'REJETEE'],
+            ['libelle' => 'INFORMATIONS_REQUISES'],
+            ['libelle' => 'EN_ATTENTE_APPROBATION'],
         ]);
     }
 }

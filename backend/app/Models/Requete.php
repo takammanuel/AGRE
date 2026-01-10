@@ -96,4 +96,57 @@ class Requete extends Model
         )->withPivot('date_etat')
          ->withTimestamps();
     }
+
+    /**
+     * Obtenir l'état actuel de la requête
+     */
+    public function getEtatActuelAttribute()
+    {
+        $dernierHistorique = $this->historiques()
+            ->with('etat')
+            ->orderBy('date_etat', 'desc')
+            ->first();
+        
+        return $dernierHistorique ? $dernierHistorique->etat : null;
+    }
+
+    /**
+     * Changer l'état de la requête et enregistrer dans l'historique
+     */
+    public function changerEtat($etatLibelle, $utilisateurId = null)
+    {
+        $etat = Etat::where('libelle', $etatLibelle)->first();
+        
+        if (!$etat) {
+            throw new \Exception("État '{$etatLibelle}' introuvable");
+        }
+
+        HistoriqueRequete::create([
+            'requete_id' => $this->id,
+            'etat_id' => $etat->id,
+            'date_etat' => now(),
+            'utilisateur_id' => $utilisateurId,
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * Générer un code de requête unique
+     */
+    public static function genererCodeRequete()
+    {
+        $annee = date('Y');
+        $derniereRequete = self::where('code_requete', 'like', "REQ-{$annee}-%")
+            ->orderBy('code_requete', 'desc')
+            ->first();
+
+        if ($derniereRequete) {
+            $numero = (int) substr($derniereRequete->code_requete, -4) + 1;
+        } else {
+            $numero = 1;
+        }
+
+        return sprintf('REQ-%s-%04d', $annee, $numero);
+    }
 }

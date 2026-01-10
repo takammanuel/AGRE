@@ -161,7 +161,7 @@
   <nav class="navbar navbar-expand-lg d-none d-lg-block ms-lg-5">
     <div class="container-fluid">
       <div class="navbar-nav">
-        <a class="nav-link active text-white" aria-current="page" routerLink="/etudiant">Mes requêtes</a>
+        <a class="nav-link active text-white" aria-current="page" routerLink="/etudiant/mes-requetes">Mes requêtes</a>
         <a class="nav-link text-white" routerLink="/etudiant/messagerie">Ma messagerie</a>
         <a class="nav-link text-white" routerLink="/etudiant/account">Mon compte</a>
       </div>
@@ -171,7 +171,7 @@
   <!-- Menu mobile (nouveau) -->
   <div *ngIf="showMobileMenu" class="mobile-menu d-lg-none">
     <div class="mobile-menu-items">
-      <a class="mobile-menu-item active" routerLink="/etudiant" (click)="toggleMobileMenu()">
+      <a class="mobile-menu-item active" routerLink="/etudiant/mes-requetes" (click)="toggleMobileMenu()">
         <i class="bi bi-inbox me-3"></i> Mes requêtes
       </a>
       <a class="mobile-menu-item" routerLink="/etudiant/messagerie" (click)="toggleMobileMenu()">

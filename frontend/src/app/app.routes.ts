@@ -32,6 +32,18 @@ export const routes: Routes = [
         path: 'profil',
         loadComponent: () => import('./pages/shared/profile/profile').then(m => m.ProfileComponent)
       },
+      {
+        path: 'nouvelle-requete',
+        loadComponent: () => import('./pages/etudiant/nouvelle-requete/nouvelle-requete').then(m => m.NouvelleRequeteComponent)
+      },
+      {
+        path: 'mes-requetes',
+        loadComponent: () => import('./pages/etudiant/mes-requetes/mes-requetes').then(m => m.MesRequetesComponent)
+      },
+      {
+        path: 'requete/:id',
+        loadComponent: () => import('./pages/etudiant/requete-detail/requete-detail').then(m => m.RequeteDetailComponent)
+      },
     ]
   },
   {
@@ -65,6 +77,18 @@ export const routes: Routes = [
         path: 'profil',
         loadComponent: () => import('./pages/shared/profile/profile').then(m => m.ProfileComponent)
       },
+      {
+        path: 'requetes-affectees',
+        loadComponent: () => import('./pages/agent/requetes-affectees/requetes-affectees').then(m => m.RequetesAffecteesComponent)
+      },
+      {
+        path: 'requete/:id',
+        loadComponent: () => import('./pages/agent/requete-detail/requete-detail').then(m => m.RequeteDetailAgentComponent)
+      },
+      {
+        path: 'requete/:id/traiter',
+        loadComponent: () => import('./pages/agent/requete-traiter/requete-traiter').then(m => m.RequeteTraiterComponent)
+      },
     ]
   },
 
@@ -77,6 +101,14 @@ export const routes: Routes = [
       {
         path: 'profil',
         loadComponent: () => import('./pages/shared/profile/profile').then(m => m.ProfileComponent)
+      },
+      {
+        path: 'approbations',
+        loadComponent: () => import('./pages/responsable/pending-approvals/pending-approvals').then(m => m.PendingApprovalsComponent)
+      },
+      {
+        path: 'requete/:id',
+        loadComponent: () => import('./pages/responsable/requete-detail/requete-detail').then(m => m.RequeteDetailResponsableComponent)
       },
     ]
   },
