@@ -8,58 +8,54 @@ use Illuminate\Http\Request;
 class NotificationController extends Controller
 {
     /**
-     * Afficher toutes les notifications
-     * - Si l'utilisateur est connecté (auth), on filtre par son id
-     * - Sinon, on peut passer ?utilisateur_id=8 en paramètre
+     * Récupérer le nombre de notifications non lues pour le badge
      */
-   public function index()
-{
-    // Récupérer uniquement les notifications de l'utilisateur connecté
-    $notifications = Notification::where('utilisateur_id', auth()->id())
-        ->with(['requete'])
-        ->orderBy('created_at', 'desc')
-        ->get();
-
-    return response()->json([
-        'success' => true,
-        'data' => $notifications
-    ]);
-}
-
-    /**
-     * Créer une nouvelle notification
-     */
-    public function store(Request $request)
+    public function unreadCount(Request $request)
     {
-        $validated = $request->validate([
-            'titre' => 'required|string|max:255',
-            'message' => 'required|string',
-            'requete_id' => 'nullable|exists:requetes,id',
-            'utilisateur_id' => 'required|exists:utilisateurs,id',
-        ]);
+        // On récupère l'ID envoyé par Angular (?utilisateur_id=...)
+        $userId = $request->query('utilisateur_id');
 
-        // Par défaut, une notification est non lue
-        $validated['is_read'] = false;
+        if (!$userId) {
+            return response()->json(['unread_count' => 0], 200);
+        }
 
-        $notification = Notification::create($validated);
+        $count = Notification::where('utilisateur_id', $userId)
+            ->where('is_read', false)
+            ->count();
 
         return response()->json([
             'success' => true,
-            'data' => $notification
-        ], 201);
+            'unread_count' => $count
+        ]);
     }
 
     /**
-     * Marquer une notification comme lue
+     * Liste complète pour Manuel
      */
-    public function markAsRead($id)
+    public function index(Request $request)
     {
-        $notification = Notification::findOrFail($id);
-        $notification->update(['is_read' => true]);
+        $userId = $request->query('utilisateur_id');
+
+        $notifications = Notification::where('utilisateur_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
             'success' => true,
-            'data' => $notification
+            'data' => $notifications
         ]);
+    }
+
+    /**
+     * Marquer comme lu
+     */
+    public function markAsRead($id)
+    {
+        $notification = Notification::find($id);
+        if ($notification) {
+            $notification->update(['is_read' => true]);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

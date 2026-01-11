@@ -9,33 +9,25 @@ class Notification extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'titre',
-        'message',
-        'requete_id',
-        'utilisateur_id',
-        'is_read', // champ ajouté
-    ];
+   protected $fillable = [
+    'titre',
+    'message',
+    'requete_id',
+    'utilisateur_id',
+    'is_read',
+    'type', // AJOUTE CECI pour que le type CHAT soit enregistré
+];
 
-    /**
-     * Relation vers la requête associée (optionnelle)
-     */
     public function requete()
     {
-        return $this->belongsTo(Requete::class);
+        return $this->belongsTo(Requete::class, 'requete_id');
     }
 
-    /**
-     * Relation vers l'utilisateur destinataire
-     */
     public function utilisateur()
     {
-        return $this->belongsTo(Utilisateur::class);
+        return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
     }
 
-    /**
-     * Vérifie si la notification est lue
-     */
     public function estLue(): bool
     {
         return (bool) $this->is_read;

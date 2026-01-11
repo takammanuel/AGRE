@@ -1,45 +1,37 @@
-<div class="container py-4">
-  <div class="card shadow-sm border-0" style="height: 80vh; display: flex; flex-direction: column; border-radius: 15px;">
-
-    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center">
-      <div class="bg-primary text-white rounded-circle p-2 me-3">
-        <i class="bi bi-headset"></i>
-      </div>
-      <div>
-        <h5 class="mb-0 fw-bold">Support Académique</h5>
-        <small class="text-success fw-bold">● En ligne</small>
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col-md-4 border-end" style="height: 80vh; overflow-y: auto;">
+      <h5>Mes Requêtes</h5>
+      <div class="list-group">
+        <a *ngFor="let req of requetes"
+           [routerLink]="['/etudiant/messagerie', req.id]"
+           class="list-group-item list-group-item-action">
+          {{ req.titre }} ({{ req.statut }})
+        </a>
       </div>
     </div>
 
-    <div class="card-body overflow-auto bg-light p-4" id="chat-box" style="flex-grow: 1;">
-      <div *ngFor="let msg of messages" class="d-flex mb-3"
-           [ngClass]="msg.emetteur_id === etudiantId ? 'justify-content-end' : 'justify-content-start'">
-
-        <div class="p-3 shadow-sm bubble"
-             [ngClass]="msg.emetteur_id === etudiantId ? 'bg-primary text-white my-message' : 'bg-white text-dark other-message'"
-             style="max-width: 75%; min-width: 100px;">
-          <p class="mb-1">{{ msg.contenu }}</p>
-          <div class="text-end">
-            <small class="opacity-75" style="font-size: 0.65rem;">
-              {{ msg.created_at | date:'HH:mm' }}
-              <i *ngIf="msg.emetteur_id === etudiantId" class="bi bi-check2-all ms-1"></i>
-            </small>
+    <div class="col-md-8">
+      <div *ngIf="requeteId; else noSelect">
+        <div class="chat-history p-3 border mb-3" style="height: 400px; overflow-y: auto; background: #f1f1f1;">
+          <div *ngFor="let m of messages"
+               [ngClass]="m.emetteur_id === monId ? 'text-end' : 'text-start'" class="mb-2">
+            <span [ngClass]="m.emetteur_id === monId ? 'bg-primary text-white' : 'bg-white border'"
+                  class="d-inline-block p-2 rounded">
+              {{ m.contenu }}
+            </span>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="card-footer bg-white p-3 border-top">
-      <div class="input-group bg-light rounded-pill p-1">
-        <input type="text" [(ngModel)]="nouveauMessage"
-               (keyup.enter)="envoyer()"
-               class="form-control border-0 bg-transparent ps-3"
-               placeholder="Écrivez votre message ici...">
-        <button (click)="envoyer()" class="btn btn-primary rounded-circle ms-2" style="width: 45px; height: 45px;">
-          <i class="bi bi-send-fill"></i>
-        </button>
+        <div class="input-group">
+          <input type="text" [(ngModel)]="nouveauMessage" class="form-control">
+          <button class="btn btn-primary" (click)="envoyer()">Envoyer</button>
+        </div>
       </div>
-    </div>
 
+      <ng-template #noSelect>
+        <p class="text-center mt-5">Sélectionnez une requête à gauche pour voir l'historique des messages.</p>
+      </ng-template>
+    </div>
   </div>
 </div>

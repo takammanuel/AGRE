@@ -1,38 +1,44 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NotificationService } from '../../../services/notification';
-import { Notification } from '../../../models/communication';
+import { RouterModule } from '@angular/router'; // 1. IMPORTÉ ICI
+import { NotificationService } from '../../../services/notification.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-notifications-list',
   standalone: true,
-  imports: [CommonModule],
-  // CORRECTION ICI : suppression de ".component" et changement de ".scss" en ".css"
+  imports: [CommonModule, RouterModule], // 2. AJOUTÉ AUX IMPORTS
   templateUrl: './notifications-list.html',
-  styleUrls: ['./notifications-list.css']
+  styleUrl: './notifications-list.css'
 })
 export class NotificationsListComponent implements OnInit {
-  private notificationService = inject(NotificationService);
-  notifications: Notification[] = [];
+  public notificationService = inject(NotificationService);
+  public authService = inject(AuthService); // 3. PASSÉ EN PUBLIC (obligatoire pour le HTML)
+
+  notifications: any[] = [];
+  userId: number | null = null;
 
   ngOnInit(): void {
-    this.loadNotifications();
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.userId = user.id;
+      this.load();
+    }
   }
 
-  loadNotifications(): void {
-    this.notificationService.getNotifications().subscribe({
-      next: (data: Notification[]) => {
-        this.notifications = data;
-      },
-      error: (err) => console.error('Erreur de chargement:', err)
+  load(): void {
+    if (!this.userId) return;
+    this.notificationService.getNotifications(this.userId).subscribe({
+      next: (res: any) => {
+        this.notifications = res.data || [];
+      }
     });
   }
 
   markAsRead(id: number): void {
-    this.notificationService.markAsRead(id).subscribe({
-      next: () => {
-        this.loadNotifications();
-      }
+    this.notificationService.markAsRead(id).subscribe(() => {
+      this.notificationService.refreshCount();
+      this.load();
     });
   }
 }

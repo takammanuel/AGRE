@@ -1,0 +1,67 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Mes Requêtes</h2>
+    <button class="btn btn-primary" (click)="ouvrirModal()">
+      <i class="fas fa-plus me-2"></i>Nouvelle Requête
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="text-center p-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p>Chargement de vos requêtes...</p>
+  </div>
+
+  <div class="row" *ngIf="!loading">
+    <div class="col-md-4 mb-3" *ngFor="let req of mesRequetes">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="badge" [ngClass]="{
+              'bg-warning': req.statut === 'En attente',
+              'bg-success': req.statut === 'Terminée',
+              'bg-info': req.statut === 'En cours'
+            }">{{ req.statut }}</span>
+            <small class="text-muted">{{ req.created_at | date:'dd/MM/yyyy' }}</small>
+          </div>
+          <h5 class="card-title">{{ req.titre }}</h5>
+          <p class="card-text text-truncate">{{ req.description }}</p>
+          <a [routerLink]="['/etudiant/messagerie', req.id]" class="btn btn-outline-primary btn-sm">
+            Voir la discussion
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="showModal">
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal d-block" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Nouvelle Requête</h5>
+            <button type="button" class="btn-close" (click)="fermerModal()"></button>
+          </div>
+          <form (ngSubmit)="soumettreRequete()">
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label">Objet (Titre)</label>
+                <input type="text" class="form-control" [(ngModel)]="nouvelleRequete.titre" name="titre" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Description détaillée</label>
+                <textarea class="form-control" rows="4" [(ngModel)]="nouvelleRequete.description" name="description" required></textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="fermerModal()">Annuler</button>
+              <button type="submit" class="btn btn-primary" [disabled]="isSending">
+                {{ isSending ? 'Envoi en cours...' : 'Envoyer la requête' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

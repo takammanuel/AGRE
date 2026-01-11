@@ -1,74 +1,82 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MessageService } from '../../../services/message';
+import { RouterModule, ActivatedRoute } from '@angular/router';
+import { RequeteService } from '../../../services/requete.service';
 import { AuthService } from '../../../services/auth.service';
-import { Message } from '../../../models/communication';
+import { MessageService } from '../../../services/message.service';
+import { NotificationService } from '../../../services/notification.service'; // AJOUTÉ
 
 @Component({
   selector: 'app-messagerie',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './messagerie.html',
-  styleUrls: ['./messagerie.css']
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './messagerie.html'
 })
 export class MessagerieComponent implements OnInit {
+  private requeteService = inject(RequeteService);
   private messageService = inject(MessageService);
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
+  public notificationService = inject(NotificationService); // AJOUTÉ
+  private route = inject(ActivatedRoute);
 
-  messages: Message[] = [];
-  nouveauMessage: string = '';
-  etudiantId: number | null = null;
+  public requetes: any[] = [];
+  public messages: any[] = [];
+  public requeteId: number | null = null;
+  public currentRequete: any = null;
+  public monId: number | null = null;
+  public nouveauMessage: string = '';
 
   ngOnInit(): void {
-    // Récupération de l'utilisateur connecté via ton AuthService
     const user = this.authService.getCurrentUser();
-    this.etudiantId = user ? user.id : null;
-
-    this.chargerDiscussion();
-  }
-
-  chargerDiscussion(): void {
-    this.messageService.getMessages().subscribe({
-      next: (data) => {
-        this.messages = Array.isArray(data) ? data : [];
-        this.scrollToBottom();
-      },
-      error: (err) => console.error('Erreur chargement:', err)
-    });
-  }
-
-  envoyer(): void {
-    // Vérification de sécurité avant l'envoi
-    if (!this.nouveauMessage.trim() || this.etudiantId === null) {
-      console.error("Impossible d'envoyer : message vide ou utilisateur non connecté");
-      return;
+    if (user) {
+      this.monId = user.id;
+      this.chargerListe();
     }
 
-    const texteAEnvoyer = this.nouveauMessage;
-    this.nouveauMessage = ''; // Vide l'input pour l'UX
-
-    // Envoi avec emetteur_id et recepteur_id
-    this.messageService.sendMessage(texteAEnvoyer, this.etudiantId, 1).subscribe({
-      next: (msg) => {
-        // On s'assure que le message a l'ID pour s'afficher à droite
-        if (!msg.emetteur_id) msg.emetteur_id = this.etudiantId as number;
-
-        this.messages.push(msg);
-        this.scrollToBottom();
-      },
-      error: (err) => {
-        console.error('Erreur de validation (422):', err.error.errors);
-        this.nouveauMessage = texteAEnvoyer; // Restaure le texte en cas d'échec
-        alert("Erreur serveur : " + JSON.stringify(err.error.errors));
+    this.route.params.subscribe(params => {
+      if (params['id']) {
+        this.requeteId = +params['id'];
+        this.chargerDiscussion(this.requeteId);
       }
     });
   }
 
-  private scrollToBottom(): void {
-    setTimeout(() => {
-      const chatBox = document.getElementById('chat-box');
-      if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
-    }, 100);
+  chargerListe(): void {
+    this.requeteService.getRequetesByEtudiant(this.monId!).subscribe({
+      next: (res: any) => this.requetes = res.data || []
+    });
+  }
+
+  chargerDiscussion(id: number): void {
+    this.requeteService.getRequeteById(id).subscribe({
+      next: (res: any) => this.currentRequete = res.data
+    });
+
+    this.messageService.getMessagesByRequete(id).subscribe({
+      next: (res: any) => {
+        this.messages = res.data || [];
+      }
+    });
+  }
+
+  envoyer(): void {
+    if (!this.nouveauMessage.trim() || !this.requeteId) return;
+
+    const payload = {
+      contenu: this.nouveauMessage,
+      emetteur_id: this.monId,
+      requete_id: this.requeteId,
+      recepteur_id: 1 // Agent par défaut
+    };
+
+    this.messageService.sendMessage(payload).subscribe({
+      next: (res: any) => {
+        this.messages.push(res.data);
+        this.nouveauMessage = '';
+        // FORCE LA MISE À JOUR DU BADGE DE NOTIFICATION
+        this.notificationService.refreshCount();
+      }
+    });
   }
 }

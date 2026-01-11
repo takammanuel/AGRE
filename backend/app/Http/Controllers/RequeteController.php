@@ -4,98 +4,87 @@ namespace App\Http\Controllers;
 
 use App\Models\Requete;
 use Illuminate\Http\Request;
-use App\Events\RequestStatusChanged;
 
 class RequeteController extends Controller
 {
     /**
-     * Créer une nouvelle requête
+     * Liste les requêtes pour l'Agent (si pas de paramètre)
+     * ou pour l'Étudiant (si utilisateur_id est présent)
      */
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'titre' => 'required|string|max:255',
-        'description' => 'required|string',
-        'utilisateur_id' => 'required|exists:utilisateurs,id',
-    ]);
+    public function index(Request $request)
+    {
+        $userId = $request->query('utilisateur_id');
+        $query = Requete::with(['typeRequete', 'etudiant']);
 
-    // Génération automatique du code
-    $validated['code_requete'] = uniqid('REQ-');
+        if ($userId) {
+            $query->where('etudiant_id', $userId);
+        }
 
-    // Associer automatiquement l'étudiant
-    $validated['etudiant_id'] = $validated['utilisateur_id'];
-    $validated['type_requete_id'] = $request->type_requete_id ?? 1;
+        $requetes = $query->orderBy('created_at', 'desc')->get();
 
-    $requete = Requete::create($validated);
-
-    return response()->json([
-        'success' => true,
-        'data' => $requete
-
-    ]);
-}
+        return response()->json(['success' => true, 'data' => $requetes]);
+    }
 
     /**
-     * Afficher une requête avec ses notifications et historiques
+     * NOUVELLE METHODE : Pour la route /requetes/etudiant/{id}
+     * C'est celle-ci que Manuel va appeler pour son Historique
      */
-    public function show($id)
+    public function getByEtudiant($id)
     {
-        $requete = Requete::with(['notifications', 'historiques.etat', 'historiques.utilisateur'])
-            ->findOrFail($id);
+        $requetes = Requete::with(['typeRequete'])
+            ->where('etudiant_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json(['success' => true, 'data' => $requetes]);
+    }
+
+    /**
+     * ACTION CRUCIALE : Mise à jour du statut par l'Agent
+     * Déclenchée par Alice pour envoyer la requête dans l'historique
+     */
+    public function updateStatut(Request $request, $id)
+    {
+        $requete = Requete::findOrFail($id);
+
+        $validated = $request->validate([
+            'statut' => 'required|in:En attente,En cours,Terminée,Rejetée'
+        ]);
+
+        $requete->update(['statut' => $validated['statut']]);
 
         return response()->json([
             'success' => true,
+            'message' => 'Statut mis à jour avec succès',
             'data' => $requete
         ]);
     }
 
-    /**
-     * Mettre à jour le statut d'une requête et déclencher l'événement
-     */
-    public function updateStatut(Request $request, $id)
+    public function store(Request $request)
     {
-        $request->validate([
-            'statut' => 'required|string'
+        $validated = $request->validate([
+            'titre' => 'required|string|max:255',
+            'description' => 'required|string',
+            'utilisateur_id' => 'required|exists:utilisateurs,id',
+            'type_requete_id' => 'nullable|exists:type_requetes,id',
         ]);
 
-        $requete = Requete::findOrFail($id);
-        $requete->update(['statut' => $request->statut]);
-
-        // Déclenchement de l’événement
-        event(new RequestStatusChanged($requete));
-
-        return response()->json([
-            'success' => true,
-            'message' => "Statut mis à jour en {$requete->statut}"
+        $requete = Requete::create([
+            'code_requete'    => uniqid('REQ-'),
+            'titre'           => $validated['titre'],
+            'description'     => $validated['description'],
+            'etudiant_id'     => $validated['utilisateur_id'],
+            'type_requete_id' => $validated['type_requete_id'] ?? 1,
+            'statut'          => 'En attente',
+            'priorite'        => 'Normale'
         ]);
+
+        return response()->json(['success' => true, 'data' => $requete], 201);
     }
 
-    /**
-     * Récupérer les notifications liées à une requête
-     */
-    public function notifications($id)
+    public function show($id)
     {
-        $notifications = Requete::findOrFail($id)->notifications;
-
-        return response()->json([
-            'success' => true,
-            'data' => $notifications
-        ]);
-    }
-
-    /**
-     * Récupérer les historiques liés à une requête
-     */
-    public function historiques($id)
-    {
-        $historiques = Requete::findOrFail($id)
-            ->historiques()
-            ->with(['etat', 'utilisateur'])
-            ->get();
-
-        return response()->json([
-            'success' => true,
-            'data' => $historiques
-        ]);
+        $requete = Requete::with(['typeRequete', 'etudiant', 'messages.emetteur'])->findOrFail($id);
+        return response()->json(['success' => true, 'data' => $requete]);
     }
 }

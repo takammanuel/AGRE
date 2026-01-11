@@ -2,10 +2,9 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 
-// Chemins relatifs (4 niveaux pour atteindre services/models depuis pages/etudiant/layout/header-etudiant)
+// Chemins remontant à la racine de app/
 import { AuthService } from '../../../../services/auth.service';
-import { NotificationService } from '../../../../services/notification';
-import { Notification } from '../../../../models/communication';
+import { NotificationService } from '../../../../services/notification.service';
 
 @Component({
   selector: 'app-header-etudiant',
@@ -15,82 +14,76 @@ import { Notification } from '../../../../models/communication';
   styleUrls: ['./header-etudiant.scss']
 })
 export class HeaderEtudiant implements OnInit {
-  private authService = inject(AuthService);
+  // Conservation du "as any" pour ton environnement
+  public notificationService = inject(NotificationService) as any;
+  public authService = inject(AuthService) as any;
   private router = inject(Router);
-  public notificationService = inject(NotificationService);
 
   currentUser: any = null;
-  showProfileMenu = false;
+  notifications: any[] = [];
   showNotifications = false;
-  notifications: Notification[] = [];
+  showProfileMenu = false;
 
   ngOnInit(): void {
-    this.loadCurrentUser();
+    this.currentUser = this.authService.getCurrentUser?.();
+    // Initialiser le compteur au chargement
+    if (this.currentUser?.id) {
+       this.notificationService.refreshCount();
+    }
     this.loadNotifications();
   }
 
-  loadCurrentUser(): void {
-    const user = this.authService.getCurrentUser();
-    if (user) {
-      this.currentUser = user;
-    }
-  }
-
   loadNotifications(): void {
-    this.notificationService.getNotifications().subscribe({
-      next: (data: Notification[]) => {
-        this.notifications = data;
-      },
-      error: (err: any) => {
-        console.error('Erreur notifications:', err);
-      }
+    const userId = this.currentUser?.id || 1;
+    this.notificationService.getNotifications(userId).subscribe({
+      next: (res: any) => this.notifications = res.data || res,
+      error: (err: any) => console.error('Erreur notifications:', err)
     });
-  }
-
-  markAsRead(id: number): void {
-    this.notificationService.markAsRead(id).subscribe({
-      next: () => this.loadNotifications(),
-      error: (err: any) => console.error(err)
-    });
-  }
-
-  // --- GESTION DES MENUS ---
-  toggleProfileMenu(): void {
-    this.showProfileMenu = !this.showProfileMenu;
-    this.showNotifications = false;
   }
 
   toggleNotifications(): void {
     this.showNotifications = !this.showNotifications;
     this.showProfileMenu = false;
+    if (this.showNotifications) this.loadNotifications();
   }
 
-  closeMenus(): void {
-    this.showProfileMenu = false;
+  toggleProfileMenu(): void {
+    this.showProfileMenu = !this.showProfileMenu;
     this.showNotifications = false;
   }
 
-  // --- NAVIGATION (Les fonctions qui manquaient) ---
+  closeMenus(): void {
+    this.showNotifications = false;
+    this.showProfileMenu = false;
+  }
+
+  markAsRead(id: number): void {
+    // Trouver la notification pour savoir si c'est un chat
+    const notif = this.notifications.find(n => n.id === id);
+
+    this.notificationService.markAsRead(id).subscribe({
+      next: () => {
+        this.notificationService.refreshCount(); // Mise à jour du badge rouge
+        this.loadNotifications();
+
+        // Redirection si c'est une notification liée à un message
+        if (notif && notif.requete_id && (notif.type === 'CHAT' || notif.titre?.includes('message'))) {
+          this.router.navigate(['/etudiant/messagerie', notif.requete_id]);
+          this.closeMenus();
+        }
+      }
+    });
+  }
+
   goToProfile(): void {
     this.router.navigate(['/etudiant/profil']);
     this.closeMenus();
   }
 
-  goToSettings(): void {
-    this.router.navigate(['/etudiant/parametres']);
-    this.closeMenus();
-  }
-
   logout(): void {
-    this.authService.logout().subscribe({
-      next: () => {
-        this.router.navigate(['/login']);
-      },
-      error: (err: any) => {
-        console.error(err);
-        localStorage.removeItem('auth_token');
-        this.router.navigate(['/login']);
-      }
+    this.notificationService.stopPolling?.();
+    this.authService.logout().subscribe(() => {
+      this.router.navigate(['/login']);
     });
   }
 }

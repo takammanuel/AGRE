@@ -1,0 +1,76 @@
+<div class="modal-overlay" *ngIf="showModal" (click)="close()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ modalTitle }}</h3>
+      <button type="button" class="close-btn" (click)="close()">×</button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #form="ngForm">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="nom">Nom *</label>
+          <input
+            type="text"
+            id="nom"
+            name="nom"
+            [(ngModel)]="formData.nom"
+            required
+            class="form-control"
+            [class.is-invalid]="submitted && !formData.nom"
+          >
+          <div *ngIf="submitted && !formData.nom" class="invalid-feedback">
+            Le nom est requis
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea
+            id="description"
+            name="description"
+            [(ngModel)]="formData.description"
+            required
+            rows="3"
+            class="form-control"
+            [class.is-invalid]="submitted && !formData.description"
+          ></textarea>
+          <div *ngIf="submitted && !formData.description" class="invalid-feedback">
+            La description est requise
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="service_id">Service *</label>
+          <select
+            id="service_id"
+            name="service_id"
+            [(ngModel)]="formData.service_id"
+            required
+            class="form-control"
+            [class.is-invalid]="submitted && !formData.service_id"
+          >
+            <option value="">Sélectionner un service</option>
+            <option *ngFor="let service of services" [value]="service.id">
+              {{ service.nom }}
+            </option>
+          </select>
+          <div *ngIf="submitted && !formData.service_id" class="invalid-feedback">
+            Le service est requis
+          </div>
+          <div *ngIf="loadingServices" class="loading-text">
+            Chargement des services...
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="loadingServices">
+          {{ isEdit ? 'Modifier' : 'Ajouter' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

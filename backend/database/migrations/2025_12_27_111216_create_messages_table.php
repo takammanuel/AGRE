@@ -12,25 +12,28 @@ return new class extends Migration {
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->text("contenu"); // contenu long
+            $table->text("contenu");
+
+            // Lien vers l'émetteur
             $table->foreignId('emetteur_id')
                 ->constrained('utilisateurs')
                 ->cascadeOnDelete();
 
+            // Lien vers le récepteur (nullable pour le support)
             $table->foreignId('recepteur_id')
                 ->nullable()
                 ->constrained('utilisateurs')
                 ->nullOnDelete();
 
-<<<<<<< HEAD
-            $table->timestamp("read_at")->nullable(); // date de lecture
-=======
+            // Ton système de lecture (Notifications)
+            $table->timestamp("read_at")->nullable();
+
+            // Lien vers la requête (Indispensable pour ta logique)
             $table->foreignId('requete_id')
                 ->nullable()
                 ->constrained('requetes')
                 ->nullOnDelete();
 
->>>>>>> 4d88cd1013aa43e270b199e9c2303d76379c9c4a
             $table->timestamps();
         });
     }

@@ -1,35 +1,35 @@
 <?php
 
-use App\Http\Controllers\Api\Admin\RolePermissionController;
-use App\Http\Controllers\Api\Admin\ServiceController;
-use App\Http\Controllers\Api\Admin\TypeRequeteController;
-use App\Http\Controllers\Api\Admin\UtilisateurController;
-use App\Http\Controllers\Api\Auth\RegisterController;
-use App\Http\Controllers\Api\Auth\LoginController;
-use App\Http\Controllers\Api\Auth\LogoutController;
-use App\Http\Controllers\Api\Auth\VerificationController;
-use App\Http\Controllers\Api\Auth\ProfileController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RequeteController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Auth\LogoutController;
+use App\Http\Controllers\Api\Auth\ProfileController;
+use App\Http\Controllers\Api\Admin\UtilisateurController;
+use App\Http\Controllers\Api\Admin\ServiceController;
+use App\Http\Controllers\Api\Admin\TypeRequeteController;
+use App\Http\Controllers\Api\Admin\RolePermissionController;
 
+/*
+|--------------------------------------------------------------------------
+| API Routes - Projet AGRE
+|--------------------------------------------------------------------------
+*/
+
+// --- ROUTES PUBLIQUES ---
 Route::prefix('auth')->group(function () {
     Route::post('/register', RegisterController::class);
     Route::post('/login', LoginController::class)->name('login');
-
-    // Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-    //     ->middleware('signed')
-    //     ->name('verification.verify');
-
-    // Route::post('/email/resend/{userId}', [VerificationController::class, 'resend'])
-    //     ->name('verification.resend');
 });
 
+// --- ROUTES PROTÉGÉES (SANCTUM) ---
 Route::middleware('auth:sanctum')->group(function () {
 
+    // Authentification & Profil
     Route::post('/auth/logout', LogoutController::class);
-
     Route::prefix('auth/profile')->group(function () {
         Route::get('/', [ProfileController::class, 'show']);
         Route::put('/', [ProfileController::class, 'update']);
@@ -37,74 +37,38 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/password', [ProfileController::class, 'changePassword']);
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Routes pour les responsables pédagogiques
-    |--------------------------------------------------------------------------
-    */
-    Route::middleware('role:RESPONSABLE_PEDAGOGIQUE')->group(function () {
-        Route::get('/etudiants', function () {
-            $etudiants = \App\Models\Utilisateur::with('profilEtudiant')
-                ->whereHas('roles', function($q) {
-                    $q->where('nom', 'ETUDIANT');
-                })
-                ->where('is_active', true)
-                ->paginate(15);
+    // --- MODULE REQUÊTES ---
+    Route::prefix('requetes')->group(function () {
+        Route::get('/', [RequeteController::class, 'index']);
+        Route::get('/etudiant/{id}', [RequeteController::class, 'getByEtudiant']);
+        Route::post('/', [RequeteController::class, 'store']);
+        Route::get('/{id}', [RequeteController::class, 'show']);
+        Route::put('/{id}/statut', [RequeteController::class, 'updateStatut']);
+        Route::get('/{id}/notifications', [RequeteController::class, 'notifications']);
+        Route::get('/{id}/historiques', [RequeteController::class, 'historiques']);
 
-            return response()->json([
-                'success' => true,
-                'data' => $etudiants
-            ]);
-        });
-
-        Route::get('/agents', function () {
-            $agents = \App\Models\Utilisateur::with(['profilAgentAdministratif', 'profilAgentAdministratif.service'])
-                ->whereHas('roles', function($q) {
-                    $q->where('nom', 'AGENT_ACADEMIQUE');
-                })
-                ->where('is_active', true)
-                ->paginate(15);
-
-            return response()->json([
-                'success' => true,
-                'data' => $agents
-            ]);
-        });
+        // Messages d'une requête spécifique
+        Route::get('/{requete_id}/messages', [MessageController::class, 'getByRequete']);
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Routes pour les agents académiques
-    |--------------------------------------------------------------------------
-    */
-    Route::middleware('role:AGENT_ACADEMIQUE')->group(function () {
-        Route::get('/etudiants', function () {
-            $etudiants = \App\Models\Utilisateur::with('profilEtudiant')
-                ->whereHas('roles', function($q) {
-                    $q->where('nom', 'ETUDIANT');
-                })
-                ->where('is_active', true)
-                ->paginate(20);
-
-            return response()->json([
-                'success' => true,
-                'data' => $etudiants
-            ]);
-        });
+    // --- MODULE MESSAGES ---
+    Route::prefix('messages')->group(function () {
+        Route::post('/', [MessageController::class, 'store']); // Envoi de message + Création notif
+        Route::get('/{requete_id}', [MessageController::class, 'getByRequete']);
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Routes ADMIN - Accessible uniquement aux administrateurs
-    |--------------------------------------------------------------------------
-    */
+    // --- MODULE NOTIFICATIONS ---
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::get('/unread-count', [NotificationController::class, 'unreadCount']); // Pour le badge rouge
+        Route::patch('/{id}/read', [NotificationController::class, 'markAsRead']);
+        Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        Route::delete('/clear', [NotificationController::class, 'clearAll']);
+    });
+
+    // --- ADMINISTRATION ---
     Route::prefix('admin')->middleware('role:ADMINISTRATEUR')->group(function () {
-        Route::get('/utilisateurs', [UtilisateurController::class, 'index']);
-        Route::get('/utilisateurs/{id}', [UtilisateurController::class, 'show']);
-        Route::post('/utilisateurs', [UtilisateurController::class, 'store']);
-        Route::put('/utilisateurs/{id}', [UtilisateurController::class, 'update']);
-        Route::delete('/utilisateurs/{id}', [UtilisateurController::class, 'destroy']);
-
+        Route::apiResource('utilisateurs', UtilisateurController::class);
         Route::put('/utilisateurs/{id}/activate', [UtilisateurController::class, 'toggleActivation']);
         Route::post('/utilisateurs/{id}/roles', [UtilisateurController::class, 'manageRoles']);
         Route::put('/utilisateurs/{id}/reset-password', [UtilisateurController::class, 'resetPassword']);
@@ -120,32 +84,12 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Routes pour le module Messages
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/messages', [MessageController::class, 'index']);
-    Route::post('/messages', [MessageController::class, 'store']);
-    Route::patch('/messages/{id}/read', [MessageController::class, 'markAsRead']);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Routes pour le module Notifications
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/notifications', [NotificationController::class, 'index']);
-    Route::post('/notifications', [NotificationController::class, 'store']);
-    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    // --- ACCÈS AGENTS / RESPONSABLES ---
+    Route::middleware('role:RESPONSABLE_PEDAGOGIQUE,AGENT_ACADEMIQUE')->group(function () {
+        Route::get('/liste-etudiants', function () {
+            return \App\Models\Utilisateur::whereHas('roles', function($q) {
+                $q->where('nom', 'ETUDIANT');
+            })->paginate(20);
+        });
+    });
 });
-Route::middleware('auth:sanctum')->group(function () {
-    // Requêtes
-
-Route::post('/requetes', [RequeteController::class, 'store']);
-Route::get('/requetes/{id}', [RequeteController::class, 'show']);
-Route::put('/requetes/{id}/statut', [RequeteController::class, 'updateStatut']);
-Route::get('/requetes/{id}/notifications', [RequeteController::class, 'notifications']);
-Route::get('/requetes/{id}/historiques', [RequeteController::class, 'historiques']);
-
-});
-
