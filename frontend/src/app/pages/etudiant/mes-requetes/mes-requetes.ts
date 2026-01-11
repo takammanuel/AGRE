@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { RequestService, Requete } from '../../../services/request.service';
 import { RequestStatusPipe } from '../../../pipes/request-status.pipe';
 import { PriorityPipe } from '../../../pipes/priority.pipe';
@@ -13,7 +13,7 @@ import { AuthService } from '../../../services/auth.service';
 @Component({
   selector: 'app-mes-requetes',
   standalone: true,
-  imports: [CommonModule, FormsModule, RequestStatusPipe, PriorityPipe, TimeAgoPipe],
+  imports: [CommonModule, FormsModule, RequestStatusPipe, PriorityPipe, TimeAgoPipe, RouterLink],
   templateUrl: './mes-requetes.html',
   styleUrls: ['./mes-requetes.css']
 })
@@ -55,6 +55,7 @@ export class MesRequetesComponent implements OnInit {
 
     this.requestService.getMyRequests(params).subscribe({
       next: (response) => {
+        console.log('Réponses reçues:', response);
         this.requetes = response.data?.data || [];
         this.pagination = response.data || {};
         this.currentPage = response.data?.current_page || 1;

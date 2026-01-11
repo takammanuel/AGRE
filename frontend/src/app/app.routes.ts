@@ -93,6 +93,7 @@ export const routes: Routes = [
         path: 'requete/:id/traiter',
         loadComponent: () => import('./pages/agent/requete-traiter/requete-traiter').then(m => m.RequeteTraiterComponent)
       },
+      { path: 'messagerie', component: MessagerieComponent },
     ]
   },
 

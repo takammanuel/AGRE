@@ -23,9 +23,9 @@ return new class extends Migration
         ->constrained('requetes')
         ->cascadeOnDelete();
 
-    $table->foreignId('utilisateur_id')
-        ->constrained('utilisateurs')
-        ->cascadeOnDelete();
+    // $table->foreignId('utilisateur_id')
+    //     ->constrained('utilisateurs')
+    //     ->cascadeOnDelete();
 
     $table->timestamps();
 });

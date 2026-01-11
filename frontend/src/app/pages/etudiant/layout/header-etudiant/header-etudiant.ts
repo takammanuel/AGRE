@@ -23,6 +23,7 @@ export class HeaderEtudiant implements OnInit {
   notifications: any[] = [];
   showNotifications = false;
   showProfileMenu = false;
+  showMobileMenu = false;
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser?.();
@@ -80,10 +81,25 @@ export class HeaderEtudiant implements OnInit {
     this.closeMenus();
   }
 
+  goToSettings(): void {
+    this.router.navigate(['/etudiant/parametres']);
+    this.closeMenus();
+  }
+
   logout(): void {
-    this.notificationService.stopPolling?.();
-    this.authService.logout().subscribe(() => {
-      this.router.navigate(['/login']);
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: (err: any) => {
+        console.error(err);
+        localStorage.removeItem('auth_token');
+        this.router.navigate(['/login']);
+      }
     });
+  }
+
+  toggleMobileMenu(): void {
+    this.showMobileMenu = !this.showMobileMenu;
   }
 }
