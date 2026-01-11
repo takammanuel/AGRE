@@ -1,24 +1,14 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-const API_URL = 'http://localhost:8000/api';
-
-export interface TypeRequete {
-  id?: number;
-  nom: string;
-  description: string;
-  service_id: number | null;
-  service?: any; // Service associé
-  created_at?: string;
-  updated_at?: string;
-}
+import { environment } from '../environments/environment';
+import { TypeRequete } from './request.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TypeRequetesService {
-  private apiUrl = `${API_URL}/admin/type-requetes`;
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -27,7 +17,7 @@ export class TypeRequetesService {
   }
 
   getForStudents(): Observable<any> {
-    return this.http.get<any>(`${API_URL}/type-requetes/students`);
+    return this.http.get<any>(`${this.apiUrl}/type-requetes/students`);
   }
 
   getById(id: number): Observable<TypeRequete> {
@@ -48,6 +38,34 @@ export class TypeRequetesService {
 
   // Pour récupérer les services pour le select
   getServices(): Observable<any> {
-    return this.http.get<any[]>(`${API_URL}/admin/services`);
+    return this.http.get(`${this.apiUrl}/services`);
+  }
+
+  /**
+   * Récupère tous les types de requêtes
+   */
+  getAllTypeRequetes(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/type-requetes`);
+  }
+
+  /**
+   * Crée un nouveau type de requête
+   */
+  createTypeRequete(payload: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/type-requetes`, payload);
+  }
+
+  /**
+   * Met à jour un type de requête
+   */
+  updateTypeRequete(id: number, payload: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/type-requetes/${id}`, payload);
+  }
+
+  /**
+   * Supprime un type de requête
+   */
+  deleteTypeRequete(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/type-requetes/${id}`);
   }
 }

@@ -26,4 +26,12 @@ export class SidebarDashboardComponent implements OnInit {
   toggleSidebar(): void {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
   }
+
+  navigateTo(route: string): void {
+    this.router.navigate([route]);
+  }
+
+  isActiveRoute(route: string): boolean {
+    return this.router.url === route;
+  }
 }

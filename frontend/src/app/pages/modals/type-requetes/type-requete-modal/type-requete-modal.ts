@@ -1,7 +1,8 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TypeRequete, TypeRequetesService } from '../../../../services/type-requetes.service';
+
+import { TypeRequetesService } from '../../../../services/type-requetes.service';
 
 @Component({
   selector: 'app-type-requete-modal',
@@ -9,76 +10,51 @@ import { TypeRequete, TypeRequetesService } from '../../../../services/type-requ
   imports: [CommonModule, FormsModule],
   templateUrl: './type-requete-modal.html'
 })
-export class TypeRequeteModalComponent implements OnInit {
-  @Input() typeRequete: TypeRequete | null = null;
-  @Input() isEdit = false;
-  @Output() save = new EventEmitter<TypeRequete>();
+export class TypeRequeteModalComponent implements OnInit, OnChanges {
+  @Input() typeRequete: any = null;
+  @Input() isEdit: boolean = false;
+  @Output() save = new EventEmitter<any>();
 
-  showModal = false;
-  formData: TypeRequete = {
-    nom: '',
-    description: '',
-    service_id: null
-  };
-  submitted = false;
+  showModal: boolean = false;
+  submitted: boolean = false;
   services: any[] = [];
-  loadingServices = false;
+  loadingServices: boolean = false;
 
+  formData: any = { nom: '', description: '', service_id: null };
+
+  // L'erreur d'injection NG2003 disparaîtra ici dès que l'import en haut sera valide
   constructor(private typeRequetesService: TypeRequetesService) {}
 
   ngOnInit(): void {
     this.loadServices();
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(_changes: SimpleChanges): void {
     if (this.typeRequete) {
-      this.formData = {
-        nom: this.typeRequete.nom || '',
-        description: this.typeRequete.description || '',
-        service_id: this.typeRequete.service_id || null
-      };
-    } else {
-      this.resetForm();
+      this.formData = { ...this.typeRequete };
     }
   }
 
   loadServices(): void {
     this.loadingServices = true;
     this.typeRequetesService.getServices().subscribe({
-      next: (response) => {
-        this.services = response.services.data;
+      next: (response: any) => {
+        this.services = response?.services?.data || response?.services || [];
         this.loadingServices = false;
       },
-      error: (error) => {
-        console.error('Erreur chargement services:', error);
-        this.services = [];
+      error: (error: any) => {
+        console.error('Erreur:', error);
         this.loadingServices = false;
       }
     });
   }
 
-  open(): void {
-    this.showModal = true;
-  }
-
-  close(): void {
-    this.showModal = false;
-    this.resetForm();
-    this.submitted = false;
-  }
-
-  resetForm(): void {
-    this.formData = {
-      nom: '',
-      description: '',
-      service_id: null
-    };
-  }
+  open(): void { this.showModal = true; this.submitted = false; }
+  close(): void { this.showModal = false; }
 
   onSubmit(): void {
     this.submitted = true;
-
-    if (this.formData.nom.trim() && this.formData.description.trim()) {
+    if (this.formData.nom && this.formData.description) {
       this.save.emit(this.formData);
     }
   }

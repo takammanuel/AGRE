@@ -6,7 +6,6 @@ use App\Models\ProfilAdministrateur;
 use App\Models\ProfilAgentAdministratif;
 use App\Models\ProfilEtudiant;
 use App\Models\ProfilResponsablePedagogique;
-use App\Models\Role;
 use App\Models\Service;
 use App\Models\Utilisateur;
 use Illuminate\Database\Seeder;
@@ -14,9 +13,6 @@ use Illuminate\Support\Facades\Hash;
 
 class UsersAndRolesSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $users = [
@@ -61,8 +57,6 @@ class UsersAndRolesSeeder extends Seeder
                 'role' => 'AGENT_ACADEMIQUE',
                 'profil_data' => [
                     'poste' => 'Agent de Scolarité',
-                    // 'date_embauche' => '2020-01-15',
-                    // service_id sera ajouté dynamiquement
                 ]
             ],
             [
@@ -98,70 +92,55 @@ class UsersAndRolesSeeder extends Seeder
             $profilData = $userData['profil_data'];
             unset($userData['role'], $userData['profil_data']);
 
-            // Créer l'utilisateur
-            $user = Utilisateur::create($userData);
+            // Créer ou mettre à jour l'utilisateur
+            $user = Utilisateur::updateOrCreate(
+                ['email' => $userData['email']], // condition unique
+                $userData
+            );
 
-            // Assigner le rôle
+            // Assigner le rôle (évite doublons)
             $user->assignRole($role);
 
-            // Créer le profil selon le rôle
+            // Créer le profil si inexistant
             $this->createProfil($user, $role, $profilData);
 
-            $this->command->info("Utilisateur créé : {$user->email} (Rôle: {$role})");
+            $this->command->info("Utilisateur créé/mis à jour : {$user->email} (Rôle: {$role})");
         }
 
-        $this->command->info("{$this->count()} utilisateurs créés avec succès !");
+        $this->command->info(count($users) . " utilisateurs créés/mis à jour avec succès !");
     }
 
-    /**
-     * Créer le profil selon le rôle
-     */
     private function createProfil(Utilisateur $utilisateur, string $role, array $profilData): void
     {
-        $roleLower = strtolower($role);
-
-        switch ($roleLower) {
+        switch (strtolower($role)) {
             case 'etudiant':
-                ProfilEtudiant::create([
-                    'utilisateur_id' => $utilisateur->id,
-                    'matricule' => $profilData['matricule'],
-                    'filiere' => $profilData['filiere'],
-                    'niveau' => $profilData['niveau'],
-                ]);
+                ProfilEtudiant::updateOrCreate(
+                    ['utilisateur_id' => $utilisateur->id],
+                    $profilData
+                );
                 break;
 
             case 'agent_academique':
-                // Récupérer un service (ex: Scolarité)
                 $service = Service::where('nom', 'Service de la Scolarité')->first();
-
-                ProfilAgentAdministratif::create([
-                    'utilisateur_id' => $utilisateur->id,
-                    'poste' => $profilData['poste'],
-                    'service_id' => $service ? $service->id : null,
-                ]);
+                ProfilAgentAdministratif::updateOrCreate(
+                    ['utilisateur_id' => $utilisateur->id],
+                    ['poste' => $profilData['poste'], 'service_id' => $service?->id]
+                );
                 break;
 
             case 'responsable_pedagogique':
-                ProfilResponsablePedagogique::create([
-                    'utilisateur_id' => $utilisateur->id,
-                    'departement' => $profilData['departement']
-                ]);
+                ProfilResponsablePedagogique::updateOrCreate(
+                    ['utilisateur_id' => $utilisateur->id],
+                    $profilData
+                );
                 break;
 
             case 'administrateur':
-                ProfilAdministrateur::create([
-                    'utilisateur_id' => $utilisateur->id,
-                    'niveau_acces' => $profilData['niveau_acces'] ?? 'admin',
-                ]);
+                ProfilAdministrateur::updateOrCreate(
+                    ['utilisateur_id' => $utilisateur->id],
+                    ['niveau_acces' => $profilData['niveau_acces'] ?? 'admin']
+                );
                 break;
         }
-    }
-
-    /**
-     * Compter le nombre d'utilisateurs
-     */
-    private function count(): int
-    {
-        return 5;
     }
 }

@@ -1,0 +1,75 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark">Gestion des Requêtes Académiques</h2>
+    <span class="badge bg-primary px-3 py-2">{{ toutesLesRequetes.length }} Requêtes reçues</span>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th class="ps-4">Date</th>
+            <th>Étudiant</th>
+            <th>Objet de la requête</th>
+            <th>Statut actuel</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let req of toutesLesRequetes">
+            <td class="ps-4 text-muted">{{ req.created_at | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="avatar-sm me-2 bg-soft-primary text-primary rounded-circle p-2" style="background: #eef2ff;">
+                   <i class="bi bi-person"></i>
+                </div>
+                <div>
+                  <h6 class="mb-0 small fw-bold">{{ req.etudiant?.nom || 'Inconnu' }}</h6>
+                  <small class="text-muted">ID: {{ req.etudiant_id }}</small>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="fw-medium">{{ req.titre }}</span>
+              <br>
+              <small class="text-truncate d-inline-block" style="max-width: 200px;">{{ req.description }}</small>
+            </td>
+            <td>
+              <span class="badge rounded-pill" [ngClass]="{
+                'bg-warning text-dark': req.statut === 'En attente',
+                'bg-info': req.statut === 'En cours',
+                'bg-success': req.statut === 'Terminée',
+                'bg-danger': req.statut === 'Rejetée'
+              }">{{ req.statut }}</span>
+            </td>
+            <td class="text-center">
+              <div class="btn-group shadow-sm">
+                <a [routerLink]="['/agent/messagerie', req.id]" class="btn btn-white btn-sm border" title="Répondre">
+                  <i class="bi bi-chat-left-text text-primary"></i>
+                </a>
+
+                <button *ngIf="req.statut !== 'Terminée'"
+                        (click)="changerStatut(req.id, 'Terminée')"
+                        class="btn btn-white btn-sm border" title="Terminer">
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                </button>
+
+                <button *ngIf="req.statut !== 'Rejetée' && req.statut !== 'Terminée'"
+                        (click)="changerStatut(req.id, 'Rejetée')"
+                        class="btn btn-white btn-sm border" title="Rejeter">
+                  <i class="bi bi-x-circle-fill text-danger"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="toutesLesRequetes.length === 0" class="text-center py-5">
+      <i class="bi bi-inbox fs-1 text-muted"></i>
+      <p class="mt-2 text-muted">Aucune requête en attente de traitement.</p>
+    </div>
+  </div>
+</div>

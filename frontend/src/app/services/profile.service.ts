@@ -5,54 +5,59 @@ import { Observable } from 'rxjs';
 const API_URL = 'http://localhost:8000/api';
 
 export interface UserProfile {
-  id: number;
+  id?: number;
   nom: string;
   prenom: string;
-  nom_complet: string;
+  nom_complet?: string;
   email: string;
-  telephone: string;
-  photo: string;
-  // photo_url: string;
-  is_active: boolean;
-  email_verified_at: string | null;
-  roles: string[];
-
-  // Profils spécifiques
+  email_verified_at?: string;
+  telephone?: string;
+  adresse?: string;
+  role: string;
+  roles?: string[];
+  avatar?: string;
+  photo?: string;
   profil_etudiant?: {
-    matricule?: string;
-    niveau?: number;
-    filiere?: string;
+    matricule: string;
+    niveau: string;
+    filiere: string;
   };
-
   profil_agent?: {
-    poste?: string;
-    service_id?: number;
-    service?: {
-      id: number;
-      nom: string;
-    };
+    poste: string;
+    service_id: number;
+    service?: { nom: string };
   };
-
   profil_responsable?: {
-    departement?: string;
+    departement: string;
   };
-
   profil_admin?: {
-    niveau_acces?: 'super_admin' | 'admin';
+    niveau_acces: string;
   };
+  created_at?: string;
+  updated_at?: string;
+  data?: any;
+  message?: string;
+}
+
+export interface UpdatePasswordRequest {
+  current_password: string;
+  new_password: string;
+  new_password_confirmation: string;
 }
 
 export interface UpdateProfileData {
   nom?: string;
   prenom?: string;
+  email?: string;
   telephone?: string;
+  adresse?: string;
   matricule?: string;
-  niveau?: number;
+  niveau?: string;
   filiere?: string;
   poste?: string;
-  service_id?: number | null;
+  service_id?: number;
   departement?: string;
-  niveau_acces?: 'super_admin' | 'admin';
+  niveau_acces?: string;
 }
 
 @Injectable({
@@ -63,49 +68,31 @@ export class ProfileService {
 
   constructor(private http: HttpClient) {}
 
-  getProfile(): Observable<{ success: boolean; data: UserProfile }> {
-    return this.http.get<{ success: boolean; data: UserProfile }>(this.apiUrl);
+  getProfile(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(this.apiUrl);
   }
 
-  updateProfile(data: UpdateProfileData): Observable<{
-    success: boolean;
-    message: string;
-    data: {
-      user: any;
-      profil: any;
-    }
-  }> {
-    return this.http.put<{
-      success: boolean;
-      message: string;
-      data: {
-        user: any;
-        profil: any;
-      }
-    }>(this.apiUrl, data);
+  updateProfile(profile: Partial<UserProfile>): Observable<UserProfile> {
+    return this.http.put<UserProfile>(this.apiUrl, profile);
   }
 
-  updatePhoto(photo: File): Observable<{
-    success: boolean;
-    message: string;
-    data: {
-      photo_url: string;
-    }
-  }> {
+  updatePassword(passwordData: UpdatePasswordRequest): Observable<any> {
+    return this.http.put(`${this.apiUrl}/password`, passwordData);
+  }
+
+  uploadAvatar(file: File): Observable<any> {
     const formData = new FormData();
-    formData.append('photo', photo);
-
-    return this.http.post<{
-      success: boolean;
-      message: string;
-      data: {
-        photo_url: string;
-      }
-    }>(`${this.apiUrl}/photo`, formData);
+    formData.append('avatar', file);
+    return this.http.post(`${this.apiUrl}/avatar`, formData);
   }
 
-  // Récupérer tous les services pour le select (pour les agents)
-  // getServices(): Observable<any[]> {
-  //   return this.http.get<any[]>(`${API_URL}/services`);
-  // }
+  deleteAvatar(): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/avatar`);
+  }
+
+  updatePhoto(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('photo', file);
+    return this.http.post(`${this.apiUrl}/photo`, formData);
+  }
 }

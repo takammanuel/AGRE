@@ -6,6 +6,9 @@ import { RequestService, Requete } from '../../../services/request.service';
 import { RequestStatusPipe } from '../../../pipes/request-status.pipe';
 import { PriorityPipe } from '../../../pipes/priority.pipe';
 import { TimeAgoPipe } from '../../../pipes/time-ago.pipe';
+import { RouterModule } from '@angular/router'; // 1. IMPORTATION NÉCESSAIRE
+import { RequeteService } from '../../../services/requete.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-mes-requetes',

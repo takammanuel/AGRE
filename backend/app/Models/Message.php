@@ -13,29 +13,27 @@ class Message extends Model
         'contenu',
         'emetteur_id',
         'recepteur_id',
+        'requete_id',
+        'read_at',
     ];
 
-    /**
-     * Relation vers l'utilisateur émetteur
-     */
     public function emetteur()
     {
         return $this->belongsTo(Utilisateur::class, 'emetteur_id');
     }
 
-    /**
-     * Relation vers l'utilisateur récepteur (nullable)
-     */
     public function recepteur()
     {
         return $this->belongsTo(Utilisateur::class, 'recepteur_id');
     }
 
-    /**
-     * Relation vers la requête associée (nullable)
-     */
     public function requete()
     {
         return $this->belongsTo(Requete::class, 'requete_id');
+    }
+
+    public function estLu(): bool
+    {
+        return !is_null($this->read_at);
     }
 }

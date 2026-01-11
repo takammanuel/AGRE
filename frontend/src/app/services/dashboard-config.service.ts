@@ -31,12 +31,9 @@ export interface WidgetConfig {
 export class DashboardConfigService {
   private authService = inject(AuthService);
 
-  /**
-   * Récupérer la configuration du dashboard selon le rôle
-   */
   getDashboardConfig(): DashboardConfig {
     const user = this.authService.getCurrentUser();
-    const primaryRole = user?.roles[0] || '';
+    const primaryRole = user?.roles?.[0] || '';
 
     const configs: { [key: string]: DashboardConfig } = {
       'ADMINISTRATEUR': this.getAdminConfig(),
@@ -48,9 +45,6 @@ export class DashboardConfigService {
     return configs[primaryRole] || this.getDefaultConfig();
   }
 
-  /**
-   * Configuration Admin
-   */
   private getAdminConfig(): DashboardConfig {
     return {
       role: 'ADMINISTRATEUR',
@@ -63,7 +57,7 @@ export class DashboardConfigService {
         { label: 'Services', icon: 'bi-building', route: '/admin/services', roles: ['ADMINISTRATEUR'] },
         { label: 'Types de requêtes', icon: 'bi-file-earmark-text', route: '/admin/types-requetes', roles: ['ADMINISTRATEUR'] },
         { label: 'Statistiques', icon: 'bi-graph-up', route: '/admin/statistiques', roles: ['ADMINISTRATEUR'] },
-        { label: 'Paramètres', icon: 'bi-gear', route: '/admin/parametres', roles: ['ADMINISTRATEUR'] },
+        { label: 'Mon profil', icon: 'bi-person', route: '/admin/profil', roles: ['ADMINISTRATEUR'] },
       ],
       widgets: [
         { type: 'stats', title: 'Vue d\'ensemble', roles: ['ADMINISTRATEUR'] },
@@ -73,9 +67,6 @@ export class DashboardConfigService {
     };
   }
 
-  /**
-   * Configuration Agent
-   */
   private getAgentConfig(): DashboardConfig {
     return {
       role: 'AGENT_ACADEMIQUE',
@@ -99,9 +90,6 @@ export class DashboardConfigService {
     };
   }
 
-  /**
-   * Configuration Responsable Pédagogique
-   */
   private getResponsableConfig(): DashboardConfig {
     return {
       role: 'RESPONSABLE_PEDAGOGIQUE',
@@ -124,9 +112,6 @@ export class DashboardConfigService {
     };
   }
 
-  /**
-   * Configuration Étudiant
-   */
   private getEtudiantConfig(): DashboardConfig {
     return {
       role: 'ETUDIANT',
@@ -135,7 +120,7 @@ export class DashboardConfigService {
       backgroundColor: 'var(--etudiant-bg)',
       menuItems: [
         { label: 'Accueil', icon: 'bi-house', route: '/etudiant', roles: ['ETUDIANT'] },
-        { label: 'Mes requêtes', icon: 'bi-file-earmark-text', route: '/etudiant/requetes', roles: ['ETUDIANT'] },
+        { label: 'Mes requêtes', icon: 'bi-file-earmark-text', route: '/etudiant/mes-requetes', roles: ['ETUDIANT'] },
         { label: 'Nouvelle requête', icon: 'bi-plus-circle', route: '/etudiant/nouvelle-requete', roles: ['ETUDIANT'] },
         { label: 'Notifications', icon: 'bi-bell', route: '/etudiant/notifications', badge: 3, roles: ['ETUDIANT'] },
         { label: 'Mon profil', icon: 'bi-person', route: '/etudiant/profil', roles: ['ETUDIANT'] },
@@ -149,9 +134,6 @@ export class DashboardConfigService {
     };
   }
 
-  /**
-   * Configuration par défaut
-   */
   private getDefaultConfig(): DashboardConfig {
     return {
       role: '',

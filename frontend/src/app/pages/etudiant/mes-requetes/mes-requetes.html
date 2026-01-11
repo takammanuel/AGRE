@@ -87,6 +87,9 @@
               <button class="btn btn-sm btn-primary" (click)="viewDetails(requete.id)">
                 Voir détails
               </button>
+              <a [routerLink]="['/etudiant/messagerie', requete.id]" class="btn btn-outline-primary btn-sm">
+                Voir la discussion
+              </a>
             </td>
           </tr>
         </tbody>

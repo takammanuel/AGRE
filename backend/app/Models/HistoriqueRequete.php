@@ -13,6 +13,7 @@ class HistoriqueRequete extends Model
         'date_etat',
         'etat_id',
         'requete_id',
+        'utilisateur_id', //  ajouté ici
     ];
 
     /**
@@ -32,7 +33,7 @@ class HistoriqueRequete extends Model
     }
 
     /**
-     * Relation vers l'utilisateur qui a effectué l'action
+     * Relation vers l'utilisateur
      */
     public function utilisateur()
     {

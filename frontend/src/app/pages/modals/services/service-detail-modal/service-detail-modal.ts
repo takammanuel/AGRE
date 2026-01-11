@@ -1,24 +1,11 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Service } from '../../../../services/services.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-service-detail-modal',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './service-detail-modal.html'
+  imports: [],
+  templateUrl: './service-detail-modal.html',
+  styleUrl: './service-detail-modal.css',
 })
-export class ServiceDetailModalComponent {
-  @Input() service: Service | null = null;
+export class ServiceDetailModal {
 
-  showModal = false;
-
-  open(): void {
-    this.showModal = true;
-  }
-
-  close(): void {
-    this.showModal = false;
-  }
-  
 }
