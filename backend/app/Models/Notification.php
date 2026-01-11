@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
 {
@@ -14,21 +15,28 @@ class Notification extends Model
         'message',
         'requete_id',
         'utilisateur_id',
+        'lu'
+    ];
+
+    protected $casts = [
+        'lu' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     /**
-     * Relation vers la requête associée (optionnelle)
+     * Relation avec l'utilisateur
      */
-    public function requete()
+    public function utilisateur(): BelongsTo
     {
-        return $this->belongsTo(Requete::class);
+        return $this->belongsTo(Utilisateur::class, 'utilisateur_id');
     }
 
     /**
-     * Relation vers l'utilisateur destinataire
+     * Relation avec la requête
      */
-    public function utilisateur()
+    public function requete(): BelongsTo
     {
-        return $this->belongsTo(Utilisateur::class);
+        return $this->belongsTo(Requete::class, 'requete_id');
     }
 }

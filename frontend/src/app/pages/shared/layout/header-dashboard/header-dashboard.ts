@@ -1,13 +1,14 @@
 import { Component, OnInit, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
 import { DashboardConfigService, DashboardConfig } from '../../../../services/dashboard-config.service';
+import { SearchRequeteComponent } from '../../../../components/search-requete/search-requete.component';
 
 @Component({
   selector: 'app-header-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, SearchRequeteComponent],
   templateUrl: './header-dashboard.html',
   styleUrls: ['./header-dashboard.scss']
 })

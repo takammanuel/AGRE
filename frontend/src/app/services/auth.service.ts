@@ -115,7 +115,8 @@ export class AuthService {
       nom: response.user.nom,
       prenom: response.user.prenom,
       email: response.user.email,
-      telephone: response.user.telephone
+      telephone: response.user.telephone,
+      roles: response.user.roles
     }));
     this.currentUserSubject.next(response.user);
   }
@@ -194,6 +195,39 @@ export class AuthService {
   hasRole(role: string): boolean {
     const user = this.getCurrentUser();
     return user?.roles?.includes(role) || false;
+  }
+
+  /**
+   * Mettre à jour le profil utilisateur
+   */
+  updateProfile(data: {
+    nom: string;
+    prenom: string;
+    email: string;
+    telephone?: string;
+  }): Observable<any> {
+    return this.http.put(`${API_URL}/auth/profile`, data).pipe(
+      tap((response: any) => {
+        if (response.success) {
+          const currentUser = this.getCurrentUser();
+          if (currentUser) {
+            const updatedUser = { ...currentUser, ...data };
+            this.updateCurrentUser(updatedUser);
+          }
+        }
+      })
+    );
+  }
+
+  /**
+   * Changer le mot de passe
+   */
+  changePassword(data: {
+    current_password: string;
+    new_password: string;
+    new_password_confirmation: string;
+  }): Observable<any> {
+    return this.http.put(`${API_URL}/auth/profile/password`, data);
   }
 
   /**

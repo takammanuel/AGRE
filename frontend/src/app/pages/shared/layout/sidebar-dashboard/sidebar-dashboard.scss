@@ -30,6 +30,36 @@
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid var(--neutral-200);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
+
+    // Effet de brillance
+    &::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+      }
+      100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+      }
+    }
 
     .logo-container {
       width: 100%;
@@ -37,17 +67,65 @@
       align-items: center;
       justify-content: center;
       gap: 0.75rem;
+      position: relative;
+      z-index: 1;
 
-      .logo {
-        width: 40px;
-        height: 40px;
-        border-radius: var(--border-radius-md);
+      .app-name-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.75rem 1.5rem;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.25);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .app-name {
+          font-size: 1.75rem;
+          font-weight: 800;
+          color: white;
+          letter-spacing: 2px;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+          background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .app-subtitle {
+          font-size: 0.65rem;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.9);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
       }
 
-      .app-name {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--neutral-900);
+      .app-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+        i {
+          font-size: 1.5rem;
+          color: white;
+        }
       }
     }
 
@@ -55,16 +133,25 @@
       width: 32px;
       height: 32px;
       border: none;
-      background: var(--neutral-100);
-      border-radius: var(--border-radius-sm);
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: all 0.2s;
+      position: relative;
+      z-index: 1;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+
+      i {
+        color: white;
+      }
 
       &:hover {
-        background: var(--neutral-200);
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.05);
       }
     }
   }

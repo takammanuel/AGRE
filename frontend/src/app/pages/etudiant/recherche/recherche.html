@@ -1,0 +1,95 @@
+<div class="recherche-container">
+  <div class="page-header">
+    <h2><i class="bi bi-search"></i> Recherche de mes requêtes</h2>
+    <p class="text-muted">Recherchez parmi vos requêtes par code ou description</p>
+  </div>
+
+  <!-- Barre de recherche -->
+  <app-search-bar
+    (searchResults)="onSearchResults($event)"
+    (searchError)="onSearchError($event)"
+  ></app-search-bar>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="errorMessage" class="alert alert-warning" role="alert">
+    <i class="bi bi-exclamation-triangle"></i> {{ errorMessage }}
+  </div>
+
+  <!-- Message initial -->
+  <div *ngIf="!hasSearched && requetes.length === 0" class="empty-state">
+    <i class="bi bi-search"></i>
+    <h4>Recherchez vos requêtes</h4>
+    <p>Entrez un code de requête ou un mot-clé de la description</p>
+    <div class="search-examples">
+      <p><strong>Exemples de recherche :</strong></p>
+      <ul>
+        <li><code>REQ-2026-00001</code> - Code de requête</li>
+        <li><code>Certificat</code> - Type de requête</li>
+        <li><code>scolarité</code> - Mot-clé dans la description</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Résultats de recherche -->
+  <div *ngIf="hasSearched && requetes.length === 0 && !errorMessage" class="empty-state">
+    <i class="bi bi-inbox"></i>
+    <h4>Aucun résultat trouvé</h4>
+    <p>Aucune requête ne correspond à votre recherche</p>
+  </div>
+
+  <!-- Liste des requêtes trouvées -->
+  <div *ngIf="requetes.length > 0" class="results-container">
+    <div class="results-header">
+      <h5>{{ requetes.length }} résultat(s) trouvé(s)</h5>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Type de requête</th>
+            <th>Service</th>
+            <th>Priorité</th>
+            <th>Statut</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let requete of requetes">
+            <td>
+              <strong>{{ requete.code_requete }}</strong>
+            </td>
+            <td>{{ requete.type_requete?.nom }}</td>
+            <td>
+              <small class="text-muted">{{ requete.type_requete?.service?.nom }}</small>
+            </td>
+            <td>
+              <span [class]="getPrioriteClass(requete.priorite)">
+                {{ requete.priorite }}
+              </span>
+            </td>
+            <td>
+              <span [class]="getStatutClass(requete.statut_actuel)">
+                {{ getStatutLabel(requete.statut_actuel) }}
+              </span>
+            </td>
+            <td>
+              <small>{{ requete.created_at | date: 'dd/MM/yyyy HH:mm' }}</small>
+            </td>
+            <td>
+              <a
+                [routerLink]="['/etudiant/requetes', requete.id]"
+                class="btn btn-sm btn-outline-primary"
+                title="Voir les détails"
+              >
+                <i class="bi bi-eye"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

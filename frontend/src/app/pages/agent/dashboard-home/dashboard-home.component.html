@@ -1,0 +1,103 @@
+<div class="dashboard-home">
+  <div class="page-header">
+    <h1>Tableau de bord</h1>
+    <p class="subtitle">Vue d'ensemble de vos requêtes</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement des statistiques...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="loadDashboardStats()">
+      <i class="bi bi-arrow-clockwise"></i> Réessayer
+    </button>
+  </div>
+
+  <!-- Dashboard Cards -->
+  <div *ngIf="stats && !loading" class="stats-grid">
+    <!-- Requêtes affectées aujourd'hui -->
+    <div class="stat-card card-today">
+      <div class="card-icon">
+        <i class="bi bi-calendar-check"></i>
+      </div>
+      <div class="card-content">
+        <h3>{{ stats.affectees_aujourdhui }}</h3>
+        <p>Requêtes affectées aujourd'hui</p>
+      </div>
+      <a [routerLink]="['/agent/requetes']" [queryParams]="{filter: 'today'}" class="card-link">
+        Voir <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Requêtes affectées cette semaine -->
+    <div class="stat-card card-week">
+      <div class="card-icon">
+        <i class="bi bi-calendar-week"></i>
+      </div>
+      <div class="card-content">
+        <h3>{{ stats.affectees_semaine }}</h3>
+        <p>Requêtes affectées cette semaine</p>
+      </div>
+      <a [routerLink]="['/agent/requetes']" [queryParams]="{filter: 'week'}" class="card-link">
+        Voir <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Requêtes urgentes -->
+    <div class="stat-card card-urgent">
+      <div class="card-icon">
+        <i class="bi bi-exclamation-triangle"></i>
+      </div>
+      <div class="card-content">
+        <h3>{{ stats.urgentes }}</h3>
+        <p>Requêtes urgentes</p>
+      </div>
+      <a [routerLink]="['/agent/requetes']" [queryParams]="{filter: 'urgent'}" class="card-link">
+        Voir <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+
+    <!-- Total requêtes affectées -->
+    <div class="stat-card card-total">
+      <div class="card-icon">
+        <i class="bi bi-inbox"></i>
+      </div>
+      <div class="card-content">
+        <h3>{{ stats.total_affectees }}</h3>
+        <p>Total requêtes affectées</p>
+      </div>
+      <a [routerLink]="['/agent/requetes']" class="card-link">
+        Voir tout <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div *ngIf="stats && !loading" class="quick-actions">
+    <h2>Actions rapides</h2>
+    <div class="actions-grid">
+      <a [routerLink]="['/agent/requetes']" class="action-card">
+        <i class="bi bi-inbox"></i>
+        <span>Toutes les requêtes</span>
+      </a>
+      <a [routerLink]="['/agent/urgentes']" class="action-card">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span>Requêtes urgentes</span>
+      </a>
+      <a [routerLink]="['/agent/statistiques']" class="action-card">
+        <i class="bi bi-graph-up"></i>
+        <span>Mes statistiques</span>
+      </a>
+      <a [routerLink]="['/agent/historique']" class="action-card">
+        <i class="bi bi-clock-history"></i>
+        <span>Historique</span>
+      </a>
+    </div>
+  </div>
+</div>

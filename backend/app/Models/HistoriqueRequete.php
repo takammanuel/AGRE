@@ -13,6 +13,7 @@ class HistoriqueRequete extends Model
         'date_etat',
         'etat_id',
         'requete_id',
+        'commentaire',
     ];
 
     /**

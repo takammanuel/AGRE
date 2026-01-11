@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Profile\ChangePasswordRequest;
-use App\Http\Requests\Profile\UpdatePhotoRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -73,6 +71,7 @@ class ProfileController extends Controller
         $userData = request()->validate([
             'nom' => ['sometimes', 'string', 'max:255'],
             'prenom' => ['sometimes', 'string', 'max:255'],
+            'email' => ['sometimes', 'email', 'max:255', 'unique:utilisateurs,email,' . $user->id],
             'telephone' => ['sometimes', 'nullable', 'string', 'max:20'],
         ]);
 
@@ -137,18 +136,19 @@ class ProfileController extends Controller
         return response()->json([
             'success' => true,
             'message' => $message,
-            'data' => [
-                'user' => $user->only(['id', 'nom', 'prenom', 'email', 'telephone', 'photo_url']),
-                'profil' => $user->getProfil(),
-            ]
+            'data' => $user->only(['id', 'nom', 'prenom', 'email', 'telephone'])
         ]);
     }
 
     /**
      * Changer la photo de profil
      */
-    public function updatePhoto(UpdatePhotoRequest $request): JsonResponse
+    public function updatePhoto(): JsonResponse
     {
+        $validated = request()->validate([
+            'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048']
+        ]);
+
         $user = auth()->user();
 
         // Supprimer l'ancienne photo si elle existe
@@ -157,7 +157,7 @@ class ProfileController extends Controller
         }
 
         // Sauvegarder la nouvelle photo
-        $path = $request->file('photo')->store('photos', 'public');
+        $path = request()->file('photo')->store('photos', 'public');
         $user->photo = $path;
         $user->save();
 
@@ -165,7 +165,7 @@ class ProfileController extends Controller
             'success' => true,
             'message' => 'Photo de profil mise à jour avec succès.',
             'data' => [
-                'photo_url' => $user->photo_url
+                'photo' => $user->photo
             ]
         ]);
     }
@@ -173,12 +173,19 @@ class ProfileController extends Controller
     /**
      * Changer le mot de passe
      */
-    public function changePassword(ChangePasswordRequest $request): JsonResponse
+    public function changePassword(): JsonResponse
     {
         $user = auth()->user();
 
+        // Validation
+        $validated = request()->validate([
+            'current_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'min:8'],
+            'new_password_confirmation' => ['required', 'string', 'same:new_password'],
+        ]);
+
         // Vérifier l'ancien mot de passe
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (!Hash::check($validated['current_password'], $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Le mot de passe actuel est incorrect.'
@@ -186,12 +193,48 @@ class ProfileController extends Controller
         }
 
         // Mettre à jour le mot de passe
-        $user->password = Hash::make($request->new_password);
+        $user->password = Hash::make($validated['new_password']);
         $user->save();
 
         return response()->json([
             'success' => true,
             'message' => 'Mot de passe changé avec succès.'
+        ]);
+    }
+
+    /**
+     * Supprimer le compte utilisateur
+     * DELETE /api/auth/profile
+     */
+    public function destroy(): JsonResponse
+    {
+        $user = auth()->user();
+
+        // Supprimer la photo si elle existe
+        if ($user->photo) {
+            Storage::delete('public/' . $user->photo);
+        }
+
+        // Supprimer les profils spécifiques
+        if ($user->profilEtudiant) {
+            $user->profilEtudiant->delete();
+        }
+        if ($user->profilAgentAdministratif) {
+            $user->profilAgentAdministratif->delete();
+        }
+        if ($user->profilResponsablePedagogique) {
+            $user->profilResponsablePedagogique->delete();
+        }
+        if ($user->profilAdministrateur) {
+            $user->profilAdministrateur->delete();
+        }
+
+        // Supprimer l'utilisateur
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Compte supprimé avec succès.'
         ]);
     }
 }
