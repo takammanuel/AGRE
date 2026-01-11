@@ -296,6 +296,19 @@
           color: var(--neutral-400);
         }
       }
+
+      &.unread {
+        background-color: var(--neutral-50);
+        border-left: 3px solid var(--primary-color);
+      }
+    }
+
+    .bg-primary-light {
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .bg-secondary-light {
+      background: rgba(108, 117, 125, 0.1);
     }
 
     .dropdown-footer {

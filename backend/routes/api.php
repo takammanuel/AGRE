@@ -78,7 +78,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- MODULE MESSAGES ---
     Route::prefix('messages')->group(function () {
+        Route::get('/conversations', [MessageController::class, 'getConversations']); // Liste des conversations
         Route::post('/', [MessageController::class, 'store']); // Envoi de message + Création notif
+        Route::post('/{requete_id}/mark-read', [MessageController::class, 'markAsRead']); // Marquer comme lu
         Route::get('/{requete_id}', [MessageController::class, 'getByRequete']);
     });
 

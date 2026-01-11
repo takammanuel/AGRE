@@ -1,0 +1,25 @@
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.list-group-item.active {
+  background-color: #e3f2fd !important;
+  border-color: #e3f2fd !important;
+  color: inherit !important;
+}
+
+.list-group-item:hover:not(.active) {
+  background-color: #f8f9fa;
+}
+
+.min-width-0 {
+  min-width: 0;
+}
+
+.message-bubble {
+  word-wrap: break-word;
+}
+
+.messages-container {
+  background-color: #f8f9fa;
+}
