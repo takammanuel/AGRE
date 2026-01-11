@@ -26,6 +26,10 @@ export class TypeRequetesService {
     return this.http.get<TypeRequete[]>(`${this.apiUrl}?page=${page}&per_page=${perPage}`);
   }
 
+  getForStudents(): Observable<any> {
+    return this.http.get<any>(`${API_URL}/type-requetes/students`);
+  }
+
   getById(id: number): Observable<TypeRequete> {
     return this.http.get<TypeRequete>(`${this.apiUrl}/${id}`);
   }

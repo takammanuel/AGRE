@@ -50,6 +50,7 @@ export class RequeteDetailComponent implements OnInit {
   loadHistory(id: number): void {
     this.requestService.getRequestHistory(id).subscribe({
       next: (response) => {
+        console.log('Historique reçu:', response);
         this.historique = response.data || [];
       },
       error: (error) => {
@@ -61,11 +62,10 @@ export class RequeteDetailComponent implements OnInit {
   downloadFile(attachment: any): void {
     this.fileService.downloadAttachment(attachment.id).subscribe({
       next: (blob) => {
-        this.fileService.downloadFile(blob, attachment.nom);
+        this.fileService.downloadFile(blob, attachment.chemin_fichier);
       },
       error: (error) => {
         console.error('Erreur lors du téléchargement', error);
-        alert('Erreur lors du téléchargement du fichier');
       }
     });
   }

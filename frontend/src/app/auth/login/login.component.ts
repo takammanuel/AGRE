@@ -51,8 +51,6 @@ export class LoginComponent {
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
         this.isLoading = false;
-
-        console.log(response);
         if (this.returnUrl) {
           this.router.navigateByUrl(this.returnUrl);
         } else {
@@ -82,7 +80,7 @@ export class LoginComponent {
     } else if (roles.includes('AGENT_ACADEMIQUE')) {
       this.router.navigate(['/agent']);
     } else if (roles.includes('ETUDIANT')) {
-      this.router.navigate(['/etudiant']);
+      this.router.navigate(['/etudiant/mes-requetes']);
     } else {
       this.router.navigate(['/']);
     }

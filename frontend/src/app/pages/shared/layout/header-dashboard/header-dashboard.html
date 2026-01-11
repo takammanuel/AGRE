@@ -34,10 +34,10 @@
       <!-- Quick Actions (selon rôle) -->
       <button class="btn btn-primary-custom me-2 d-none d-md-inline-flex">
         <i class="bi bi-plus-lg me-2"></i>
-        <span *ngIf="config.role === 'ETUDIANT'">Nouvelle requête</span>
-        <span *ngIf="config.role === 'AGENT_ACADEMIQUE'">Traiter requête</span>
-        <span *ngIf="config.role === 'RESPONSABLE_PEDAGOGIQUE'">Approuver</span>
-        <span *ngIf="config.role === 'ADMINISTRATEUR'">Nouvel utilisateur</span>
+        <span *ngIf="config.role === 'ETUDIANT'" (click)="navigateToSection(config.role)">Nouvelle requête</span>
+        <span *ngIf="config.role === 'AGENT_ACADEMIQUE'" (click)="navigateToSection(config.role)">Traiter requête</span>
+        <span *ngIf="config.role === 'RESPONSABLE_PEDAGOGIQUE'" (click)="navigateToSection(config.role)">Approuver</span>
+        <span *ngIf="config.role === 'ADMINISTRATEUR'" (click)="navigateToSection(config.role)">Nouvel utilisateur</span>
       </button>
 
       <!-- Notifications -->

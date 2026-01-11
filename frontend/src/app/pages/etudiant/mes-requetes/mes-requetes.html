@@ -71,15 +71,15 @@
         <tbody>
           <tr *ngFor="let requete of requetes">
             <td><strong>{{ requete.code_requete }}</strong></td>
-            <td>{{ requete.typeRequete?.nom }}</td>
+            <td>{{ requete.type_requete?.nom }}</td>
             <td>
               <span [class]="requete.priorite === 'URGENTE' ? 'badge bg-danger' : 'badge bg-secondary'">
                 {{ requete.priorite | priority }}
               </span>
             </td>
             <td>
-              <span [class]="getStatusClass(requete.etat_actuel?.libelle || '')">
-                {{ requete.etat_actuel?.libelle | requestStatus }}
+              <span [class]="getStatusClass(requete.historiques[requete.historiques.length - 1].etat?.libelle || '')">
+                {{ requete.historiques[requete.historiques.length - 1]?.etat?.libelle | requestStatus }}
               </span>
             </td>
             <td>{{ requete.created_at | date:'dd/MM/yyyy' }}</td>
@@ -99,8 +99,8 @@
         <li class="page-item" [class.disabled]="currentPage === 1">
           <a class="page-link" (click)="goToPage(currentPage - 1)">Précédent</a>
         </li>
-        <li *ngFor="let page of [].constructor(pagination.last_page); let i = index" 
-            class="page-item" 
+        <li *ngFor="let page of [].constructor(pagination.last_page); let i = index"
+            class="page-item"
             [class.active]="currentPage === i + 1">
           <a class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</a>
         </li>

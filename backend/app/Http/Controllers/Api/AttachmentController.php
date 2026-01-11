@@ -20,7 +20,7 @@ class AttachmentController extends Controller
 
         // Vérifier les permissions
         $canUpload = false;
-        
+
         if ($user->isEtudiant() && $requete->etudiant_id === $user->id) {
             // L'étudiant peut uploader si la requête est en attente d'infos
             $etatActuel = $requete->etatActuel;
@@ -68,7 +68,7 @@ class AttachmentController extends Controller
     /**
      * Télécharger une pièce jointe
      */
-    public function download(Request $request, PieceJointe $attachment): JsonResponse
+    public function download(Request $request, PieceJointe $attachment)
     {
         $user = $request->user();
         $requete = $attachment->requete;
@@ -99,7 +99,7 @@ class AttachmentController extends Controller
         }
 
         $filePath = Storage::disk('public')->path($attachment->chemin_fichier);
-        
+
         return response()->download($filePath, $attachment->nom);
     }
 

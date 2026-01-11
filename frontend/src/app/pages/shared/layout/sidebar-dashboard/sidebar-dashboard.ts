@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { DashboardConfigService, DashboardConfig } from '../../../../services/dashboard-config.service';
+import { RequestService } from '../../../../services/request.service';
 
 @Component({
   selector: 'app-sidebar-dashboard',
@@ -12,6 +13,7 @@ import { DashboardConfigService, DashboardConfig } from '../../../../services/da
 })
 export class SidebarDashboardComponent implements OnInit {
   private dashboardConfigService = inject(DashboardConfigService);
+  private requestService = inject(RequestService);
   private router = inject(Router);
 
   config!: DashboardConfig;

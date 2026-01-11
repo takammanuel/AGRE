@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Etudiant\StoreRequestRequest;
 use App\Http\Requests\Etudiant\UpdateRequestRequest;
 use App\Models\Etat;
+use App\Models\ProfilAgentAdministratif;
 use App\Models\Requete;
 use App\Models\TypeRequete;
 use Illuminate\Http\JsonResponse;
@@ -21,7 +22,7 @@ class EtudiantRequestController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        
+
         $query = Requete::where('etudiant_id', $user->id)
             ->with(['typeRequete.service', 'agent', 'piecesJointes'])
             ->with(['historiques' => function($q) {
@@ -106,7 +107,7 @@ class EtudiantRequestController extends Controller
             if ($request->hasFile('pieces_jointes')) {
                 foreach ($request->file('pieces_jointes') as $file) {
                     $path = $file->store('requetes/' . $requete->id, 'public');
-                    
+
                     $requete->piecesJointes()->create([
                         'nom' => $file->getClientOriginalName(),
                         'chemin_fichier' => $path,
@@ -117,7 +118,12 @@ class EtudiantRequestController extends Controller
             // Affectation automatique au service
             if ($typeRequete->service_id) {
                 $requete->changerEtat('AFFECTEE', null);
-                
+                $agent = ProfilAgentAdministratif::where('service_id', $typeRequete->service_id)->first();
+                if ($agent) {
+                    $requete->agent_id = $agent->utilisateur_id;
+                    $requete->save();
+                }
+
                 // TODO: Déclencher notification aux agents du service
                 // Event::dispatch(new RequestAssigned($requete));
             }

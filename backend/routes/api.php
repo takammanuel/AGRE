@@ -42,6 +42,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/password', [ProfileController::class, 'changePassword']);
     });
 
+    Route::get('/type-requetes/students', [TypeRequeteController::class, 'typeRequestForStudents']);
+
     /*
     |--------------------------------------------------------------------------
     | Routes pour les responsables pédagogiques

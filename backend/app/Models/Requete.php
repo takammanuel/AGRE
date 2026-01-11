@@ -106,7 +106,7 @@ class Requete extends Model
             ->with('etat')
             ->orderBy('date_etat', 'desc')
             ->first();
-        
+
         return $dernierHistorique ? $dernierHistorique->etat : null;
     }
 
@@ -116,7 +116,7 @@ class Requete extends Model
     public function changerEtat($etatLibelle, $utilisateurId = null)
     {
         $etat = Etat::where('libelle', $etatLibelle)->first();
-        
+
         if (!$etat) {
             throw new \Exception("État '{$etatLibelle}' introuvable");
         }
@@ -125,7 +125,6 @@ class Requete extends Model
             'requete_id' => $this->id,
             'etat_id' => $etat->id,
             'date_etat' => now(),
-            'utilisateur_id' => $utilisateurId,
         ]);
 
         return $this;

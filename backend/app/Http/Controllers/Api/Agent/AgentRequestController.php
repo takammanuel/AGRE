@@ -33,9 +33,7 @@ class AgentRequestController extends Controller
         $serviceId = $profilAgent->service_id;
 
         // Requêtes affectées au service (via le type de requête)
-        $query = Requete::whereHas('typeRequete', function($q) use ($serviceId) {
-                $q->where('service_id', $serviceId);
-            })
+        $query = Requete::where('agent_id', $user->id)
             ->with([
                 'etudiant.profilEtudiant',
                 'typeRequete.service',
@@ -87,7 +85,7 @@ class AgentRequestController extends Controller
         // Tri
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
-        
+
         // Tri spécial pour priorité
         if ($sortBy === 'priorite') {
             $query->orderByRaw("CASE WHEN priorite = 'URGENTE' THEN 1 ELSE 2 END")
@@ -221,18 +219,18 @@ class AgentRequestController extends Controller
                 case 'validate':
                     // Validation directe
                     $requete->changerEtat('TRAITEE', $user->id);
-                    
+
                     // Upload du document généré si fourni
                     if ($request->hasFile('document')) {
                         $file = $request->file('document');
                         $path = $file->store('requetes/' . $requete->id . '/documents', 'public');
-                        
+
                         $requete->piecesJointes()->create([
                             'nom' => 'Document généré - ' . $file->getClientOriginalName(),
                             'chemin_fichier' => $path,
                         ]);
                     }
-                    
+
                     $message = 'Requête validée avec succès.';
                     break;
 

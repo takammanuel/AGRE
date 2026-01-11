@@ -17,7 +17,7 @@
         <div class="card-body">
           <dl class="row">
             <dt class="col-sm-4">Type de requête :</dt>
-            <dd class="col-sm-8">{{ requete.typeRequete?.nom }}</dd>
+            <dd class="col-sm-8">{{ requete.type_requete?.nom }}</dd>
 
             <dt class="col-sm-4">Priorité :</dt>
             <dd class="col-sm-8">
@@ -74,11 +74,11 @@
           <h5 class="mb-0">Pièces jointes</h5>
         </div>
         <div class="card-body">
-          <div *ngIf="!requete.piecesJointes || requete.piecesJointes.length === 0" class="text-muted">
+          <div *ngIf="!requete.pieces_jointes || requete.pieces_jointes.length === 0" class="text-muted">
             Aucune pièce jointe
           </div>
-          <ul *ngIf="requete.piecesJointes && requete.piecesJointes.length > 0" class="list-group list-group-flush">
-            <li *ngFor="let piece of requete.piecesJointes" class="list-group-item d-flex justify-content-between align-items-center">
+          <ul *ngIf="requete.pieces_jointes && requete.pieces_jointes.length > 0" class="list-group list-group-flush">
+            <li *ngFor="let piece of requete.pieces_jointes" class="list-group-item d-flex justify-content-between align-items-center">
               <span>{{ piece.nom }}</span>
               <button class="btn btn-sm btn-primary" (click)="downloadFile(piece)">
                 Télécharger
@@ -97,7 +97,7 @@
           <button *ngIf="canCancel()" class="btn btn-danger w-100 mb-2" (click)="cancelRequest()">
             Annuler la requête
           </button>
-          <button *ngIf="needsInfo()" class="btn btn-warning w-100" 
+          <button *ngIf="needsInfo()" class="btn btn-warning w-100"
                   (click)="navigateToAddInfos()">
             Ajouter des informations
           </button>

@@ -36,9 +36,9 @@ export class NouvelleRequeteComponent implements OnInit {
   }
 
   loadTypesRequetes(): void {
-    this.typeRequetesService.getAll().subscribe({
+    this.typeRequetesService.getForStudents().subscribe({
       next: (response) => {
-        this.typesRequetes = response.type_requetes?.data || response.data || [];
+        this.typesRequetes = response.types_requetes;
       },
       error: (error) => {
         console.error('Erreur lors du chargement des types de requêtes', error);

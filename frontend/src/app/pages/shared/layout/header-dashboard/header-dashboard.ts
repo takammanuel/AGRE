@@ -75,4 +75,21 @@ export class HeaderDashboardComponent implements OnInit {
     this.router.navigate([`/${role}/parametres`]);
     this.closeMenus();
   }
+
+  navigateToSection(role: string): void {
+    switch(role) {
+      case 'ETUDIANT':
+        this.router.navigate(['/etudiant/nouvelle-requete']);
+        break;
+      case 'AGENT_ACADEMIQUE':
+        this.router.navigate(['/agent/requetes-affectees']);
+        break;
+      case 'RESPONSABLE_PEDAGOGIQUE':
+        this.router.navigate(['/responsable/requetes-en-attente']);
+        break;
+      case 'ADMINISTRATEUR':
+        this.router.navigate(['/admin/utilisateurs/creer']);
+        break;
+    }
+  }
 }

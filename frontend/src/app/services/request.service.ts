@@ -52,9 +52,9 @@ export interface Requete {
   etudiant?: any;
   agent?: any;
   responsable?: any;
-  typeRequete?: TypeRequete;
-  piecesJointes?: PieceJointe[];
-  historiques?: HistoriqueRequete[];
+  type_requete?: TypeRequete;
+  pieces_jointes?: PieceJointe[];
+  historiques: HistoriqueRequete[];
   etat_actuel?: Etat;
 }
 
@@ -109,7 +109,7 @@ export class RequestService {
     formData.append('type_requete_id', data.type_requete_id.toString());
     formData.append('description', data.description);
     formData.append('priorite', data.priorite);
-    
+
     if (data.pieces_jointes && data.pieces_jointes.length > 0) {
       data.pieces_jointes.forEach((file, index) => {
         formData.append(`pieces_jointes[${index}]`, file);

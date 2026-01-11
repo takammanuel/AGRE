@@ -24,6 +24,16 @@ class TypeRequeteController extends Controller
         ]);
     }
 
+    public function typeRequestForStudents(): JsonResponse
+    {
+        $types = TypeRequete::with('service')->get();
+
+        return response()->json([
+            'success' => true,
+            'types_requetes' => $types
+        ]);
+    }
+
     /**
      * Afficher un type de requête
      */
