@@ -28,8 +28,8 @@
 
             <dt class="col-sm-4">Statut :</dt>
             <dd class="col-sm-8">
-              <span [class]="getStatusClass(requete.etat_actuel?.libelle || '')">
-                {{ requete.etat_actuel?.libelle | requestStatus }}
+              <span [class]="getStatusClass(requete.historiques[requete.historiques.length - 1].etat?.libelle || '')">
+                {{ requete.historiques[requete.historiques.length - 1].etat?.libelle | requestStatus }}
               </span>
             </dd>
 

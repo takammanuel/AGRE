@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
 import { DashboardConfigService, DashboardConfig } from '../../../../services/dashboard-config.service';
 import { SearchRequeteComponent } from '../../../../components/search-requete/search-requete.component';
@@ -10,7 +10,7 @@ import { NotificationService } from '../../../../services/notification.service';
 @Component({
   selector: 'app-header-dashboard',
   standalone: true,
-  imports: [CommonModule, SearchRequeteComponent],
+  imports: [CommonModule, SearchRequeteComponent, RouterLink],
   templateUrl: './header-dashboard.html',
   styleUrls: ['./header-dashboard.scss']
 })

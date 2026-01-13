@@ -61,8 +61,8 @@
           <div class="notifications-list">
             <!-- Notifications dynamiques -->
             <ng-container *ngIf="notifications.length > 0; else noNotifications">
-              <a 
-                *ngFor="let notif of notifications" 
+              <a
+                *ngFor="let notif of notifications"
                 class="notification-item"
                 [class.unread]="!notif.is_read"
                 (click)="markAsRead(notif)"

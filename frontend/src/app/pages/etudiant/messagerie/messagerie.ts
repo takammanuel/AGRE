@@ -44,7 +44,9 @@ export class MessagerieComponent implements OnInit {
 
   chargerListe(): void {
     this.requeteService.getRequetesByEtudiant(this.monId!).subscribe({
-      next: (res: any) => this.requetes = res.data || []
+      next: (res: any) => {
+        this.requetes = res.data || []
+      }
     });
   }
 

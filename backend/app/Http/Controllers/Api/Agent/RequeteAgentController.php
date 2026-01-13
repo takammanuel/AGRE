@@ -135,7 +135,7 @@ class RequeteAgentController extends Controller
             ];
         }
 
-        // Temps moyen de traitement (en heures)
+        // Temps moyen de traitement (en heures)++
         $tempsMoyen = DB::table('requetes')
             ->join('historique_requetes as h1', 'requetes.id', '=', 'h1.requete_id')
             ->join('historique_requetes as h2', 'requetes.id', '=', 'h2.requete_id')
