@@ -8,6 +8,7 @@ import { MessagerieComponent } from './pages/etudiant/messagerie/messagerie';
 import { NotificationsListComponent } from './pages/etudiant/notifications-list/notifications-list';
 import { MesRequetesComponent } from './pages/etudiant/mes-requetes/mes-requetes';
 import { HistoriqueComponent } from './pages/etudiant/historique/historique';
+import { ResponsableRechercheComponent } from './pages/responsable/recherche/recherche';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -16,7 +17,7 @@ export const routes: Routes = [
   // ESPACE ETUDIANT
   {
     path: 'etudiant',
-    loadComponent: () => import('./pages/shared/dashboard/dashboard').then(m => m.DashboardComponent),
+    loadComponent: () => import('./pages/etudiant/dashboard-etudiant/dashboard-etudiant').then(m => m.DashboardEtudiant),
     canActivate: [authGuard, roleGuard],
     data: { roles: ['ETUDIANT'] },
     children: [
@@ -85,11 +86,11 @@ export const routes: Routes = [
       },
       {
         path: 'services',
-        loadComponent: () => import('./pages/admin/services/services').then(m => m.Services)
+        loadComponent: () => import('./pages/admin/services/services').then(m => m.ServicesComponent)
       },
       {
         path: 'types-requetes',
-        loadComponent: () => import('./pages/admin/type-requetes/type-requetes').then(m => m.TypeRequetes)
+        loadComponent: () => import('./pages/admin/type-requetes/type-requetes').then(m => m.TypeRequetesComponent)
       },
       {
         path: 'profil',
@@ -107,6 +108,10 @@ export const routes: Routes = [
     data: { roles: ['AGENT_ACADEMIQUE'] },
     children: [
       {
+        path: '',
+        loadComponent: () => import('./pages/agent/dashboard-home/dashboard-home.component').then(m => m.AgentDashboardHomeComponent)
+      },
+      {
         path: 'requetes',
         loadComponent: () => import('./pages/agent/liste-requetes/liste-requetes').then(m => m.ListeRequetesAgentComponent)
       },
@@ -120,7 +125,7 @@ export const routes: Routes = [
       },
       {
         path: 'requete/:id',
-        loadComponent: () => import('./pages/agent/requete-detail/requete-detail').then(m => m.RequeteDetailAgentComponent)
+        loadComponent: () => import('./pages/agent/requete-details/requete-details.component').then(m => m.RequeteDetailsComponent)
       },
       {
         path: 'requete/:id/traiter',
@@ -135,10 +140,10 @@ export const routes: Routes = [
         path: 'urgentes',
         loadComponent: () => import('./pages/agent/requetes-urgentes/requetes-urgentes.component').then(m => m.AgentRequetesUrgentesComponent)
       },
-      {
-        path: 'messagerie',
-        loadComponent: () => import('./pages/agent/messagerie/messagerie.component').then(m => m.AgentMessagerieComponent)
-      },
+      // {
+      //   path: 'messagerie',
+      //   loadComponent: () => import('./pages/agent/messagerie/messagerie.component').then(m => m.AgentMessagerieComponent)
+      // },
       {
         path: 'historique',
         loadComponent: () => import('./pages/agent/historique/historique.component').then(m => m.AgentHistoriqueComponent)
@@ -158,6 +163,10 @@ export const routes: Routes = [
     data: { roles: ['RESPONSABLE_PEDAGOGIQUE'] },
     children: [
       {
+        path: '',
+        loadComponent: () => import('./pages/responsable/dashboard-home/dashboard-home').then(m => m.ResponsableDashboardHomeComponent)
+      },
+      {
         path: 'profil',
         loadComponent: () => import('./pages/shared/profile/profile').then(m => m.ProfileComponent)
       },
@@ -166,32 +175,32 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/responsable/pending-approvals/pending-approvals').then(m => m.PendingApprovalsComponent)
       },
       {
-        path: 'requete/:id',
-        loadComponent: () => import('./pages/responsable/requete-detail/requete-detail').then(m => m.RequeteDetailResponsableComponent)
+        path: 'requetes/:id',
+        loadComponent: () => import('./pages/responsable/requete-details/requete-details').then(m => m.ResponsableRequeteDetailsComponent)
       },
       {
         path: 'recherche',
-        loadComponent: () => import('./responsable/recherche/recherche').then(m => m.ResponsableRechercheComponent)
+        component: ResponsableRechercheComponent
       },
       {
         path: 'approbations',
-        loadComponent: () => import('./responsable/approbations/approbations').then(m => m.ResponsableApprobationsComponent)
+        loadComponent: () => import('./pages/responsable/approbations/approbations').then(m => m.ResponsableApprobationsComponent)
       },
       {
         path: 'escaladees',
-        loadComponent: () => import('./responsable/requetes-escaladees/requetes-escaladees').then(m => m.ResponsableRequetesEscaladeesComponent)
+        loadComponent: () => import('./pages/responsable/requetes-escaladees/requetes-escaladees').then(m => m.ResponsableRequetesEscaladeesComponent)
       },
-      // {
-      //   path: 'requetes',
-      //   loadComponent: () => import('./responsable/requetes/requetes').then(m => m.ResponsableRequetesComponent)
-      // },
+      {
+        path: 'requetes',
+        loadComponent: () => import('./pages/responsable/requetes/requetes').then(m => m.ResponsableRequetesComponent)
+      },
       {
         path: 'historique',
-        loadComponent: () => import('./responsable/historique/historique').then(m => m.ResponsableHistoriqueComponent)
+        loadComponent: () => import('./pages/responsable/historique/historique').then(m => m.ResponsableHistoriqueComponent)
       },
       {
         path: 'statistiques',
-        loadComponent: () => import('./responsable/statistiques/statistiques').then(m => m.ResponsableStatistiquesComponent)
+        loadComponent: () => import('./pages/responsable/statistiques/statistiques').then(m => m.ResponsableStatistiquesComponent)
       },
     ]
   },

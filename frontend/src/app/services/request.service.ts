@@ -13,6 +13,7 @@ export interface TypeRequete {
     id: number;
     nom: string;
   };
+  created_at?: string;
 }
 
 export interface Etat {

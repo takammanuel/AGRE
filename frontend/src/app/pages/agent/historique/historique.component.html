@@ -8,8 +8,8 @@
   <div class="filters-section">
     <div class="search-box">
       <i class="bi bi-search"></i>
-      <input 
-        type="text" 
+      <input
+        type="text"
         [(ngModel)]="searchTerm"
         (ngModelChange)="onSearchChange()"
         placeholder="Rechercher par code, étudiant, description...">
@@ -69,7 +69,7 @@
 
   <!-- Historique List -->
   <div *ngIf="!loading && !error && filteredRequetes.length > 0" class="historique-list">
-    <div class="historique-item" *ngFor="let requete of filteredRequetes" [routerLink]="['/agent/requetes', requete.id]">
+    <div class="historique-item" *ngFor="let requete of filteredRequetes" [routerLink]="['/agent/requete', requete.id]">
       <div class="item-header">
         <div class="item-info">
           <h3 class="requete-code">{{ requete.code_requete }}</h3>
@@ -82,8 +82,8 @@
       </div>
 
       <div class="item-body">
-        <p class="description">{{ requete.description }}</p>
-        
+        <!-- <p class="description">{{ requete.description }}</p> -->
+
         <div class="item-meta">
           <div class="meta-item">
             <i class="bi bi-person"></i>

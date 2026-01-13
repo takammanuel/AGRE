@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ResponsableService } from '../../services/responsable.service';
+import { ResponsableService } from '../../../services/responsable.service';
 
 @Component({
   selector: 'app-responsable-requete-details',
@@ -39,7 +39,7 @@ import { ResponsableService } from '../../services/responsable.service';
 export class ResponsableRequeteDetailsComponent implements OnInit {
   private responsableService = inject(ResponsableService);
   private route = inject(ActivatedRoute);
-  
+
   requete: any = null;
   isLoading = true;
 

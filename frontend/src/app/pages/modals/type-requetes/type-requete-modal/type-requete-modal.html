@@ -1,76 +1,101 @@
-<div class="modal-overlay" *ngIf="showModal" (click)="close()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h3>{{ modalTitle }}</h3>
-      <button type="button" class="close-btn" (click)="close()">×</button>
-    </div>
+<div class="modal fade"
+     [class.show]="showModal"
+     [style.display]="showModal ? 'block' : 'none'"
+     (click)="close()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header" [class]="isEdit ? 'bg-warning text-dark' : 'bg-primary text-white'">
+        <h5 class="modal-title">
+          <i [class]="isEdit ? 'bi bi-pencil-square me-2' : 'bi bi-plus-circle me-2'"></i>
+          {{ modalTitle }}
+        </h5>
+        <button type="button" class="btn-close" [class]="isEdit ? '' : 'btn-close-white'" (click)="close()"></button>
+      </div>
 
-    <form (ngSubmit)="onSubmit()" #form="ngForm">
       <div class="modal-body">
-        <div class="form-group">
-          <label for="nom">Nom *</label>
-          <input
-            type="text"
-            id="nom"
-            name="nom"
-            [(ngModel)]="formData.nom"
-            required
-            class="form-control"
-            [class.is-invalid]="submitted && !formData.nom"
-          >
-          <div *ngIf="submitted && !formData.nom" class="invalid-feedback">
-            Le nom est requis
-          </div>
-        </div>
+        <form (ngSubmit)="onSubmit()" #typeRequeteForm="ngForm">
+          <!-- Libellé -->
+          <div class="mb-3">
+            <label for="nom" class="form-label">
+              Libellé <span class="text-danger">*</span>
+            </label>
+            <input type="text"
+                   class="form-control"
+                   id="nom"
+                   name="nom"
+                   [(ngModel)]="formData.nom"
+                   #nom="ngModel"
+                   required
+                   maxlength="255"
+                   [class.is-invalid]="submitted && nom.invalid">
 
-        <div class="form-group">
-          <label for="description">Description *</label>
-          <textarea
-            id="description"
-            name="description"
-            [(ngModel)]="formData.description"
-            required
-            rows="3"
-            class="form-control"
-            [class.is-invalid]="submitted && !formData.description"
-          ></textarea>
-          <div *ngIf="submitted && !formData.description" class="invalid-feedback">
-            La description est requise
+            <div *ngIf="submitted && nom.invalid" class="invalid-feedback">
+              <span *ngIf="nom.errors?.['required']">
+                Le libellé est obligatoire
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="service_id">Service *</label>
-          <select
-            id="service_id"
-            name="service_id"
-            [(ngModel)]="formData.service_id"
-            required
-            class="form-control"
-            [class.is-invalid]="submitted && !formData.service_id"
-          >
-            <option value="">Sélectionner un service</option>
-            <option *ngFor="let service of services" [value]="service.id">
-              {{ service.nom }}
-            </option>
-          </select>
-          <div *ngIf="submitted && !formData.service_id" class="invalid-feedback">
-            Le service est requis
+          <!-- Description -->
+          <div class="mb-3">
+            <label for="description" class="form-label">
+              Description <span class="text-danger">*</span>
+            </label>
+            <textarea class="form-control"
+                      id="description"
+                      name="description"
+                      [(ngModel)]="formData.description"
+                      #description="ngModel"
+                      rows="4"
+                      required
+                      [class.is-invalid]="submitted && description.invalid"></textarea>
+
+            <div *ngIf="submitted && description.invalid" class="invalid-feedback">
+              <span *ngIf="description.errors?.['required']">
+                La description est obligatoire
+              </span>
+            </div>
           </div>
-          <div *ngIf="loadingServices" class="loading-text">
-            Chargement des services...
+
+          <!-- Service associé -->
+          <div class="mb-3">
+            <label for="service_id" class="form-label">
+              Service associé
+            </label>
+            <select class="form-control"
+                    id="service_id"
+                    name="service_id"
+                    [(ngModel)]="formData.service_id">
+              <option [value]="null">Aucun service</option>
+              <option *ngFor="let service of services" [value]="service.id">
+                {{ service.nom }}
+              </option>
+            </select>
+            <div class="form-text">
+              Sélectionnez un service pour associer ce type de requête
+            </div>
           </div>
-        </div>
+        </form>
       </div>
 
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="close()">
+          <i class="bi bi-x-circle me-1"></i>
           Annuler
         </button>
-        <button type="submit" class="btn btn-primary" [disabled]="loadingServices">
-          {{ isEdit ? 'Modifier' : 'Ajouter' }}
+        <button type="button"
+                class="btn"
+                [class]="isEdit ? 'btn-warning' : 'btn-primary'"
+                (click)="onSubmit()">
+          <i [class]="isEdit ? 'bi bi-check-circle me-1' : 'bi bi-save me-1'"></i>
+          {{ isEdit ? 'Modifier' : 'Enregistrer' }}
         </button>
       </div>
-    </form>
+    </div>
   </div>
 </div>
+
+<div class="modal-backdrop fade"
+     [class.show]="showModal"
+     [style.display]="showModal ? 'block' : 'none'"
+     (click)="close()"></div>

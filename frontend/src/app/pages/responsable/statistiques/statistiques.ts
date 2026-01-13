@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ResponsableService } from '../../services/responsable.service';
+import { ResponsableService } from '../../../services/responsable.service';
 
 @Component({
   selector: 'app-responsable-statistiques',
@@ -9,7 +9,7 @@ import { ResponsableService } from '../../services/responsable.service';
   template: `
     <div class="container py-4">
       <h2><i class="bi bi-graph-up"></i> Statistiques</h2>
-      
+
       <div *ngIf="isLoading" class="text-center py-5">
         <div class="spinner-border" role="status"></div>
       </div>
@@ -58,7 +58,7 @@ import { ResponsableService } from '../../services/responsable.service';
 })
 export class ResponsableStatistiquesComponent implements OnInit {
   private responsableService = inject(ResponsableService);
-  
+
   stats: any = null;
   isLoading = true;
 

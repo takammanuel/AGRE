@@ -1,1 +1,36 @@
-<p>confirm-modal works!</p>
+<div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" (click)="close()">
+  <div class="modal-dialog" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+          {{ config.title }}
+        </h5>
+        <button type="button" class="btn-close" (click)="close()"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-0">{{ config.message }}</p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          <i class="bi bi-x-circle me-1"></i>
+          {{ config.cancelText }}
+        </button>
+        <button type="button"
+                class="btn"
+                [class]="'btn-' + config.confirmColor"
+                (click)="onConfirm()">
+          <i class="bi bi-check-circle me-1"></i>
+          {{ config.confirmText }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop fade"
+     [class.show]="showModal"
+     [style.display]="showModal ? 'block' : 'none'"
+     (click)="close()"></div>

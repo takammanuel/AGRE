@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../../services/auth.service';
 
 const API_URL = 'http://localhost:8000/api';
 
@@ -66,8 +66,8 @@ const API_URL = 'http://localhost:8000/api';
           <div class="danger-zone">
             <h5><i class="bi bi-exclamation-triangle"></i> Zone Dangereuse</h5>
             <p class="text-muted">Actions irréversibles</p>
-            <button 
-              class="btn btn-danger w-100" 
+            <button
+              class="btn btn-danger w-100"
               (click)="confirmDelete()"
               [disabled]="isDeleting"
             >
@@ -93,9 +93,9 @@ const API_URL = 'http://localhost:8000/api';
                 <div class="row">
                   <div class="col-md-6 mb-3">
                     <label class="form-label">Nom *</label>
-                    <input 
-                      type="text" 
-                      class="form-control" 
+                    <input
+                      type="text"
+                      class="form-control"
                       [(ngModel)]="profileData.nom"
                       name="nom"
                       required
@@ -103,9 +103,9 @@ const API_URL = 'http://localhost:8000/api';
                   </div>
                   <div class="col-md-6 mb-3">
                     <label class="form-label">Prénom *</label>
-                    <input 
-                      type="text" 
-                      class="form-control" 
+                    <input
+                      type="text"
+                      class="form-control"
                       [(ngModel)]="profileData.prenom"
                       name="prenom"
                       required
@@ -115,17 +115,17 @@ const API_URL = 'http://localhost:8000/api';
 
                 <div class="mb-3">
                   <label class="form-label">Email *</label>
-                  <input 
-                    type="email" 
-                    class="form-control" 
+                  <input
+                    type="email"
+                    class="form-control"
                     [(ngModel)]="profileData.email"
                     name="email"
                     required
                   />
                 </div>
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   class="btn btn-primary"
                   [disabled]="isUpdating || !profileForm.valid"
                 >
@@ -149,9 +149,9 @@ const API_URL = 'http://localhost:8000/api';
               <form (ngSubmit)="changePassword()" #passwordForm="ngForm">
                 <div class="mb-3">
                   <label class="form-label">Mot de passe actuel *</label>
-                  <input 
-                    type="password" 
-                    class="form-control" 
+                  <input
+                    type="password"
+                    class="form-control"
                     [(ngModel)]="passwordData.current_password"
                     name="current_password"
                     required
@@ -160,9 +160,9 @@ const API_URL = 'http://localhost:8000/api';
 
                 <div class="mb-3">
                   <label class="form-label">Nouveau mot de passe *</label>
-                  <input 
-                    type="password" 
-                    class="form-control" 
+                  <input
+                    type="password"
+                    class="form-control"
                     [(ngModel)]="passwordData.new_password"
                     name="new_password"
                     required
@@ -173,17 +173,17 @@ const API_URL = 'http://localhost:8000/api';
 
                 <div class="mb-3">
                   <label class="form-label">Confirmer le nouveau mot de passe *</label>
-                  <input 
-                    type="password" 
-                    class="form-control" 
+                  <input
+                    type="password"
+                    class="form-control"
                     [(ngModel)]="passwordData.new_password_confirmation"
                     name="new_password_confirmation"
                     required
                   />
                 </div>
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   class="btn btn-warning"
                   [disabled]="isChangingPassword || !passwordForm.valid"
                 >
@@ -357,7 +357,7 @@ export class ResponsableProfilComponent implements OnInit {
   private authService = inject(AuthService);
   private http = inject(HttpClient);
   private router = inject(Router);
-  
+
   user: any = null;
   isLoading = false;
   isUpdating = false;

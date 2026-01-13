@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { ResponsableService } from '../../../services/responsable.service';
 
 const API_URL = 'http://localhost:8000/api';
 
@@ -14,6 +15,7 @@ const API_URL = 'http://localhost:8000/api';
 })
 export class ResponsableDashboardHomeComponent implements OnInit {
   private http = inject(HttpClient);
+  private responsableService = inject(ResponsableService);
 
   stats: any = {
     total: 0,
@@ -21,7 +23,7 @@ export class ResponsableDashboardHomeComponent implements OnInit {
     en_cours: 0,
     traitees: 0
   };
-  
+
   isLoading = true;
 
   ngOnInit(): void {
@@ -29,7 +31,7 @@ export class ResponsableDashboardHomeComponent implements OnInit {
   }
 
   loadDashboard(): void {
-    this.http.get<any>(`${API_URL}/responsable/dashboard`).subscribe({
+    this.responsableService.getDashboard().subscribe({
       next: (response) => {
         if (response.success) {
           this.stats = response.data;

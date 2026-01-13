@@ -38,6 +38,9 @@
 
             <dt class="col-sm-4">Description :</dt>
             <dd class="col-sm-8">{{ requete.description }}</dd>
+
+            <dt class="col-sm-4">Agent assigné :</dt>
+            <dd class="col-sm-8">{{ requete.agent.nom }} {{ requete.agent.prenom }}</dd>
           </dl>
         </div>
       </div>
@@ -49,19 +52,26 @@
         </div>
         <div class="card-body">
           <div class="timeline">
-            <div *ngFor="let hist of historique" class="timeline-item">
-              <div class="timeline-marker"></div>
-              <div class="timeline-content">
-                <h6>{{ hist.etat?.libelle | requestStatus }}</h6>
-                <p class="text-muted small">
-                  {{ hist.date_etat | date:'dd/MM/yyyy à HH:mm' }}
-                  <span *ngIf="hist.utilisateur">
-                    par {{ hist.utilisateur.nom }} {{ hist.utilisateur.prenom }}
-                  </span>
-                </p>
-                <p *ngIf="hist.duree" class="text-muted small">Durée : {{ hist.duree }}</p>
-              </div>
+            <div class="timeline">
+        <div *ngFor="let historique of requete.historiques" class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              @if(historique.etat?.libelle) {
+                <span [class]="'status-badge ' + getStatusClass(historique.etat?.libelle || '')">
+                {{ getStatusLabel(historique.etat?.libelle || '') }}
+              </span>
+              }
+              <span class="timeline-date">
+                {{ historique.date_etat | date: 'dd/MM/yyyy HH:mm' }}
+              </span>
             </div>
+            <!-- <p *ngIf="historique.commentaire" class="timeline-comment">
+              {{ historique.commentaire }}
+            </p> -->
+          </div>
+        </div>
+      </div>
           </div>
         </div>
       </div>

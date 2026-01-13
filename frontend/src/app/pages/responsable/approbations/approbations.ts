@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ResponsableService } from '../../services/responsable.service';
+import { ResponsableService } from '../../../services/responsable.service';
 
 @Component({
   selector: 'app-responsable-approbations',
@@ -11,7 +11,7 @@ import { ResponsableService } from '../../services/responsable.service';
     <div class="container py-4">
       <h2><i class="bi bi-check-circle"></i> Approbations</h2>
       <p class="text-muted">Gérez les approbations de requêtes</p>
-      
+
       <div *ngIf="isLoading" class="text-center py-5">
         <div class="spinner-border" role="status"></div>
       </div>
@@ -58,7 +58,7 @@ import { ResponsableService } from '../../services/responsable.service';
 })
 export class ResponsableApprobationsComponent implements OnInit {
   private responsableService = inject(ResponsableService);
-  
+
   requetes: any[] = [];
   isLoading = true;
 

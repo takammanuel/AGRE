@@ -221,7 +221,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/utilisateurs/{id}/reset-password', [UtilisateurController::class, 'resetPassword']);
 
         Route::apiResource('services', ServiceController::class)->except(['create', 'edit']);
-        Route::apiResource('type-requetes', TypeRequeteController::class)->except(['create', 'edit']);
+        Route::apiResource('types-requetes', TypeRequeteController::class)->except(['create', 'edit']);
 
         Route::prefix('roles-permissions')->group(function () {
             Route::get('/roles', [RolePermissionController::class, 'roles']);

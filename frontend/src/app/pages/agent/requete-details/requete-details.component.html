@@ -46,10 +46,6 @@
       </div>
 
       <div class="card-body">
-        <div class="info-section">
-          <h3>Description</h3>
-          <p>{{ requete.description }}</p>
-        </div>
 
         <div class="info-grid">
           <div class="info-item">
@@ -79,10 +75,15 @@
           <div class="info-item">
             <i class="bi bi-calendar"></i>
             <div>
-              <label>Date de création</label>
+              <label>Date de soumission</label>
               <p>{{ requete.created_at | date: 'dd/MM/yyyy à HH:mm' }}</p>
             </div>
           </div>
+        </div>
+
+        <div class="info-section">
+          <h3>Description</h3>
+          <p>{{ requete.description }}</p>
         </div>
 
         <!-- Pièces jointes -->
@@ -102,35 +103,35 @@
 
       <!-- Actions -->
       <div class="card-actions">
-        <button 
-          *ngIf="canPrendreEnCharge()" 
-          class="btn btn-primary" 
+        <button
+          *ngIf="canPrendreEnCharge()"
+          class="btn btn-primary"
           (click)="prendreEnCharge()"
           [disabled]="processing">
           <i class="bi bi-hand-thumbs-up"></i>
           Prendre en charge
         </button>
 
-        <button 
-          *ngIf="canTraiter()" 
-          class="btn btn-success" 
+        <button
+          *ngIf="canTraiter()"
+          class="btn btn-success"
           (click)="openTraiterModal()"
           [disabled]="processing">
           <i class="bi bi-check-circle"></i>
           Traiter
         </button>
 
-        <button 
-          *ngIf="canRejeter()" 
-          class="btn btn-danger" 
+        <button
+          *ngIf="canRejeter()"
+          class="btn btn-danger"
           (click)="openRejeterModal()"
           [disabled]="processing">
           <i class="bi bi-x-circle"></i>
           Rejeter
         </button>
 
-        <button 
-          class="btn btn-outline" 
+        <button
+          class="btn btn-outline"
           (click)="openCommentaireModal()"
           [disabled]="processing">
           <i class="bi bi-chat-left-text"></i>
@@ -170,8 +171,8 @@
         <form (ngSubmit)="traiter()">
           <div class="form-group">
             <label>Commentaire (optionnel)</label>
-            <textarea 
-              [(ngModel)]="traiterForm.commentaire" 
+            <textarea
+              [(ngModel)]="traiterForm.commentaire"
               name="commentaire"
               rows="4"
               placeholder="Ajoutez un commentaire sur le traitement..."></textarea>
@@ -179,8 +180,8 @@
 
           <div class="form-group">
             <label>Pièces jointes (optionnel)</label>
-            <input 
-              type="file" 
+            <input
+              type="file"
               (change)="onFileSelect($event)"
               multiple
               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
@@ -214,8 +215,8 @@
         <form (ngSubmit)="rejeter()">
           <div class="form-group">
             <label>Motif du rejet *</label>
-            <textarea 
-              [(ngModel)]="rejeterForm.motif" 
+            <textarea
+              [(ngModel)]="rejeterForm.motif"
               name="motif"
               rows="4"
               placeholder="Expliquez pourquoi cette requête est rejetée..."
@@ -249,8 +250,8 @@
         <form (ngSubmit)="ajouterCommentaire()">
           <div class="form-group">
             <label>Commentaire *</label>
-            <textarea 
-              [(ngModel)]="commentaireForm.commentaire" 
+            <textarea
+              [(ngModel)]="commentaireForm.commentaire"
               name="commentaire"
               rows="4"
               placeholder="Votre commentaire..."

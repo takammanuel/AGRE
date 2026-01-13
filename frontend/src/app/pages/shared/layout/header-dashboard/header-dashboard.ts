@@ -89,7 +89,7 @@ export class HeaderDashboardComponent implements OnInit {
         this.router.navigate(['/responsable/requetes-en-attente']);
         break;
       case 'ADMINISTRATEUR':
-        this.router.navigate(['/admin/utilisateurs/creer']);
+        this.router.navigate(['/admin/utilisateurs']);
         break;
     }
   }

@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { SearchBar } from '../../pages/shared/search-bar/search-bar';
+import { SearchBar } from '../../shared/search-bar/search-bar';
 
 @Component({
   selector: 'app-responsable-recherche',
@@ -19,7 +19,7 @@ export class ResponsableRechercheComponent {
   onSearchResults(results: any): void {
     this.hasSearched = true;
     this.errorMessage = '';
-    
+
     if (results === null) {
       this.requetes = [];
       this.hasSearched = false;
