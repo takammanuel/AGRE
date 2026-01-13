@@ -26,7 +26,8 @@ class Utilisateur extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'two_factor_code',
         'two_factor_expires_at',
-        'is_active'
+        'is_active',
+        'last_login_at'
     ];
 
     protected $hidden = [
@@ -42,6 +43,7 @@ class Utilisateur extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'two_factor_expires_at' => 'datetime',
             'is_active' => 'boolean',
+            'last_login_at' => 'datetime',
         ];
     }
 

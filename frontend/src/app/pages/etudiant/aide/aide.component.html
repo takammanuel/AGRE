@@ -1,0 +1,84 @@
+<div class="aide-container">
+  <div class="page-header">
+    <h1><i class="bi bi-question-circle"></i> Centre d'Aide</h1>
+    <p class="subtitle">Trouvez des réponses à vos questions</p>
+  </div>
+
+  <!-- Actions rapides -->
+  <div class="quick-help">
+    <div class="help-card" [routerLink]="['/etudiant/nouvelle-requete']">
+      <i class="bi bi-plus-circle"></i>
+      <h3>Créer une requête</h3>
+      <p>Soumettre une nouvelle demande</p>
+    </div>
+
+    <div class="help-card" [routerLink]="['/etudiant/requetes']">
+      <i class="bi bi-list-check"></i>
+      <h3>Mes requêtes</h3>
+      <p>Suivre l'état de mes demandes</p>
+    </div>
+
+    <div class="help-card" [routerLink]="['/etudiant/profil']">
+      <i class="bi bi-person-gear"></i>
+      <h3>Mon profil</h3>
+      <p>Gérer mes informations</p>
+    </div>
+
+    <div class="help-card">
+      <i class="bi bi-envelope"></i>
+      <h3>Contact</h3>
+      <p>support@agre.cm</p>
+    </div>
+  </div>
+
+  <!-- Catégories -->
+  <div class="categories-section">
+    <h2>Questions fréquentes</h2>
+    <div class="categories">
+      <button 
+        *ngFor="let category of categories"
+        (click)="selectCategory(category.id)"
+        [class.active]="selectedCategory === category.id"
+        class="category-btn">
+        <i [class]="'bi ' + category.icon"></i>
+        {{ category.label }}
+      </button>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <div *ngFor="let faq of filteredFaqs" class="faq-item" [class.expanded]="faq.expanded">
+      <div class="faq-question" (click)="toggleFaq(faq)">
+        <h3>{{ faq.question }}</h3>
+        <i class="bi" [class.bi-chevron-down]="!faq.expanded" [class.bi-chevron-up]="faq.expanded"></i>
+      </div>
+      <div class="faq-answer" *ngIf="faq.expanded">
+        <p>{{ faq.answer }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact support -->
+  <div class="support-section">
+    <div class="support-card">
+      <i class="bi bi-headset"></i>
+      <h2>Besoin d'aide supplémentaire ?</h2>
+      <p>Notre équipe de support est là pour vous aider</p>
+      <div class="support-info">
+        <div class="info-item">
+          <i class="bi bi-envelope"></i>
+          <span>support@agre.cm</span>
+        </div>
+        <div class="info-item">
+          <i class="bi bi-telephone"></i>
+          <span>+237 6XX XXX XXX</span>
+        </div>
+        <div class="info-item">
+          <i class="bi bi-clock"></i>
+          <span>Lun - Ven: 8h - 17h</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

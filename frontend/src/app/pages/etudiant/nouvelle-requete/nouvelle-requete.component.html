@@ -1,0 +1,102 @@
+<div class="nouvelle-requete-container">
+  <div class="page-header">
+    <h1><i class="bi bi-plus-circle"></i> Nouvelle Requête</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <div *ngIf="!loading" class="form-container">
+    <form (ngSubmit)="onSubmit()">
+      <!-- Type de requête -->
+      <div class="form-group">
+        <label for="type_requete">Type de requête <span class="required">*</span></label>
+        <select 
+          id="type_requete" 
+          [(ngModel)]="formData.type_requete_id" 
+          name="type_requete_id"
+          class="form-control"
+          required>
+          <option [value]="0">Sélectionnez un type</option>
+          <option *ngFor="let type of typesRequetes" [ngValue]="type.id">
+            {{ type.nom }} - {{ type.service?.nom }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Priorité -->
+      <div class="form-group">
+        <label for="priorite">Priorité <span class="required">*</span></label>
+        <select 
+          id="priorite" 
+          [(ngModel)]="formData.priorite" 
+          name="priorite"
+          class="form-control">
+          <option value="STANDARD">Standard</option>
+          <option value="URGENTE">Urgente</option>
+        </select>
+        <small class="form-text">Sélectionnez "Urgente" uniquement si nécessaire</small>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="description">Description <span class="required">*</span></label>
+        <textarea 
+          id="description" 
+          [(ngModel)]="formData.description" 
+          name="description"
+          class="form-control"
+          rows="6"
+          placeholder="Décrivez votre demande en détail..."
+          required></textarea>
+        <small class="form-text">{{ formData.description.length }}/2000 caractères</small>
+      </div>
+
+      <!-- Pièces jointes -->
+      <div class="form-group">
+        <label for="pieces_jointes">Pièces jointes</label>
+        <input 
+          type="file" 
+          id="pieces_jointes" 
+          (change)="onFileSelect($event)"
+          class="form-control"
+          multiple
+          accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+        <small class="form-text">Formats acceptés: PDF, DOC, DOCX, JPG, PNG (Max 10 Mo par fichier)</small>
+        
+        <div *ngIf="selectedFiles.length > 0" class="files-list">
+          <div *ngFor="let file of selectedFiles; let i = index" class="file-item">
+            <i class="bi bi-file-earmark"></i>
+            <span>{{ file.name }}</span>
+            <button type="button" (click)="removeFile(i)" class="btn-remove">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message d'erreur -->
+      <div *ngIf="error" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i>
+        {{ error }}
+      </div>
+
+      <!-- Boutons -->
+      <div class="form-actions">
+        <button type="button" (click)="cancel()" class="btn btn-secondary" [disabled]="submitting">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="submitting">
+          <span *ngIf="!submitting">
+            <i class="bi bi-check-circle"></i> Soumettre la requête
+          </span>
+          <span *ngIf="submitting">
+            <span class="spinner-small"></span> Envoi en cours...
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -7,7 +7,13 @@
   <!-- Header Sidebar -->
   <div class="sidebar-header">
     <div class="logo-container">
-      <span class="app-name" *ngIf="!isSidebarCollapsed">AGRE</span>
+      <div class="app-name-wrapper" *ngIf="!isSidebarCollapsed">
+        <span class="app-name">AGRE</span>
+        <span class="app-subtitle">Gestion des Requêtes</span>
+      </div>
+      <div class="app-icon" *ngIf="isSidebarCollapsed">
+        <i class="bi bi-file-earmark-text"></i>
+      </div>
     </div>
     <button class="btn-toggle" (click)="toggleSidebar()">
       <i class="bi" [class.bi-chevron-left]="!isSidebarCollapsed" [class.bi-chevron-right]="isSidebarCollapsed"></i>
@@ -35,7 +41,9 @@
         >
           <i class="menu-icon bi {{ item.icon }}"></i>
           <span class="menu-label" *ngIf="!isSidebarCollapsed">{{ item.label }}</span>
-          <span class="badge-count" *ngIf="item.badge && !isSidebarCollapsed">{{ item.badge }}</span>
+          <span class="badge-count" *ngIf="getBadgeForRoute(item.route) && !isSidebarCollapsed">
+            {{ getBadgeForRoute(item.route) }}
+          </span>
         </a>
       </li>
     </ul>

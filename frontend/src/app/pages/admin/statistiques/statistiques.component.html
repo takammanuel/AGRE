@@ -1,0 +1,170 @@
+<div class="statistiques-container">
+  <div class="page-header">
+    <h1><i class="bi bi-graph-up"></i> Statistiques Détaillées</h1>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement des statistiques...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-state">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button (click)="loadStatistiques()" class="btn btn-primary">Réessayer</button>
+  </div>
+
+  <!-- Statistiques -->
+  <div *ngIf="stats && !loading" class="stats-content">
+    <!-- Vue d'ensemble -->
+    <div class="stats-section">
+      <h2>Vue d'ensemble</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <i class="bi bi-file-earmark-text"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ stats.requetes.total }}</h3>
+            <p>Total requêtes</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ getTauxTraitement() }}%</h3>
+            <p>Taux de traitement</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+            <i class="bi bi-clock"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ getDelaiMoyen() }}</h3>
+            <p>Délai moyen</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <i class="bi bi-x-circle"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{ getTauxRejet() }}%</h3>
+            <p>Taux de rejet</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Répartition des requêtes -->
+    <div class="stats-section">
+      <h2>Répartition par statut</h2>
+      <div class="chart-container">
+        <div class="progress-stats">
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="label">En attente</span>
+              <span class="value">{{ stats.requetes.en_attente }} ({{ (stats.requetes.en_attente / stats.requetes.total * 100).toFixed(1) }}%)</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill warning" [style.width.%]="(stats.requetes.en_attente / stats.requetes.total * 100)"></div>
+            </div>
+          </div>
+
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="label">En cours</span>
+              <span class="value">{{ stats.requetes.en_cours }} ({{ (stats.requetes.en_cours / stats.requetes.total * 100).toFixed(1) }}%)</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill info" [style.width.%]="(stats.requetes.en_cours / stats.requetes.total * 100)"></div>
+            </div>
+          </div>
+
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="label">Traitées</span>
+              <span class="value">{{ stats.requetes.traitees }} ({{ (stats.requetes.traitees / stats.requetes.total * 100).toFixed(1) }}%)</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill success" [style.width.%]="(stats.requetes.traitees / stats.requetes.total * 100)"></div>
+            </div>
+          </div>
+
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="label">Rejetées</span>
+              <span class="value">{{ stats.requetes.rejetees }} ({{ (stats.requetes.rejetees / stats.requetes.total * 100).toFixed(1) }}%)</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill danger" [style.width.%]="(stats.requetes.rejetees / stats.requetes.total * 100)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Répartition par service -->
+    <div class="stats-section" *ngIf="stats.requetes_par_service">
+      <h2>Répartition par service</h2>
+      <div class="services-stats">
+        <div *ngFor="let service of stats.requetes_par_service" class="service-item">
+          <div class="service-header">
+            <span class="service-name">{{ service.nom }}</span>
+            <span class="service-count">{{ service.total }} requêtes</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill primary" 
+                 [style.width.%]="(service.total / stats.requetes.total * 100)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistiques utilisateurs -->
+    <div class="stats-section">
+      <h2>Utilisateurs</h2>
+      <div class="users-stats">
+        <div class="user-stat-card">
+          <i class="bi bi-mortarboard"></i>
+          <div>
+            <h3>{{ stats.utilisateurs.etudiants }}</h3>
+            <p>Étudiants</p>
+          </div>
+        </div>
+
+        <div class="user-stat-card">
+          <i class="bi bi-person-badge"></i>
+          <div>
+            <h3>{{ stats.utilisateurs.agents }}</h3>
+            <p>Agents</p>
+          </div>
+        </div>
+
+        <div class="user-stat-card">
+          <i class="bi bi-person-check"></i>
+          <div>
+            <h3>{{ stats.utilisateurs.responsables }}</h3>
+            <p>Responsables</p>
+          </div>
+        </div>
+
+        <div class="user-stat-card">
+          <i class="bi bi-check-circle"></i>
+          <div>
+            <h3>{{ stats.utilisateurs.actifs }}</h3>
+            <p>Actifs</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

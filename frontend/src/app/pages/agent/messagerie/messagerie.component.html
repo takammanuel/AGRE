@@ -1,0 +1,163 @@
+<div class="messagerie-page">
+  <div class="messagerie-container">
+    <!-- Sidebar - Liste des conversations -->
+    <div class="conversations-sidebar">
+      <div class="sidebar-header">
+        <h2>Messagerie</h2>
+        <button class="btn-new-message" (click)="startNewConversation()" title="Nouveau message">
+          <i class="bi bi-pencil-square"></i>
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loading" class="loading-sidebar">
+        <div class="spinner-small"></div>
+        <p>Chargement...</p>
+      </div>
+
+      <!-- Error -->
+      <div *ngIf="error && !loading" class="error-sidebar">
+        <i class="bi bi-exclamation-triangle"></i>
+        <p>{{ error }}</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading && !error && conversations.length === 0" class="empty-sidebar">
+        <i class="bi bi-inbox"></i>
+        <p>Aucune conversation</p>
+        <button class="btn btn-primary" (click)="startNewConversation()">
+          Nouveau message
+        </button>
+      </div>
+
+      <!-- Liste des conversations -->
+      <div class="conversations-list" *ngIf="!loading && !error && conversations.length > 0">
+        <div 
+          *ngFor="let conv of conversations"
+          class="conversation-item"
+          [class.active]="selectedUserId === conv.user_id"
+          [class.unread]="conv.unread_count > 0"
+          (click)="selectConversation(conv.user_id)">
+          
+          <div class="conv-avatar">
+            <i class="bi bi-person-circle"></i>
+          </div>
+          
+          <div class="conv-info">
+            <div class="conv-header">
+              <h4>{{ conv.user_prenom }} {{ conv.user_nom }}</h4>
+              <span class="conv-date">{{ formatDate(conv.last_message_date) }}</span>
+            </div>
+            <div class="conv-preview">
+              <p [class.unread-text]="conv.unread_count > 0">{{ conv.last_message }}</p>
+              <span *ngIf="conv.unread_count > 0" class="unread-badge">{{ conv.unread_count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zone de conversation -->
+    <div class="conversation-area">
+      <!-- Aucune conversation sélectionnée -->
+      <div *ngIf="!selectedConversation" class="no-conversation">
+        <i class="bi bi-chat-dots"></i>
+        <h3>Sélectionnez une conversation</h3>
+        <p>Choisissez une conversation dans la liste ou démarrez-en une nouvelle</p>
+        <button class="btn btn-primary" (click)="startNewConversation()">
+          <i class="bi bi-plus-circle"></i>
+          Nouveau message
+        </button>
+      </div>
+
+      <!-- Conversation sélectionnée -->
+      <div *ngIf="selectedConversation" class="conversation-content">
+        <!-- Header de la conversation -->
+        <div class="conversation-header">
+          <div class="user-info">
+            <div class="user-avatar">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div>
+              <h3>{{ selectedConversation.user.prenom }} {{ selectedConversation.user.nom }}</h3>
+              <p>{{ selectedConversation.user.email }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="messages-container" #messagesContainer>
+          <div *ngIf="loadingMessages" class="loading-messages">
+            <div class="spinner-small"></div>
+          </div>
+
+          <div *ngIf="!loadingMessages && selectedConversation.messages.length === 0" class="no-messages">
+            <i class="bi bi-chat-left-text"></i>
+            <p>Aucun message. Commencez la conversation!</p>
+          </div>
+
+          <div *ngIf="!loadingMessages" class="messages-list">
+            <div 
+              *ngFor="let message of selectedConversation.messages"
+              class="message"
+              [class.message-sent]="isMyMessage(message)"
+              [class.message-received]="!isMyMessage(message)">
+              
+              <div class="message-bubble">
+                <p>{{ message.contenu }}</p>
+                <span class="message-time">{{ formatDate(message.created_at) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zone d'envoi -->
+        <div class="message-input-area">
+          <textarea
+            [(ngModel)]="newMessage"
+            placeholder="Écrivez votre message..."
+            rows="3"
+            (keydown.enter)="onEnterPress($any($event))"
+            [disabled]="sending"></textarea>
+          
+          <button 
+            class="btn-send"
+            (click)="sendMessage()"
+            [disabled]="!newMessage.trim() || sending">
+            <i class="bi bi-send-fill"></i>
+            {{ sending ? 'Envoi...' : 'Envoyer' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal - Nouveau message -->
+  <div class="modal-overlay" *ngIf="showNewMessageModal" (click)="closeNewMessageModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Nouveau message</h3>
+        <button class="btn-close" (click)="closeNewMessageModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <p>Sélectionnez un étudiant pour démarrer une conversation:</p>
+        
+        <div class="etudiants-list">
+          <div 
+            *ngFor="let etudiant of etudiants"
+            class="etudiant-item"
+            (click)="selectEtudiantForNewMessage(etudiant.id)">
+            <i class="bi bi-person-circle"></i>
+            <div>
+              <h4>{{ etudiant.prenom }} {{ etudiant.nom }}</h4>
+              <p>{{ etudiant.email }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

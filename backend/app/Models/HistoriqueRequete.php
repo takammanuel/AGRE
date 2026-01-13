@@ -14,6 +14,7 @@ class HistoriqueRequete extends Model
         'etat_id',
         'requete_id',
         'utilisateur_id', //  ajouté ici
+        'commentaire',
     ];
 
     /**

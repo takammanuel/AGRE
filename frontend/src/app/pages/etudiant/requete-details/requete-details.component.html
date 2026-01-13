@@ -1,0 +1,101 @@
+<div class="requete-details-container">
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement des détails...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-state">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button (click)="goBack()" class="btn btn-primary">Retour</button>
+  </div>
+
+  <!-- Détails de la requête -->
+  <div *ngIf="requete && !loading" class="details-content">
+    <!-- Header -->
+    <div class="details-header">
+      <button (click)="goBack()" class="btn-back">
+        <i class="bi bi-arrow-left"></i> Retour
+      </button>
+      <div class="header-info">
+        <h1>{{ requete.code_requete }}</h1>
+        <div class="badges">
+          <span [class]="'status-badge ' + getStatusClass(requete.statut_actuel)">
+            {{ getStatusLabel(requete.statut_actuel) }}
+          </span>
+          <span [class]="getPriorityClass(requete.priorite)">
+            {{ getPriorityLabel(requete.priorite) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Informations principales -->
+    <div class="info-section">
+      <h2><i class="bi bi-info-circle"></i> Informations</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Type de requête:</label>
+          <span>{{ requete.type_requete?.nom }}</span>
+        </div>
+        <div class="info-item">
+          <label>Service:</label>
+          <span>{{ requete.type_requete?.service?.nom }}</span>
+        </div>
+        <div class="info-item">
+          <label>Date de création:</label>
+          <span>{{ requete.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <div class="info-item" *ngIf="requete.agent">
+          <label>Agent assigné:</label>
+          <span>{{ requete.agent.nom }} {{ requete.agent.prenom }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="description-section">
+      <h2><i class="bi bi-file-text"></i> Description</h2>
+      <p>{{ requete.description }}</p>
+    </div>
+
+    <!-- Pièces jointes -->
+    <div class="files-section" *ngIf="requete.pieces_jointes && requete.pieces_jointes.length > 0">
+      <h2><i class="bi bi-paperclip"></i> Pièces jointes</h2>
+      <div class="files-list">
+        <div *ngFor="let file of requete.pieces_jointes" class="file-item">
+          <i class="bi bi-file-earmark"></i>
+          <span>{{ file.nom }}</span>
+          <button (click)="downloadFile(file)" class="btn-download">
+            <i class="bi bi-download"></i> Télécharger
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Historique -->
+    <div class="history-section" *ngIf="requete.historiques && requete.historiques.length > 0">
+      <h2><i class="bi bi-clock-history"></i> Historique</h2>
+      <div class="timeline">
+        <div *ngFor="let historique of requete.historiques" class="timeline-item">
+          <div class="timeline-marker"></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <span [class]="'status-badge ' + getStatusClass(historique.etat?.libelle)">
+                {{ getStatusLabel(historique.etat?.libelle) }}
+              </span>
+              <span class="timeline-date">
+                {{ historique.date_etat | date: 'dd/MM/yyyy HH:mm' }}
+              </span>
+            </div>
+            <p *ngIf="historique.commentaire" class="timeline-comment">
+              {{ historique.commentaire }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

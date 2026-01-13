@@ -1,5 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { AuthService } from './auth.service';
+import { BadgeCounterService } from './badge-counter.service';
+import { Observable, map } from 'rxjs';
 
 export interface DashboardConfig {
   role: string;
@@ -30,6 +32,7 @@ export interface WidgetConfig {
 })
 export class DashboardConfigService {
   private authService = inject(AuthService);
+  private badgeCounterService = inject(BadgeCounterService);
 
   getDashboardConfig(): DashboardConfig {
     const user = this.authService.getCurrentUser();
@@ -45,6 +48,23 @@ export class DashboardConfigService {
     return configs[primaryRole] || this.getDefaultConfig();
   }
 
+  /**
+   * Obtenir les compteurs de badges
+   */
+  getBadgeCounts(): Observable<any> {
+    return this.badgeCounterService.counts$;
+  }
+
+  /**
+   * Rafraîchir les compteurs
+   */
+  refreshBadges(): void {
+    this.badgeCounterService.refreshCounts();
+  }
+
+  /**
+   * Configuration Admin
+   */
   private getAdminConfig(): DashboardConfig {
     return {
       role: 'ADMINISTRATEUR',
@@ -53,9 +73,13 @@ export class DashboardConfigService {
       backgroundColor: 'var(--admin-bg)',
       menuItems: [
         { label: 'Tableau de bord', icon: 'bi-speedometer2', route: '/admin', roles: ['ADMINISTRATEUR'] },
-        { label: 'Utilisateurs', icon: 'bi-people', route: '/admin/utilisateurs', badge: null, roles: ['ADMINISTRATEUR'] },
+        { label: 'Recherche', icon: 'bi-search', route: '/admin/recherche', roles: ['ADMINISTRATEUR'] },
+        { label: 'Approbations', icon: 'bi-check-circle', route: '/admin/approbations', roles: ['ADMINISTRATEUR'] },
+        { label: 'Requêtes escaladées', icon: 'bi-exclamation-triangle', route: '/admin/requetes-escaladees', roles: ['ADMINISTRATEUR'] },
+        { label: 'Utilisateurs', icon: 'bi-people', route: '/admin/utilisateurs', roles: ['ADMINISTRATEUR'] },
         { label: 'Services', icon: 'bi-building', route: '/admin/services', roles: ['ADMINISTRATEUR'] },
         { label: 'Types de requêtes', icon: 'bi-file-earmark-text', route: '/admin/types-requetes', roles: ['ADMINISTRATEUR'] },
+        { label: 'Historique', icon: 'bi-clock-history', route: '/admin/historique', roles: ['ADMINISTRATEUR'] },
         { label: 'Statistiques', icon: 'bi-graph-up', route: '/admin/statistiques', roles: ['ADMINISTRATEUR'] },
         { label: 'Mon profil', icon: 'bi-person', route: '/admin/profil', roles: ['ADMINISTRATEUR'] },
       ],
@@ -98,8 +122,10 @@ export class DashboardConfigService {
       backgroundColor: 'var(--responsable-bg)',
       menuItems: [
         { label: 'Tableau de bord', icon: 'bi-speedometer2', route: '/responsable', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
-        { label: 'Approbations', icon: 'bi-check-circle', route: '/responsable/approbations', badge: null, roles: ['RESPONSABLE_PEDAGOGIQUE'] },
-        { label: 'Requêtes escaladées', icon: 'bi-arrow-up-circle', route: '/responsable/escaladees', badge: null, roles: ['RESPONSABLE_PEDAGOGIQUE'] },
+        { label: 'Recherche', icon: 'bi-search', route: '/responsable/recherche', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
+        { label: 'Approbations', icon: 'bi-check-circle', route: '/responsable/approbations', badge: 5, roles: ['RESPONSABLE_PEDAGOGIQUE'] },
+        { label: 'Requêtes escaladées', icon: 'bi-arrow-up-circle', route: '/responsable/escaladees', badge: 2, roles: ['RESPONSABLE_PEDAGOGIQUE'] },
+        { label: 'Toutes les requêtes', icon: 'bi-list-ul', route: '/responsable/requetes', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
         { label: 'Historique', icon: 'bi-clock-history', route: '/responsable/historique', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
         { label: 'Statistiques', icon: 'bi-graph-up', route: '/responsable/statistiques', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
         { label: 'Mon profil', icon: 'bi-person', route: '/responsable/profil', roles: ['RESPONSABLE_PEDAGOGIQUE'] },

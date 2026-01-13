@@ -16,8 +16,9 @@ export const routes: Routes = [
   // ESPACE ETUDIANT
   {
     path: 'etudiant',
-    component: DashboardEtudiant,
-    canActivate: [authGuard],
+    loadComponent: () => import('./pages/shared/dashboard/dashboard').then(m => m.DashboardComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ETUDIANT'] },
     children: [
       { path: 'notifications', component: NotificationsListComponent },
       { path: 'mes-requetes', component: MesRequetesComponent },
@@ -50,6 +51,38 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['ADMINISTRATEUR'] },
     children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/admin/dashboard-home/dashboard-home.component').then(m => m.AdminDashboardHomeComponent)
+      },
+      {
+        path: 'recherche',
+        loadComponent: () => import('./pages/admin/recherche/recherche').then(m => m.Recherche)
+      },
+      {
+        path: 'approbations',
+        loadComponent: () => import('./pages/admin/approbations/approbations.component').then(m => m.ApprobationsComponent)
+      },
+      {
+        path: 'requetes-escaladees',
+        loadComponent: () => import('./pages/admin/requetes-escaladees/requetes-escaladees.component').then(m => m.RequetesEscaladeesComponent)
+      },
+      {
+        path: 'utilisateurs',
+        loadComponent: () => import('./pages/admin/utilisateurs/utilisateurs.component').then(m => m.UtilisateursComponent)
+      },
+      {
+        path: 'historique',
+        loadComponent: () => import('./pages/admin/historique/historique.component').then(m => m.AdminHistoriqueComponent)
+      },
+      {
+        path: 'statistiques',
+        loadComponent: () => import('./pages/admin/statistiques/statistiques.component').then(m => m.AdminStatistiquesComponent)
+      },
+      {
+        path: 'profil',
+        loadComponent: () => import('./pages/admin/profil/profil.component').then(m => m.AdminProfilComponent)
+      },
       {
         path: 'services',
         loadComponent: () => import('./pages/admin/services/services').then(m => m.Services)
@@ -93,7 +126,27 @@ export const routes: Routes = [
         path: 'requete/:id/traiter',
         loadComponent: () => import('./pages/agent/requete-traiter/requete-traiter').then(m => m.RequeteTraiterComponent)
       },
-      { path: 'messagerie', component: MessagerieComponent },
+      // { path: 'messagerie', component: MessagerieComponent },
+      {
+        path: 'recherche',
+        loadComponent: () => import('./pages/agent/recherche/recherche').then(m => m.Recherche)
+      },
+      {
+        path: 'urgentes',
+        loadComponent: () => import('./pages/agent/requetes-urgentes/requetes-urgentes.component').then(m => m.AgentRequetesUrgentesComponent)
+      },
+      {
+        path: 'messagerie',
+        loadComponent: () => import('./pages/agent/messagerie/messagerie.component').then(m => m.AgentMessagerieComponent)
+      },
+      {
+        path: 'historique',
+        loadComponent: () => import('./pages/agent/historique/historique.component').then(m => m.AgentHistoriqueComponent)
+      },
+      {
+        path: 'statistiques',
+        loadComponent: () => import('./pages/agent/statistiques/statistiques.component').then(m => m.AgentStatistiquesComponent)
+      }
     ]
   },
 
@@ -115,6 +168,30 @@ export const routes: Routes = [
       {
         path: 'requete/:id',
         loadComponent: () => import('./pages/responsable/requete-detail/requete-detail').then(m => m.RequeteDetailResponsableComponent)
+      },
+      {
+        path: 'recherche',
+        loadComponent: () => import('./responsable/recherche/recherche').then(m => m.ResponsableRechercheComponent)
+      },
+      {
+        path: 'approbations',
+        loadComponent: () => import('./responsable/approbations/approbations').then(m => m.ResponsableApprobationsComponent)
+      },
+      {
+        path: 'escaladees',
+        loadComponent: () => import('./responsable/requetes-escaladees/requetes-escaladees').then(m => m.ResponsableRequetesEscaladeesComponent)
+      },
+      // {
+      //   path: 'requetes',
+      //   loadComponent: () => import('./responsable/requetes/requetes').then(m => m.ResponsableRequetesComponent)
+      // },
+      {
+        path: 'historique',
+        loadComponent: () => import('./responsable/historique/historique').then(m => m.ResponsableHistoriqueComponent)
+      },
+      {
+        path: 'statistiques',
+        loadComponent: () => import('./responsable/statistiques/statistiques').then(m => m.ResponsableStatistiquesComponent)
       },
     ]
   },
