@@ -12,11 +12,21 @@ export class MessageService {
   private apiUrl = environment.apiUrl || 'http://localhost:8000/api';
 
   /**
+   * Récupérer toutes les conversations de l'utilisateur connecté
+   */
+  getConversations(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/messages/conversations`).pipe(
+      catchError(err => {
+        console.error('Erreur chargement conversations:', err);
+        return of({ success: false, data: [] });
+      })
+    );
+  }
+
+  /**
    * Récupérer l'historique d'une requête spécifique
-   * ATTENTION : L'URL doit correspondre au prefix 'requetes' de ton api.php
    */
   getMessagesByRequete(requeteId: number): Observable<any> {
-    // Correction de l'URL pour correspondre à : Route::get('/{requete_id}/messages') dans le prefix 'requetes'
     return this.http.get(`${this.apiUrl}/requetes/${requeteId}/messages`).pipe(
       catchError(err => {
         console.error('Erreur chargement historique messages:', err);
@@ -29,11 +39,22 @@ export class MessageService {
    * Envoyer un message
    */
   sendMessage(messageData: any): Observable<any> {
-    // Cette route est dans le prefix 'messages' : Route::post('/', [MessageController::class, 'store'])
     return this.http.post(`${this.apiUrl}/messages`, messageData).pipe(
       catchError(err => {
         console.error('Envoi message échoué:', err);
         throw err;
+      })
+    );
+  }
+
+  /**
+   * Marquer les messages d'une conversation comme lus
+   */
+  markAsRead(requeteId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/messages/${requeteId}/mark-read`, {}).pipe(
+      catchError(err => {
+        console.error('Erreur marquage messages lus:', err);
+        return of({ success: false });
       })
     );
   }

@@ -44,7 +44,9 @@ export class MessagerieComponent implements OnInit {
 
   chargerListe(): void {
     this.requeteService.getRequetesByEtudiant(this.monId!).subscribe({
-      next: (res: any) => this.requetes = res.data || []
+      next: (res: any) => {
+        this.requetes = res.data || []
+      }
     });
   }
 
@@ -63,11 +65,14 @@ export class MessagerieComponent implements OnInit {
   envoyer(): void {
     if (!this.nouveauMessage.trim() || !this.requeteId) return;
 
+    // Déterminer le destinataire : l'agent assigné à la requête ou Charlie (ID 3) par défaut
+    const recepteurId = this.currentRequete?.agent_id || this.currentRequete?.responsable_id || 3;
+
     const payload = {
       contenu: this.nouveauMessage,
       emetteur_id: this.monId,
       requete_id: this.requeteId,
-      recepteur_id: 1 // Agent par défaut
+      recepteur_id: recepteurId
     };
 
     this.messageService.sendMessage(payload).subscribe({

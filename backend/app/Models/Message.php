@@ -13,6 +13,7 @@ class Message extends Model
     protected $table = 'messages';
 
     protected $fillable = [
+        'contenu',
         'emetteur_id',
         'recepteur_id',
         'requete_id',

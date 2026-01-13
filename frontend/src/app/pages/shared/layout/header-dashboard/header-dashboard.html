@@ -59,42 +59,38 @@
           </div>
 
           <div class="notifications-list">
-            <a class="notification-item">
-              <div class="notification-icon bg-success-light">
-                <i class="bi bi-check-circle text-success"></i>
-              </div>
-              <div class="notification-content">
-                <p class="notification-title">Requête approuvée</p>
-                <p class="notification-text">Votre demande #REQ-2024-001 a été traitée</p>
-                <span class="notification-time">Il y a 2 heures</span>
-              </div>
-            </a>
+            <!-- Notifications dynamiques -->
+            <ng-container *ngIf="notifications.length > 0; else noNotifications">
+              <a
+                *ngFor="let notif of notifications"
+                class="notification-item"
+                [class.unread]="!notif.is_read"
+                (click)="markAsRead(notif)"
+              >
+                <div class="notification-icon" [ngClass]="getNotificationBgClass(notif.type)">
+                  <i class="bi" [ngClass]="getNotificationIcon(notif.type)"></i>
+                </div>
+                <div class="notification-content">
+                  <p class="notification-title">{{ notif.titre }}</p>
+                  <p class="notification-text">{{ notif.message }}</p>
+                  <span class="notification-time">{{ formatTimeAgo(notif.created_at) }}</span>
+                </div>
+              </a>
+            </ng-container>
 
-            <a class="notification-item">
-              <div class="notification-icon bg-info-light">
-                <i class="bi bi-info-circle text-info"></i>
+            <!-- Aucune notification -->
+            <ng-template #noNotifications>
+              <div class="text-center py-4 text-muted">
+                <i class="bi bi-bell-slash fs-3 d-block mb-2"></i>
+                <p class="mb-0">Aucune notification</p>
               </div>
-              <div class="notification-content">
-                <p class="notification-title">Nouvelle affectation</p>
-                <p class="notification-text">Une requête vous a été affectée</p>
-                <span class="notification-time">Il y a 5 heures</span>
-              </div>
-            </a>
-
-            <a class="notification-item">
-              <div class="notification-icon bg-warning-light">
-                <i class="bi bi-exclamation-triangle text-warning"></i>
-              </div>
-              <div class="notification-content">
-                <p class="notification-title">Requête urgente</p>
-                <p class="notification-text">Une requête prioritaire nécessite votre attention</p>
-                <span class="notification-time">Il y a 1 jour</span>
-              </div>
-            </a>
+            </ng-template>
           </div>
 
           <div class="dropdown-footer">
-            <a href="#" class="text-primary">Voir toutes les notifications</a>
+            <a (click)="goToNotifications()" class="text-primary" style="cursor: pointer;">
+              Voir toutes les notifications
+            </a>
           </div>
         </div>
       </div>
@@ -134,19 +130,6 @@
         >
           <div class="dropdown-header">
             <div class="d-flex align-items-center">
-              <!-- <ng-container *ngIf="currentUser?.photo_url; else defaultIcon">
-                <img
-                  [src]="currentUser.photo_url"
-                  alt="Photo profil"
-                  class="rounded-circle me-3"
-                  style="width: 50px; height: 50px; object-fit: cover;"
-                >
-              </ng-container> -->
-
-              <!-- Icône par défaut -->
-              <!-- <ng-template #defaultIcon>
-                <i class="bi bi-person-circle fs-4" style="margin-right: 10px;"></i>
-              </ng-template> -->
               <div>
                 <p class="mb-0 fw-bold">{{ currentUser?.prenom }} {{ currentUser?.nom }}</p>
                 <small class="text-muted">{{ currentUser?.email }}</small>
