@@ -93,6 +93,18 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/admin/type-requetes/type-requetes').then(m => m.TypeRequetesComponent)
       },
       {
+        path: 'notifications',
+        loadComponent: () => import('./pages/shared/notifications/notifications').then(m => m.NotificationsComponent)
+      },
+      {
+        path: 'messagerie',
+        loadComponent: () => import('./pages/shared/messagerie/messagerie').then(m => m.MessagerieSharedComponent)
+      },
+      {
+        path: 'messagerie/:id',
+        loadComponent: () => import('./pages/shared/messagerie/messagerie').then(m => m.MessagerieSharedComponent)
+      },
+      {
         path: 'profil',
         loadComponent: () => import('./pages/shared/profile/profile').then(m => m.ProfileComponent)
       },
@@ -114,6 +126,18 @@ export const routes: Routes = [
       {
         path: 'requetes',
         loadComponent: () => import('./pages/agent/liste-requetes/liste-requetes').then(m => m.ListeRequetesAgentComponent)
+      },
+      {
+        path: 'notifications',
+        loadComponent: () => import('./pages/shared/notifications/notifications').then(m => m.NotificationsComponent)
+      },
+      {
+        path: 'messagerie',
+        loadComponent: () => import('./pages/shared/messagerie/messagerie').then(m => m.MessagerieSharedComponent)
+      },
+      {
+        path: 'messagerie/:id',
+        loadComponent: () => import('./pages/shared/messagerie/messagerie').then(m => m.MessagerieSharedComponent)
       },
       {
         path: 'profil',
@@ -165,6 +189,18 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () => import('./pages/responsable/dashboard-home/dashboard-home').then(m => m.ResponsableDashboardHomeComponent)
+      },
+      {
+        path: 'notifications',
+        loadComponent: () => import('./pages/shared/notifications/notifications').then(m => m.NotificationsComponent)
+      },
+      {
+        path: 'messagerie',
+        loadComponent: () => import('./pages/shared/messagerie/messagerie').then(m => m.MessagerieSharedComponent)
+      },
+      {
+        path: 'messagerie/:id',
+        loadComponent: () => import('./pages/shared/messagerie/messagerie').then(m => m.MessagerieSharedComponent)
       },
       {
         path: 'profil',

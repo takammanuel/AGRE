@@ -1,0 +1,162 @@
+<div class="container-fluid py-4">
+  <div class="row g-3" style="height: calc(100vh - 180px);">
+    
+    <!-- Liste des conversations (gauche) -->
+    <div class="col-md-4 col-lg-3">
+      <div class="card shadow-sm h-100">
+        <div class="card-header bg-white border-bottom">
+          <h6 class="mb-0">
+            <i class="bi bi-chat-left-text me-2"></i>Conversations
+          </h6>
+        </div>
+        <div class="card-body p-0" style="overflow-y: auto;">
+          
+          <!-- Loading -->
+          <div *ngIf="loadingConversations" class="text-center py-4">
+            <div class="spinner-border spinner-border-sm text-primary"></div>
+          </div>
+
+          <!-- Aucune conversation -->
+          <div *ngIf="!loadingConversations && conversations.length === 0" class="text-center py-4 text-muted">
+            <i class="bi bi-inbox display-6 d-block mb-2"></i>
+            <small>Aucune conversation</small>
+          </div>
+
+          <!-- Liste -->
+          <div *ngIf="!loadingConversations && conversations.length > 0" class="list-group list-group-flush">
+            <a *ngFor="let conv of conversations" 
+               (click)="selectConversation(conv)"
+               class="list-group-item list-group-item-action py-3 cursor-pointer"
+               [class.active]="isActiveConversation(conv)"
+               [class.bg-light]="isActiveConversation(conv)">
+              <div class="d-flex align-items-start">
+                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                     style="width: 40px; height: 40px; font-size: 14px;">
+                  {{ conv.etudiant?.prenom?.charAt(0) || 'U' }}{{ conv.etudiant?.nom?.charAt(0) || '' }}
+                </div>
+                <div class="flex-grow-1 min-width-0">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <h6 class="mb-0 text-truncate" style="font-size: 14px;">
+                      {{ conv.etudiant?.prenom }} {{ conv.etudiant?.nom }}
+                    </h6>
+                    <small class="text-muted ms-2 flex-shrink-0">
+                      {{ formatTimeAgo(conv.last_message?.created_at) }}
+                    </small>
+                  </div>
+                  <p class="mb-1 text-muted text-truncate" style="font-size: 12px;">
+                    {{ conv.titre || conv.code_requete }}
+                  </p>
+                  <p *ngIf="conv.last_message" class="mb-0 text-truncate" style="font-size: 13px;">
+                    {{ conv.last_message.contenu }}
+                  </p>
+                </div>
+                <span *ngIf="conv.unread_count > 0" 
+                      class="badge bg-danger rounded-pill ms-2 flex-shrink-0">
+                  {{ conv.unread_count }}
+                </span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zone de conversation (droite) -->
+    <div class="col-md-8 col-lg-9">
+      
+      <!-- Pas de conversation sélectionnée -->
+      <div *ngIf="!requeteId" class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column align-items-center justify-content-center text-muted">
+          <i class="bi bi-chat-square-text display-3 mb-3"></i>
+          <h5>Sélectionnez une conversation</h5>
+          <p class="text-center">Choisissez une conversation dans la liste ou cliquez sur "Voir discussion" depuis une requête.</p>
+        </div>
+      </div>
+
+      <!-- Conversation active -->
+      <div *ngIf="requeteId" class="card shadow-sm h-100 d-flex flex-column">
+        
+        <!-- Header conversation -->
+        <div class="card-header bg-white border-bottom">
+          <div class="d-flex align-items-center">
+            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
+                 style="width: 45px; height: 45px;">
+              <i class="bi bi-person"></i>
+            </div>
+            <div class="flex-grow-1">
+              <h6 class="mb-0">{{ requete?.etudiant?.prenom }} {{ requete?.etudiant?.nom }}</h6>
+              <small class="text-muted">{{ requete?.titre || requete?.code_requete }}</small>
+            </div>
+            <span class="badge" 
+                  [ngClass]="{
+                    'bg-warning': requete?.statut === 'OUVERT',
+                    'bg-info': requete?.statut === 'EN_COURS',
+                    'bg-success': requete?.statut === 'TRAITE',
+                    'bg-danger': requete?.statut === 'REJETE'
+                  }">
+              {{ requete?.statut }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="card-body messages-container flex-grow-1" style="overflow-y: auto;">
+          
+          <!-- Loading -->
+          <div *ngIf="loading" class="text-center py-5">
+            <div class="spinner-border text-primary"></div>
+          </div>
+
+          <!-- Aucun message -->
+          <div *ngIf="!loading && messages.length === 0" class="text-center py-5 text-muted">
+            <i class="bi bi-chat-square display-4 d-block mb-2"></i>
+            <p>Aucun message. Commencez la conversation!</p>
+          </div>
+
+          <!-- Liste des messages -->
+          <div *ngIf="!loading && messages.length > 0">
+            <div *ngFor="let msg of messages" 
+                 class="d-flex mb-3"
+                 [class.justify-content-end]="isMyMessage(msg)">
+              <div class="message-bubble p-3 rounded-3"
+                   [class.bg-primary]="isMyMessage(msg)"
+                   [class.text-white]="isMyMessage(msg)"
+                   [class.bg-light]="!isMyMessage(msg)"
+                   style="max-width: 70%;">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <small class="fw-bold" [class.text-white-50]="isMyMessage(msg)" [class.text-muted]="!isMyMessage(msg)">
+                    {{ msg.emetteur?.prenom }} {{ msg.emetteur?.nom }}
+                  </small>
+                  <small class="ms-3" [class.text-white-50]="isMyMessage(msg)" [class.text-muted]="!isMyMessage(msg)">
+                    {{ formatTime(msg.created_at) }}
+                  </small>
+                </div>
+                <p class="mb-0">{{ msg.contenu }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input message -->
+        <div class="card-footer bg-white border-top">
+          <form (ngSubmit)="sendMessage()" class="d-flex gap-2">
+            <input 
+              type="text"
+              class="form-control"
+              placeholder="Tapez votre message..."
+              [(ngModel)]="newMessage"
+              name="newMessage"
+              [disabled]="sending"
+            >
+            <button 
+              type="submit" 
+              class="btn btn-primary px-4"
+              [disabled]="!newMessage.trim() || sending">
+              <i class="bi" [class.bi-send]="!sending" [class.bi-hourglass-split]="sending"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

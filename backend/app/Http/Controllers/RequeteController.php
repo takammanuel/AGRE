@@ -84,7 +84,7 @@ class RequeteController extends Controller
 
     public function show($id)
     {
-        $requete = Requete::with(['typeRequete', 'etudiant', 'messages.emetteur'])->findOrFail($id);
+        $requete = Requete::with(['typeRequete', 'etudiant', 'agent', 'responsable', 'messages.emetteur'])->findOrFail($id);
         return response()->json(['success' => true, 'data' => $requete]);
     }
 }
