@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DashboardAgentService } from '../../../services/dashboard-agent.service';
+import { FileService } from '../../../services/file.service';
 
 @Component({
   selector: 'app-requete-details',
@@ -15,31 +16,32 @@ export class RequeteDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private dashboardService = inject(DashboardAgentService);
-  
+   private fileService = inject(FileService);
+
   requete: any = null;
   loading = true;
   error: string | null = null;
   success: string | null = null;
-  
+
   // Modals
   showTraiterModal = false;
   showRejeterModal = false;
   showCommentaireModal = false;
-  
+
   // Formulaires
   traiterForm = {
     commentaire: '',
     pieces_jointes: [] as File[]
   };
-  
+
   rejeterForm = {
     motif: ''
   };
-  
+
   commentaireForm = {
     commentaire: ''
   };
-  
+
   processing = false;
 
   ngOnInit(): void {
@@ -50,7 +52,7 @@ export class RequeteDetailsComponent implements OnInit {
   loadRequeteDetails(id: number): void {
     this.loading = true;
     this.error = null;
-    
+
     this.dashboardService.getRequeteDetails(id).subscribe({
       next: (response) => {
         this.requete = response.data;
@@ -66,16 +68,16 @@ export class RequeteDetailsComponent implements OnInit {
 
   prendreEnCharge(): void {
     if (!confirm('Voulez-vous prendre en charge cette requête ?')) return;
-    
+
     this.processing = true;
     this.error = null;
-    
+
     this.dashboardService.prendreEnCharge(this.requete.id).subscribe({
       next: (response) => {
         this.success = response.message;
         this.processing = false;
         this.loadRequeteDetails(this.requete.id);
-        
+
         setTimeout(() => this.success = null, 3000);
       },
       error: (err) => {
@@ -103,9 +105,9 @@ export class RequeteDetailsComponent implements OnInit {
   traiter(): void {
     this.processing = true;
     this.error = null;
-    
+
     console.log('Traitement de la requête avec:', this.traiterForm);
-    
+
     this.dashboardService.traiterRequete(this.requete.id, this.traiterForm).subscribe({
       next: (response) => {
         console.log('Réponse du serveur:', response);
@@ -113,7 +115,7 @@ export class RequeteDetailsComponent implements OnInit {
         this.processing = false;
         this.closeTraiterModal();
         this.loadRequeteDetails(this.requete.id);
-        
+
         setTimeout(() => this.success = null, 3000);
       },
       error: (err) => {
@@ -138,17 +140,17 @@ export class RequeteDetailsComponent implements OnInit {
       this.error = 'Le motif est obligatoire';
       return;
     }
-    
+
     this.processing = true;
     this.error = null;
-    
+
     this.dashboardService.rejeterRequete(this.requete.id, this.rejeterForm.motif).subscribe({
       next: (response) => {
         this.success = response.message;
         this.processing = false;
         this.closeRejeterModal();
         this.loadRequeteDetails(this.requete.id);
-        
+
         setTimeout(() => this.success = null, 3000);
       },
       error: (err) => {
@@ -173,17 +175,17 @@ export class RequeteDetailsComponent implements OnInit {
       this.error = 'Le commentaire est obligatoire';
       return;
     }
-    
+
     this.processing = true;
     this.error = null;
-    
+
     this.dashboardService.ajouterCommentaire(this.requete.id, this.commentaireForm.commentaire).subscribe({
       next: (response) => {
         this.success = response.message;
         this.processing = false;
         this.closeCommentaireModal();
         this.loadRequeteDetails(this.requete.id);
-        
+
         setTimeout(() => this.success = null, 3000);
       },
       error: (err) => {
@@ -215,14 +217,25 @@ export class RequeteDetailsComponent implements OnInit {
   }
 
   canPrendreEnCharge(): boolean {
-    return this.requete?.statut_actuel === 'EN_ATTENTE';
+    return this.requete?.statut_actuel === 'EN_ATTENTE' || this.requete?.statut_actuel === 'AFFECTEE';;
   }
 
   canTraiter(): boolean {
-    return this.requete?.statut_actuel === 'EN_COURS' || this.requete?.statut_actuel === 'EN_ATTENTE';
+    return this.requete?.statut_actuel === 'EN_COURS' || this.requete?.statut_actuel === 'EN_ATTENTE' || this.requete?.statut_actuel === 'AFFECTEE';
   }
 
   canRejeter(): boolean {
     return this.requete?.statut_actuel !== 'TRAITEE' && this.requete?.statut_actuel !== 'REJETEE';
+  }
+
+  downloadFile(attachment: any): void {
+    this.fileService.downloadAttachment(attachment.id).subscribe({
+      next: (blob) => {
+        this.fileService.downloadFile(blob, attachment.chemin_fichier);
+      },
+      error: (error) => {
+        console.error('Erreur lors du téléchargement', error);
+      }
+    });
   }
 }

@@ -243,10 +243,11 @@
   }
 
   .btn-download {
-    padding: 0.5rem;
     color: var(--primary-color);
     text-decoration: none;
     transition: color 0.2s;
+    border: none;
+    background: none;
 
     &:hover {
       color: var(--primary-dark);

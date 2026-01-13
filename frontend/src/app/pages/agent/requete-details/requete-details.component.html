@@ -93,9 +93,9 @@
             <div *ngFor="let piece of requete.pieces_jointes" class="piece-item">
               <i class="bi bi-file-earmark"></i>
               <span>{{ piece.nom }}</span>
-              <a [href]="'/storage/' + piece.chemin_fichier" target="_blank" class="btn-download">
+              <button title="download" class="btn-download" (click)="downloadFile(piece)">
                 <i class="bi bi-download"></i>
-              </a>
+              </button>
             </div>
           </div>
         </div>
