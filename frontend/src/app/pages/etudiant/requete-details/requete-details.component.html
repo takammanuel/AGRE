@@ -22,8 +22,8 @@
       <div class="header-info">
         <h1>{{ requete.code_requete }}</h1>
         <div class="badges">
-          <span [class]="'status-badge ' + getStatusClass(requete.statut_actuel)">
-            {{ getStatusLabel(requete.statut_actuel) }}
+          <span [class]="'status-badge ' + getStatusClass(requete.historiques[requete.historiques.length - 1].etat?.libelle)">
+            {{ getStatusLabel(requete.historiques[requete.historiques.length - 1].etat?.libelle) }}
           </span>
           <span [class]="getPriorityClass(requete.priorite)">
             {{ getPriorityLabel(requete.priorite) }}
