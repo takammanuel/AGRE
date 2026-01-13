@@ -131,6 +131,15 @@
         </button>
 
         <button
+          *ngIf="canEscalader()"
+          class="btn btn-warning"
+          (click)="openEscaladerModal()"
+          [disabled]="processing">
+          <i class="bi bi-arrow-up-circle"></i>
+          Escalader
+        </button>
+
+        <button
           class="btn btn-outline"
           (click)="openCommentaireModal()"
           [disabled]="processing">
@@ -264,6 +273,45 @@
               {{ processing ? 'Ajout...' : 'Ajouter' }}
             </button>
             <button type="button" class="btn btn-outline" (click)="closeCommentaireModal()" [disabled]="processing">
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Escalader -->
+  <div *ngIf="showEscaladerModal" class="modal-overlay" (click)="closeEscaladerModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Escalader la requête</h3>
+        <button class="btn-close" (click)="closeEscaladerModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle"></i>
+          <p>En escaladant cette requête, elle sera transmise au responsable pédagogique pour approbation.</p>
+        </div>
+        <form (ngSubmit)="escalader()">
+          <div class="form-group">
+            <label>Commentaire (optionnel)</label>
+            <textarea
+              [(ngModel)]="escaladerForm.commentaire"
+              name="commentaire"
+              rows="4"
+              placeholder="Expliquez pourquoi cette requête nécessite une escalade..."></textarea>
+            <small>Ce commentaire sera visible par le responsable pédagogique.</small>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-warning" [disabled]="processing">
+              <i class="bi bi-arrow-up-circle"></i>
+              {{ processing ? 'Escalade...' : 'Confirmer l\'escalade' }}
+            </button>
+            <button type="button" class="btn btn-outline" (click)="closeEscaladerModal()" [disabled]="processing">
               Annuler
             </button>
           </div>

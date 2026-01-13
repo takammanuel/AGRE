@@ -152,6 +152,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/requetes/{id}/traiter', [RequeteAgentController::class, 'traiter']);
         Route::post('/requetes/{id}/rejeter', [RequeteAgentController::class, 'rejeter']);
         Route::post('/requetes/{id}/commentaire', [RequeteAgentController::class, 'ajouterCommentaire']);
+        Route::post('/requetes/{id}/escalader', [RequeteAgentController::class, 'escalader']);
 
         // Messagerie
         Route::prefix('messagerie')->group(function () {

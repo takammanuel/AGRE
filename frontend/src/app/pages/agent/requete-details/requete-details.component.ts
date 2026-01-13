@@ -27,6 +27,7 @@ export class RequeteDetailsComponent implements OnInit {
   showTraiterModal = false;
   showRejeterModal = false;
   showCommentaireModal = false;
+  showEscaladerModal = false;
 
   // Formulaires
   traiterForm = {
@@ -39,6 +40,10 @@ export class RequeteDetailsComponent implements OnInit {
   };
 
   commentaireForm = {
+    commentaire: ''
+  };
+
+  escaladerForm = {
     commentaire: ''
   };
 
@@ -56,6 +61,11 @@ export class RequeteDetailsComponent implements OnInit {
     this.dashboardService.getRequeteDetails(id).subscribe({
       next: (response) => {
         this.requete = response.data;
+        // Debug: afficher les informations pour l'escalade
+        console.log('Statut actuel de la requête:', this.requete?.statut_actuel);
+        console.log('Type de requête:', this.requete?.type_requete);
+        console.log('Nécessite approbation:', this.requete?.type_requete?.necessite_approbation);
+        console.log('Peut escalader?', this.canEscalader());
         this.loading = false;
       },
       error: (err) => {
@@ -226,6 +236,65 @@ export class RequeteDetailsComponent implements OnInit {
 
   canRejeter(): boolean {
     return this.requete?.statut_actuel !== 'TRAITEE' && this.requete?.statut_actuel !== 'REJETEE';
+  }
+
+  canEscalader(): boolean {
+    // Le bouton escalader s'affiche UNIQUEMENT si :
+    // 1. Le type de requête a necessite_approbation = true (champ boolean dans type_requetes)
+    // 2. La requête n'est pas déjà escaladée, traitée ou rejetée
+    // 3. La requête est dans un statut où l'escalade est possible
+    
+    if (!this.requete) return false;
+    
+    // Vérifier que le type de requête nécessite une approbation (champ boolean)
+    const typeRequete = this.requete.type_requete;
+    if (!typeRequete) return false;
+    
+    // Le bouton s'affiche SEULEMENT si necessite_approbation = true
+    if (typeRequete.necessite_approbation !== true) {
+      return false;
+    }
+    
+    const statut = this.requete.statut_actuel;
+    
+    // Ne pas afficher si déjà escaladée, traitée ou rejetée
+    if (statut === 'EN_ATTENTE_APPROBATION' || statut === 'TRAITEE' || statut === 'REJETEE') {
+      return false;
+    }
+    
+    // Afficher pour les statuts actifs où l'agent peut escalader
+    const statutsValides = ['EN_COURS', 'EN_ATTENTE', 'AFFECTEE'];
+    return statutsValides.includes(statut);
+  }
+
+  openEscaladerModal(): void {
+    this.showEscaladerModal = true;
+    this.escaladerForm = { commentaire: '' };
+  }
+
+  closeEscaladerModal(): void {
+    this.showEscaladerModal = false;
+  }
+
+  escalader(): void {
+    this.processing = true;
+    this.error = null;
+
+    this.dashboardService.escaladerRequete(this.requete.id, this.escaladerForm.commentaire).subscribe({
+      next: (response) => {
+        this.success = response.message || 'Requête escaladée avec succès';
+        this.processing = false;
+        this.closeEscaladerModal();
+        this.loadRequeteDetails(this.requete.id);
+
+        setTimeout(() => this.success = null, 3000);
+      },
+      error: (err) => {
+        console.error('Erreur:', err);
+        this.error = err.error?.message || 'Erreur lors de l\'escalade';
+        this.processing = false;
+      }
+    });
   }
 
   downloadFile(attachment: any): void {

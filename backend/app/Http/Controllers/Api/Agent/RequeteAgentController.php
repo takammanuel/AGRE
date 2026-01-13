@@ -416,6 +416,55 @@ class RequeteAgentController extends Controller
     }
 
     /**
+     * Escalader une requête au responsable pédagogique
+     * POST /api/agent/requetes/{id}/escalader
+     */
+    public function escalader(Request $request, int $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'commentaire' => 'nullable|string|max:1000'
+        ]);
+
+        $user = $request->user();
+
+        $requete = Requete::where('agent_id', $user->id)->findOrFail($id);
+
+        // Récupérer l'état EN_ATTENTE_APPROBATION
+        $etatEnAttenteApprobation = \App\Models\Etat::where('libelle', 'EN_ATTENTE_APPROBATION')->first();
+
+        if (!$etatEnAttenteApprobation) {
+            return response()->json([
+                'success' => false,
+                'message' => 'État EN_ATTENTE_APPROBATION non trouvé'
+            ], 500);
+        }
+
+        // Ajouter le commentaire dans la description si fourni
+        if (!empty($validated['commentaire'])) {
+            $requete->description .= "\n\n--- Escaladé le " . now()->format('d/m/Y à H:i') . " ---\n" . $validated['commentaire'];
+            $requete->save();
+        }
+
+        // Créer un nouvel historique
+        DB::table('historique_requetes')->insert([
+            'requete_id' => $requete->id,
+            'etat_id' => $etatEnAttenteApprobation->id,
+            'date_etat' => now(),
+            'commentaire' => $validated['commentaire'] ?? 'Requête escaladée au responsable pédagogique',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // TODO: Notifier le responsable pédagogique
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Requête escaladée au responsable pédagogique avec succès',
+            'data' => $requete->load(['typeRequete', 'historiques.etat'])
+        ]);
+    }
+
+    /**
      * Rechercher des requêtes affectées à l'agent
      * GET /api/agent/requetes/search?q=...
      */

@@ -90,4 +90,13 @@ export class DashboardAgentService {
   ajouterCommentaire(id: number, commentaire: string): Observable<any> {
     return this.http.post<any>(`${API_URL}/agent/requetes/${id}/commentaire`, { commentaire });
   }
+
+  /**
+   * Escalader une requête au responsable pédagogique
+   */
+  escaladerRequete(id: number, commentaire?: string): Observable<any> {
+    return this.http.post<any>(`${API_URL}/agent/requetes/${id}/escalader`, {
+      commentaire: commentaire || ''
+    });
+  }
 }

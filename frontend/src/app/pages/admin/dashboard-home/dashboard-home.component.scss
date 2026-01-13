@@ -75,43 +75,73 @@
 
 .stat-card {
   background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    
+    &::before {
+      opacity: 0.3;
+    }
   }
 
   .card-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
+    width: 70px;
+    height: 70px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s;
 
     i {
-      font-size: 1.8rem;
+      font-size: 2rem;
       color: white;
+    }
+
+    .stat-card:hover & {
+      transform: scale(1.1) rotate(5deg);
     }
   }
 
   .card-content {
     h3 {
-      font-size: 2.5rem;
-      font-weight: 700;
+      font-size: 3rem;
+      font-weight: 800;
       margin-bottom: 0.5rem;
-      color: var(--text-primary);
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
     }
 
     p {
       color: var(--text-secondary);
-      font-size: 0.95rem;
+      font-size: 1rem;
       margin: 0;
+      font-weight: 500;
     }
   }
 
@@ -143,9 +173,10 @@
 
 .recent-section {
   background: white;
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 
   .section-header {
     display: flex;
