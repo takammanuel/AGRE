@@ -13,7 +13,7 @@ export class TypeRequetesService {
   constructor(private http: HttpClient) {}
 
   getAll(page: number = 1, perPage: number = 10): Observable<any> {
-    return this.http.get<TypeRequete[]>(`${this.apiUrl}?page=${page}&per_page=${perPage}`);
+    return this.http.get<TypeRequete[]>(`${this.apiUrl}/admin/types-requetes?page=${page}&per_page=${perPage}`);
   }
 
   getForStudents(): Observable<any> {
@@ -21,51 +21,51 @@ export class TypeRequetesService {
   }
 
   getById(id: number): Observable<TypeRequete> {
-    return this.http.get<TypeRequete>(`${this.apiUrl}/${id}`);
+    return this.http.get<TypeRequete>(`${this.apiUrl}/admin/types-requetes/${id}`);
   }
 
   create(typeRequete: TypeRequete): Observable<TypeRequete> {
-    return this.http.post<TypeRequete>(this.apiUrl, typeRequete);
+    return this.http.post<TypeRequete>(`${this.apiUrl}/admin/types-requetes`, typeRequete);
   }
 
   update(id: number, typeRequete: TypeRequete): Observable<TypeRequete> {
-    return this.http.put<TypeRequete>(`${this.apiUrl}/${id}`, typeRequete);
+    return this.http.put<TypeRequete>(`${this.apiUrl}/admin/types-requetes${id}`, typeRequete);
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/admin/types-requetes/${id}`);
   }
 
   // Pour récupérer les services pour le select
   getServices(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/services`);
+    return this.http.get(`${this.apiUrl}/admin/services`);
   }
 
-  /**
-   * Récupère tous les types de requêtes
-   */
-  getAllTypeRequetes(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/type-requetes`);
-  }
+  // /**
+  //  * Récupère tous les types de requêtes
+  //  */
+  // getAllTypeRequetes(): Observable<any> {
+  //   return this.http.get(`${this.apiUrl}/admin/type-requetes`);
+  // }
 
-  /**
-   * Crée un nouveau type de requête
-   */
-  createTypeRequete(payload: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/type-requetes`, payload);
-  }
+  // /**
+  //  * Crée un nouveau type de requête
+  //  */
+  // createTypeRequete(payload: any): Observable<any> {
+  //   return this.http.post(`${this.apiUrl}/type-requetes`, payload);
+  // }
 
-  /**
-   * Met à jour un type de requête
-   */
-  updateTypeRequete(id: number, payload: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/type-requetes/${id}`, payload);
-  }
+  // /**
+  //  * Met à jour un type de requête
+  //  */
+  // updateTypeRequete(id: number, payload: any): Observable<any> {
+  //   return this.http.put(`${this.apiUrl}/type-requetes/${id}`, payload);
+  // }
 
-  /**
-   * Supprime un type de requête
-   */
-  deleteTypeRequete(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/type-requetes/${id}`);
-  }
+  // /**
+  //  * Supprime un type de requête
+  //  */
+  // deleteTypeRequete(id: number): Observable<any> {
+  //   return this.http.delete(`${this.apiUrl}/type-requetes/${id}`);
+  // }
 }

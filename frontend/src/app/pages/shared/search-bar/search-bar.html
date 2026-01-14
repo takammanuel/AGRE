@@ -1,0 +1,34 @@
+<div class="search-bar-container">
+  <div class="search-input-wrapper">
+    <i class="bi bi-search search-icon"></i>
+    <input
+      type="text"
+      class="form-control search-input"
+      [(ngModel)]="searchTerm"
+      [placeholder]="placeholder"
+      (keyup)="onKeyup($event)"
+      [disabled]="isSearching"
+    />
+    <button
+      *ngIf="searchTerm"
+      class="btn-clear"
+      (click)="onClear()"
+      type="button"
+    >
+      <i class="bi bi-x-circle"></i>
+    </button>
+  </div>
+  <button
+    class="btn btn-primary btn-search"
+    (click)="onSearch()"
+    [disabled]="isSearching || !searchTerm || searchTerm.length < 2"
+  >
+    <span *ngIf="!isSearching">
+      <i class="bi bi-search"></i> Rechercher
+    </span>
+    <span *ngIf="isSearching">
+      <span class="spinner-border spinner-border-sm me-2"></span>
+      Recherche...
+    </span>
+  </button>
+</div>

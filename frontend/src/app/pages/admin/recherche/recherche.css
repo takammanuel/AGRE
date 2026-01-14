@@ -1,0 +1,167 @@
+.recherche-container {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h2 {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.page-header h2 i {
+  margin-right: 0.75rem;
+  color: var(--admin-color, #dc3545);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin-top: 2rem;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+  color: #495057;
+  margin-bottom: 0.75rem;
+}
+
+.empty-state p {
+  color: #6c757d;
+  font-size: 1rem;
+}
+
+.search-examples {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  text-align: left;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.search-examples p {
+  margin-bottom: 0.75rem;
+  color: #495057;
+}
+
+.search-examples ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.search-examples li {
+  padding: 0.5rem 0;
+  color: #6c757d;
+}
+
+.search-examples code {
+  background: #e9ecef;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  color: #495057;
+  font-weight: 500;
+}
+
+.results-container {
+  margin-top: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.results-header {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--admin-color, #dc3545) 0%, #c82333 100%);
+  color: white;
+}
+
+.results-header h5 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.table-responsive {
+  padding: 1.5rem;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  border-bottom: 2px solid #dee2e6;
+  padding: 1rem;
+}
+
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.table tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.etudiant-info strong {
+  display: block;
+  color: #2c3e50;
+}
+
+.etudiant-info small {
+  font-size: 0.85rem;
+}
+
+.badge {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.btn-sm {
+  padding: 0.375rem 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .recherche-container {
+    padding: 1rem;
+  }
+
+  .table-responsive {
+    padding: 0.5rem;
+  }
+
+  .table {
+    font-size: 0.875rem;
+  }
+
+  .table thead th,
+  .table tbody td {
+    padding: 0.5rem;
+  }
+}

@@ -1,0 +1,132 @@
+<div class="utilisateurs-container">
+  <div class="page-header">
+    <div>
+      <h1><i class="bi bi-people"></i> Gestion des Utilisateurs</h1>
+      <p class="subtitle">{{ utilisateursFiltres.length }} utilisateur(s)</p>
+    </div>
+    <button class="btn btn-primary">
+      <i class="bi bi-plus-circle"></i> Nouvel utilisateur
+    </button>
+  </div>
+
+  <!-- Filtres et recherche -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="bi bi-search"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        placeholder="Rechercher par nom, prénom ou email..."
+        class="search-input">
+    </div>
+
+    <div class="filter-group">
+      <label>Rôle:</label>
+      <select [(ngModel)]="filtreRole" class="form-select">
+        <option value="TOUS">Tous</option>
+        <option value="ETUDIANT">Étudiants</option>
+        <option value="AGENT_ACADEMIQUE">Agents</option>
+        <option value="RESPONSABLE_PEDAGOGIQUE">Responsables</option>
+        <option value="ADMINISTRATEUR">Administrateurs</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Statut:</label>
+      <select [(ngModel)]="filtreStatut" class="form-select">
+        <option value="TOUS">Tous</option>
+        <option value="ACTIF">Actifs</option>
+        <option value="INACTIF">Inactifs</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement des utilisateurs...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-state">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button (click)="loadUtilisateurs()" class="btn btn-primary">Réessayer</button>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading && !error" class="table-section">
+    <div *ngIf="utilisateursFiltres.length === 0" class="empty-state">
+      <i class="bi bi-inbox"></i>
+      <p>Aucun utilisateur trouvé</p>
+    </div>
+
+    <div *ngIf="utilisateursFiltres.length > 0" class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nom complet</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Rôle(s)</th>
+            <th>Statut</th>
+            <th>Inscription</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of utilisateursFiltres">
+            <td>
+              <div class="user-info">
+                <div class="user-avatar">
+                  {{ user.nom?.charAt(0) }}{{ user.prenom?.charAt(0) }}
+                </div>
+                <div>
+                  <strong>{{ user.nom }} {{ user.prenom }}</strong>
+                </div>
+              </div>
+            </td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.telephone || '-' }}</td>
+            <td>
+              <div class="roles-badges">
+                <span 
+                  *ngFor="let role of user.roles" 
+                  [class]="'badge ' + getRoleBadgeClass(role.nom)">
+                  {{ getRoleLabel(role.nom) }}
+                </span>
+              </div>
+            </td>
+            <td>
+              <span [class]="'status-badge ' + (user.is_active ? 'status-active' : 'status-inactive')">
+                {{ user.is_active ? 'Actif' : 'Inactif' }}
+              </span>
+            </td>
+            <td>{{ user.created_at | date: 'dd/MM/yyyy' }}</td>
+            <td>
+              <div class="action-buttons">
+                <button 
+                  (click)="toggleActivation(user)" 
+                  [class]="'btn-icon ' + (user.is_active ? 'btn-warning' : 'btn-success')"
+                  [title]="user.is_active ? 'Désactiver' : 'Activer'">
+                  <i [class]="user.is_active ? 'bi bi-pause-circle' : 'bi bi-play-circle'"></i>
+                </button>
+                <button 
+                  (click)="resetPassword(user)" 
+                  class="btn-icon btn-info"
+                  title="Réinitialiser le mot de passe">
+                  <i class="bi bi-key"></i>
+                </button>
+                <button 
+                  class="btn-icon btn-primary"
+                  title="Modifier">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,53 @@
+<div class="search-requete">
+  <div class="search-box">
+    <i class="bi bi-search"></i>
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="onSearch()"
+      (blur)="closeResults()"
+      placeholder="Rechercher une requête (code, étudiant, description...)">
+    <button *ngIf="searchTerm" class="btn-clear" (click)="clearSearch()">
+      <i class="bi bi-x-circle-fill"></i>
+    </button>
+  </div>
+
+  <!-- Search Results Dropdown -->
+  <div *ngIf="showResults" class="search-results">
+    <!-- Loading -->
+    <div *ngIf="searching" class="search-loading">
+      <div class="spinner-small"></div>
+      <span>Recherche en cours...</span>
+    </div>
+
+    <!-- No Results -->
+    <div *ngIf="!searching && searchResults.length === 0" class="no-results">
+      <i class="bi bi-inbox"></i>
+      <p>Aucune requête trouvée pour "{{ searchTerm }}"</p>
+    </div>
+
+    <!-- Results List -->
+    <div *ngIf="!searching && searchResults.length > 0" class="results-list">
+      <div class="results-header">
+        <span>{{ searchResults.length }} résultat{{ searchResults.length > 1 ? 's' : '' }} trouvé{{ searchResults.length > 1 ? 's' : '' }}</span>
+      </div>
+      
+      <div *ngFor="let requete of searchResults" class="result-item">
+        <div class="result-header">
+          <strong>{{ requete.code_requete }}</strong>
+          <span class="badge" [ngClass]="getStatusClass(requete.statut_actuel)">
+            {{ getStatusLabel(requete.statut_actuel) }}
+          </span>
+        </div>
+        <p class="result-description">{{ requete.description }}</p>
+        <div class="result-meta">
+          <span><i class="bi bi-person"></i> {{ requete.etudiant?.prenom }} {{ requete.etudiant?.nom }}</span>
+          <span><i class="bi bi-tag"></i> {{ requete.type_requete?.nom }}</span>
+          <span *ngIf="requete.priorite === 'URGENTE'" class="urgent-tag">
+            <i class="bi bi-flag-fill"></i> Urgente
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

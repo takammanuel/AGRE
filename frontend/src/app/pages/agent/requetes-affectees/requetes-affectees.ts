@@ -33,6 +33,7 @@ export class RequetesAffecteesComponent implements OnInit {
     this.loading = true;
     this.requestService.getAssignedRequests({ ...this.filters, page: this.currentPage }).subscribe({
       next: (response) => {
+        console.log("fffff:" + JSON.stringify(response.data?.data, null, 2))
         this.requetes = response.data?.data || [];
         this.pagination = response.data || {};
         this.loading = false;

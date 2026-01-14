@@ -1,1 +1,140 @@
-<p>services works!</p>
+<div class="container-fluid py-4">
+  <!-- En-tête -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0">
+        <i class="bi bi-building me-2"></i>
+        Gestion des Services
+      </h1>
+      <p class="text-muted mb-0">Liste et gestion de tous les services</p>
+    </div>
+    <button class="btn btn-primary" (click)="openAddModal()">
+      <i class="bi bi-plus-circle me-1"></i>
+      Ajouter un service
+    </button>
+  </div>
+
+  <!-- Alertes -->
+  @if (error) {
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      {{ error }}
+      <button type="button" class="btn-close" (click)="error = ''"></button>
+    </div>
+  }
+
+  <!-- Tableau -->
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nom</th>
+              <th>Description</th>
+              <th>Créé le</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (loading) {
+              <tr>
+                <td colspan="5" class="text-center py-5">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                  </div>
+                </td>
+              </tr>
+            } @else {
+              @if (services.length === 0) {
+                <tr>
+                  <td colspan="5" class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox display-6 d-block mb-2"></i>
+                    Aucun service trouvé
+                  </td>
+                </tr>
+              } @else {
+                @for (service of services; track service.id; let i = $index) {
+                  <tr>
+                    <td>{{ service.id }}</td>
+                    <td class="fw-semibold">{{ service.nom }}</td>
+                    <td>
+                      <div class="text-truncate" style="max-width: 300px;">
+                        {{ service.description }}
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge bg-light text-dark">
+                        {{ service.created_at | date:'dd/MM/yyyy' }}
+                      </span>
+                    </td>
+                    <td class="text-end">
+                      <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-outline-info"
+                                (click)="openDetailModal(service)"
+                                title="Voir détails">
+                          <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning"
+                                (click)="openEditModal(service)"
+                                title="Modifier">
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger"
+                                (click)="openDeleteModal(service)"
+                                title="Supprimer">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination avec query parameters -->
+      @if (pagination && pagination.last_page > 1) {
+        <div class="d-flex justify-content-center align-items-center gap-3 my-4">
+          <button
+            class="btn btn-outline-primary px-4"
+            (click)="goToPreviousPage()"
+            [disabled]="currentPage === 1 || loading">
+            <i class="bi bi-chevron-left me-2"></i> Précédent
+          </button>
+
+          <span class="fw-semibold">
+            Page <span class="text-primary">{{ currentPage }}</span>
+            / {{ pagination.last_page }}
+          </span>
+
+          <button
+            class="btn btn-outline-primary px-4"
+            (click)="goToNextPage()"
+            [disabled]="currentPage === pagination.last_page || loading">
+            Suivant <i class="bi bi-chevron-right ms-2"></i>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Modal d'ajout/modification -->
+<app-service-modal
+  [service]="selectedService"
+  [isEdit]="isEditMode"
+  (save)="onServiceSaved($event)">
+</app-service-modal>
+
+<!-- Modal de détails -->
+<app-service-detail-modal
+  [service]="selectedService">
+</app-service-detail-modal>
+
+<!-- Modal de confirmation -->
+<app-confirm-modal
+  (confirm)="onDeleteConfirmed()">
+</app-confirm-modal>

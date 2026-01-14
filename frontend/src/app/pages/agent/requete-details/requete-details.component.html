@@ -1,0 +1,322 @@
+<div class="requete-details-page">
+  <!-- Header -->
+  <div class="page-header">
+    <button class="btn-back" [routerLink]="['/agent/requetes']">
+      <i class="bi bi-arrow-left"></i>
+      Retour
+    </button>
+    <h1>Détails de la requête</h1>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="alert alert-error">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    {{ error }}
+  </div>
+
+  <!-- Success -->
+  <div *ngIf="success" class="alert alert-success">
+    <i class="bi bi-check-circle-fill"></i>
+    {{ success }}
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="requete && !loading" class="details-content">
+    <!-- Main Info Card -->
+    <div class="info-card">
+      <div class="card-header">
+        <div>
+          <h2>{{ requete.code_requete }}</h2>
+          <p class="type">{{ requete.type_requete?.nom }}</p>
+        </div>
+        <div class="badges">
+          <span class="badge" [ngClass]="getStatusClass(requete.historiques[requete.historiques.length - 1].etat?.libelle)">
+            {{ getStatusLabel(requete.historiques[requete.historiques.length - 1].etat?.libelle) }}
+          </span>
+          <span *ngIf="requete.priorite === 'URGENTE'" class="badge badge-urgent">
+            <i class="bi bi-flag-fill"></i> Urgente
+          </span>
+        </div>
+      </div>
+
+      <div class="card-body">
+
+        <div class="info-grid">
+          <div class="info-item">
+            <i class="bi bi-person"></i>
+            <div>
+              <label>Étudiant</label>
+              <p>{{ requete.etudiant?.prenom }} {{ requete.etudiant?.nom }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <i class="bi bi-envelope"></i>
+            <div>
+              <label>Email</label>
+              <p>{{ requete.etudiant?.email }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <i class="bi bi-building"></i>
+            <div>
+              <label>Service</label>
+              <p>{{ requete.type_requete?.service?.nom }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <i class="bi bi-calendar"></i>
+            <div>
+              <label>Date de soumission</label>
+              <p>{{ requete.created_at | date: 'dd/MM/yyyy à HH:mm' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3>Description</h3>
+          <p>{{ requete.description }}</p>
+        </div>
+
+        <!-- Pièces jointes -->
+        <div *ngIf="requete.pieces_jointes && requete.pieces_jointes.length > 0" class="info-section">
+          <h3>Pièces jointes</h3>
+          <div class="pieces-jointes">
+            <div *ngFor="let piece of requete.pieces_jointes" class="piece-item">
+              <i class="bi bi-file-earmark"></i>
+              <span>{{ piece.nom }}</span>
+              <button title="download" class="btn-download" (click)="downloadFile(piece)">
+                <i class="bi bi-download"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="card-actions">
+        <button
+          *ngIf="canPrendreEnCharge()"
+          class="btn btn-primary"
+          (click)="prendreEnCharge()"
+          [disabled]="processing">
+          <i class="bi bi-hand-thumbs-up"></i>
+          Prendre en charge
+        </button>
+
+        <button
+          *ngIf="canTraiter()"
+          class="btn btn-success"
+          (click)="openTraiterModal()"
+          [disabled]="processing">
+          <i class="bi bi-check-circle"></i>
+          Traiter
+        </button>
+
+        <button
+          *ngIf="canRejeter()"
+          class="btn btn-danger"
+          (click)="openRejeterModal()"
+          [disabled]="processing">
+          <i class="bi bi-x-circle"></i>
+          Rejeter
+        </button>
+
+        <button
+          *ngIf="canEscalader()"
+          class="btn btn-warning"
+          (click)="openEscaladerModal()"
+          [disabled]="processing">
+          <i class="bi bi-arrow-up-circle"></i>
+          Escalader
+        </button>
+
+        <button
+          class="btn btn-outline"
+          (click)="openCommentaireModal()"
+          [disabled]="processing">
+          <i class="bi bi-chat-left-text"></i>
+          Ajouter un commentaire
+        </button>
+      </div>
+    </div>
+
+    <!-- Historique -->
+    <div class="historique-card">
+      <h3>Historique</h3>
+      <div class="timeline">
+        <div *ngFor="let hist of requete.historiques" class="timeline-item">
+          <div class="timeline-marker" [ngClass]="getStatusClass(hist.etat?.libelle)"></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <strong>{{ getStatusLabel(hist.etat?.libelle) }}</strong>
+              <span class="timeline-date">{{ hist.date_etat | date: 'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <p *ngIf="hist.commentaire" class="timeline-comment">{{ hist.commentaire }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Traiter -->
+  <div *ngIf="showTraiterModal" class="modal-overlay" (click)="closeTraiterModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Traiter la requête</h3>
+        <button class="btn-close" (click)="closeTraiterModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="traiter()">
+          <div class="form-group">
+            <label>Commentaire (optionnel)</label>
+            <textarea
+              [(ngModel)]="traiterForm.commentaire"
+              name="commentaire"
+              rows="4"
+              placeholder="Ajoutez un commentaire sur le traitement..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Pièces jointes (optionnel)</label>
+            <input
+              type="file"
+              (change)="onFileSelect($event)"
+              multiple
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+            <small>Formats acceptés: PDF, DOC, DOCX, JPG, PNG (Max 10MB par fichier)</small>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-success" [disabled]="processing">
+              <i class="bi bi-check-circle"></i>
+              {{ processing ? 'Traitement...' : 'Valider le traitement' }}
+            </button>
+            <button type="button" class="btn btn-outline" (click)="closeTraiterModal()" [disabled]="processing">
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Rejeter -->
+  <div *ngIf="showRejeterModal" class="modal-overlay" (click)="closeRejeterModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Rejeter la requête</h3>
+        <button class="btn-close" (click)="closeRejeterModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="rejeter()">
+          <div class="form-group">
+            <label>Motif du rejet *</label>
+            <textarea
+              [(ngModel)]="rejeterForm.motif"
+              name="motif"
+              rows="4"
+              placeholder="Expliquez pourquoi cette requête est rejetée..."
+              required></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-danger" [disabled]="processing">
+              <i class="bi bi-x-circle"></i>
+              {{ processing ? 'Rejet...' : 'Confirmer le rejet' }}
+            </button>
+            <button type="button" class="btn btn-outline" (click)="closeRejeterModal()" [disabled]="processing">
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Commentaire -->
+  <div *ngIf="showCommentaireModal" class="modal-overlay" (click)="closeCommentaireModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Ajouter un commentaire</h3>
+        <button class="btn-close" (click)="closeCommentaireModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="ajouterCommentaire()">
+          <div class="form-group">
+            <label>Commentaire *</label>
+            <textarea
+              [(ngModel)]="commentaireForm.commentaire"
+              name="commentaire"
+              rows="4"
+              placeholder="Votre commentaire..."
+              required></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="processing">
+              <i class="bi bi-chat-left-text"></i>
+              {{ processing ? 'Ajout...' : 'Ajouter' }}
+            </button>
+            <button type="button" class="btn btn-outline" (click)="closeCommentaireModal()" [disabled]="processing">
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Escalader -->
+  <div *ngIf="showEscaladerModal" class="modal-overlay" (click)="closeEscaladerModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Escalader la requête</h3>
+        <button class="btn-close" (click)="closeEscaladerModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle"></i>
+          <p>En escaladant cette requête, elle sera transmise au responsable pédagogique pour approbation.</p>
+        </div>
+        <form (ngSubmit)="escalader()">
+          <div class="form-group">
+            <label>Commentaire (optionnel)</label>
+            <textarea
+              [(ngModel)]="escaladerForm.commentaire"
+              name="commentaire"
+              rows="4"
+              placeholder="Expliquez pourquoi cette requête nécessite une escalade..."></textarea>
+            <small>Ce commentaire sera visible par le responsable pédagogique.</small>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="btn btn-warning" [disabled]="processing">
+              <i class="bi bi-arrow-up-circle"></i>
+              {{ processing ? 'Escalade...' : 'Confirmer l\'escalade' }}
+            </button>
+            <button type="button" class="btn btn-outline" (click)="closeEscaladerModal()" [disabled]="processing">
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

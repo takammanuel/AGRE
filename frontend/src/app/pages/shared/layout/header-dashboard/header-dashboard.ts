@@ -1,15 +1,16 @@
 import { Component, OnInit, OnDestroy, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { AuthService } from '../../../../services/auth.service';
 import { DashboardConfigService, DashboardConfig } from '../../../../services/dashboard-config.service';
+import { SearchRequeteComponent } from '../../../../components/search-requete/search-requete.component';
+import { Subscription } from 'rxjs';
 import { NotificationService } from '../../../../services/notification.service';
 
 @Component({
   selector: 'app-header-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, SearchRequeteComponent, RouterLink],
   templateUrl: './header-dashboard.html',
   styleUrls: ['./header-dashboard.scss']
 })
@@ -32,12 +33,12 @@ export class HeaderDashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
     this.config = this.dashboardConfigService.getDashboardConfig();
-    
+
     // S'abonner au compteur de notifications
     this.countSubscription = this.notificationService.unreadCount$.subscribe(count => {
       this.notificationCount = count;
     });
-    
+
     // Charger les notifications et forcer le refresh du compteur
     this.loadNotifications();
     this.notificationService.refreshCount();
@@ -185,7 +186,7 @@ export class HeaderDashboardComponent implements OnInit, OnDestroy {
         this.router.navigate(['/responsable/requetes-en-attente']);
         break;
       case 'ADMINISTRATEUR':
-        this.router.navigate(['/admin/utilisateurs/creer']);
+        this.router.navigate(['/admin/utilisateurs']);
         break;
     }
   }

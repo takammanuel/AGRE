@@ -29,14 +29,16 @@ export class RequeteDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadRequete(+id);
-      this.loadHistory(+id);
+      // this.loadHistory(+id);
     }
   }
 
   loadRequete(id: number): void {
     this.requestService.getRequestById(id).subscribe({
       next: (response) => {
+        console.log("sddddd: " + JSON.stringify(response.data, null, 2));
         this.requete = response.data;
+        this.historique = response.data.historiques || [];
         this.loading = false;
       },
       error: (error) => {
@@ -96,7 +98,7 @@ export class RequeteDetailComponent implements OnInit {
     return this.requete.etat_actuel.libelle === 'INFORMATIONS_REQUISES';
   }
 
-  getStatusClass(statut: string): string {
+  getStatusClass(statut: string ): string {
     const classes: { [key: string]: string } = {
       'EN_ATTENTE': 'badge bg-warning',
       'AFFECTEE': 'badge bg-info',
@@ -117,5 +119,17 @@ export class RequeteDetailComponent implements OnInit {
     if (this.requete) {
       this.router.navigate(['/etudiant/requete', this.requete.id, 'ajouter-informations']);
     }
+  }
+
+  getStatusLabel(statut: string): string {
+    const labelMap: { [key: string]: string } = {
+      'EN_ATTENTE': 'En attente',
+      'EN_COURS': 'En cours',
+      'TRAITEE': 'Traitée',
+      'REJETEE': 'Rejetée',
+      'AFFECTEE': 'Affectée',
+      'EN_ATTENTE_APPROBATION': 'En attentte d\'approbation',
+    };
+    return labelMap[statut] || statut;
   }
 }

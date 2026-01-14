@@ -6,7 +6,7 @@
         <a *ngFor="let req of requetes"
            [routerLink]="['/etudiant/messagerie', req.id]"
            class="list-group-item list-group-item-action">
-          {{ req.titre }} ({{ req.statut }})
+          {{ req.code_requete }} ({{ req.type_requete?.nom }})
         </a>
       </div>
     </div>
