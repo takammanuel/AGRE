@@ -37,19 +37,20 @@ class DashboardController extends Controller
 
         // Statistiques des utilisateurs
         $utilisateursStats = [
-            'total' => Utilisateur::whereNotNull('last_login_at')->count(),
-            'etudiants' => Utilisateur::whereHas('roles', fn($q) => $q->where('nom', 'ETUDIANT'))
-                ->whereNotNull('last_login_at')
-                ->count(),
-            'agents' => Utilisateur::whereHas('roles', fn($q) => $q->where('nom', 'AGENT_ACADEMIQUE'))
-                ->whereNotNull('last_login_at')
-                ->count(),
-            'responsables' => Utilisateur::whereHas('roles', fn($q) => $q->where('nom', 'RESPONSABLE_PEDAGOGIQUE'))
-                ->whereNotNull('last_login_at')
-                ->count(),
-            'actifs' => Utilisateur::where('is_active', true)
-                ->whereNotNull('last_login_at')
-                ->count(),
+            'total' => Utilisateur::count(),
+            'etudiants' => Utilisateur::whereHas('roles', function($q) {
+                $q->where('nom', 'Étudiant')
+                  ->orWhere('libelle', 'ETUDIANT');
+            })->count(),
+            'agents' => Utilisateur::whereHas('roles', function($q) {
+                $q->where('nom', 'Agent Académique')
+                  ->orWhere('libelle', 'AGENT_ACADEMIQUE');
+            })->count(),
+            'responsables' => Utilisateur::whereHas('roles', function($q) {
+                $q->where('nom', 'Responsable Pédagogique')
+                  ->orWhere('libelle', 'RESPONSABLE_PEDAGOGIQUE');
+            })->count(),
+            'actifs' => Utilisateur::where('is_active', true)->count(),
         ];
 
         // Requêtes récentes
@@ -260,6 +261,14 @@ class DashboardController extends Controller
 
         $requetes = $query->orderBy('created_at', 'desc')->paginate(20);
 
+        // Ajouter le statut actuel à chaque requête
+        $requetes->getCollection()->transform(function($requete) {
+            $dernierHistorique = $requete->historiques->sortByDesc('date_etat')->first();
+            $requete->statut_actuel = $dernierHistorique?->etat->libelle ?? 'N/A';
+            $requete->date_statut = $dernierHistorique?->date_etat ?? null;
+            return $requete;
+        });
+
         return response()->json([
             'success' => true,
             'data' => $requetes
@@ -273,7 +282,7 @@ class DashboardController extends Controller
     public function badgeCounts(Request $request): JsonResponse
     {
         $counts = [
-            'utilisateurs' => Utilisateur::whereNotNull('last_login_at')->count(),
+            'utilisateurs' => Utilisateur::count(),
             'approbations' => Requete::whereHas('typeRequete', fn($q) => $q->where('necessite_approbation', true))
                 ->whereHas('historiques', function($q) {
                     $q->whereHas('etat', fn($eq) => $eq->where('libelle', 'EN_ATTENTE'));

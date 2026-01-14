@@ -126,19 +126,23 @@
   }
 
   &.card-today .card-icon {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    box-shadow: var(--shadow-lg);
   }
 
   &.card-week .card-icon {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-dark) 100%);
+    box-shadow: var(--shadow-lg);
   }
 
   &.card-urgent .card-icon {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    background: linear-gradient(135deg, var(--error-color) 0%, var(--error-dark) 100%);
+    box-shadow: var(--shadow-lg);
   }
 
   &.card-total .card-icon {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    background: linear-gradient(135deg, var(--info-color) 0%, var(--info-dark) 100%);
+    box-shadow: var(--shadow-lg);
   }
 }
 

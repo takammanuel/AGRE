@@ -27,10 +27,10 @@ export class AdminHistoriqueComponent implements OnInit {
     statut: '',
     service_id: '',
     date_debut: '',
-    date_fin: '',
-    etudiant: '',
-    agent: ''
+    date_fin: ''
   };
+  
+  searching = false;
 
   ngOnInit(): void {
     this.loadServices();
@@ -59,13 +59,28 @@ export class AdminHistoriqueComponent implements OnInit {
       }
     });
     
+    console.log('=== CHARGEMENT HISTORIQUE ===');
+    console.log('Filtres:', cleanFilters);
+    
     this.adminService.getHistorique(cleanFilters).subscribe({
       next: (response) => {
-        this.requetes = response.data.data || [];
+        console.log('Réponse API historique:', response);
+        console.log('response.data:', response.data);
+        
+        // Le backend retourne une pagination Laravel
+        if (response.data && response.data.data) {
+          this.requetes = response.data.data;
+        } else if (response.data && Array.isArray(response.data)) {
+          this.requetes = response.data;
+        } else {
+          this.requetes = [];
+        }
+        
+        console.log('Requêtes chargées:', this.requetes.length);
         this.loading = false;
       },
       error: (err) => {
-        console.error('Erreur:', err);
+        console.error('Erreur complète:', err);
         this.error = 'Impossible de charger l\'historique';
         this.loading = false;
       }
@@ -73,7 +88,12 @@ export class AdminHistoriqueComponent implements OnInit {
   }
 
   applyFilters(): void {
+    this.searching = true;
     this.loadHistorique();
+    // Désactiver le spinner après un court délai
+    setTimeout(() => {
+      this.searching = false;
+    }, 500);
   }
 
   resetFilters(): void {
@@ -81,11 +101,13 @@ export class AdminHistoriqueComponent implements OnInit {
       statut: '',
       service_id: '',
       date_debut: '',
-      date_fin: '',
-      etudiant: '',
-      agent: ''
+      date_fin: ''
     };
+    this.searching = true;
     this.loadHistorique();
+    setTimeout(() => {
+      this.searching = false;
+    }, 500);
   }
 
   exportToCSV(): void {

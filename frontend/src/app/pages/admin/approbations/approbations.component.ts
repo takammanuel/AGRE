@@ -2,16 +2,19 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../services/admin.service';
+import { ToastService } from '../../../services/toast.service';
+import { ToastComponent } from '../../../components/toast/toast.component';
 
 @Component({
   selector: 'app-approbations',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ToastComponent],
   templateUrl: './approbations.component.html',
   styleUrls: ['./approbations.component.scss']
 })
 export class ApprobationsComponent implements OnInit {
   private adminService = inject(AdminService);
+  private toastService = inject(ToastService);
   
   approbations: any[] = [];
   loading = true;
@@ -31,13 +34,27 @@ export class ApprobationsComponent implements OnInit {
     this.loading = true;
     this.error = null;
     
+    console.log('=== CHARGEMENT APPROBATIONS ===');
+    
     this.adminService.getApprobations().subscribe({
       next: (response) => {
-        this.approbations = response.data.data || [];
+        console.log('Réponse API approbations:', response);
+        console.log('response.data:', response.data);
+        
+        // Gérer la pagination Laravel
+        if (response.data && response.data.data) {
+          this.approbations = response.data.data;
+        } else if (response.data && Array.isArray(response.data)) {
+          this.approbations = response.data;
+        } else {
+          this.approbations = [];
+        }
+        
+        console.log('Approbations chargées:', this.approbations.length);
         this.loading = false;
       },
       error: (err) => {
-        console.error('Erreur:', err);
+        console.error('Erreur complète:', err);
         this.error = 'Impossible de charger les approbations';
         this.loading = false;
       }
@@ -47,12 +64,16 @@ export class ApprobationsComponent implements OnInit {
   approuver(requete: any): void {
     if (confirm(`Voulez-vous approuver la requête ${requete.code_requete} ?`)) {
       this.adminService.approuverRequete(requete.id).subscribe({
-        next: () => {
+        next: (response) => {
+          this.toastService.success(
+            `Requête ${requete.code_requete} approuvée avec succès !`
+          );
           this.loadApprobations();
         },
         error: (err) => {
           console.error('Erreur:', err);
-          alert('Erreur lors de l\'approbation');
+          const message = err.error?.message || 'Erreur lors de l\'approbation';
+          this.toastService.error(message);
         }
       });
     }
@@ -72,21 +93,25 @@ export class ApprobationsComponent implements OnInit {
 
   rejeter(): void {
     if (!this.motifRejet.trim()) {
-      alert('Veuillez saisir un motif de rejet');
+      this.toastService.warning('Veuillez saisir un motif de rejet');
       return;
     }
 
     this.submitting = true;
     
     this.adminService.rejeterRequete(this.selectedRequete.id, this.motifRejet).subscribe({
-      next: () => {
+      next: (response) => {
+        this.toastService.success(
+          `Requête ${this.selectedRequete.code_requete} rejetée avec succès`
+        );
         this.submitting = false;
         this.closeRejectModal();
         this.loadApprobations();
       },
       error: (err) => {
         console.error('Erreur:', err);
-        alert('Erreur lors du rejet');
+        const message = err.error?.message || 'Erreur lors du rejet';
+        this.toastService.error(message);
         this.submitting = false;
       }
     });

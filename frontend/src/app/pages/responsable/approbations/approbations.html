@@ -1,0 +1,116 @@
+<app-toast></app-toast>
+
+<div class="approbations-container">
+  <div class="page-header">
+    <div>
+      <h1><i class="bi bi-check-circle"></i> Approbations</h1>
+      <p class="subtitle">{{ requetes.length }} requête(s) en attente</p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !isLoading" class="error-state">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button (click)="loadApprobations()" class="btn btn-primary">Réessayer</button>
+  </div>
+
+  <!-- Liste -->
+  <div *ngIf="!isLoading && !error" class="approbations-list">
+    <div *ngIf="requetes.length === 0" class="empty-state">
+      <i class="bi bi-check-all"></i>
+      <p>Aucune approbation en attente</p>
+      <small>Les requêtes nécessitant votre approbation apparaîtront ici</small>
+    </div>
+
+    <div *ngFor="let requete of requetes" class="approbation-card">
+      <div class="card-header">
+        <div>
+          <h3>{{ requete.code_requete }}</h3>
+          <span class="priority" [class.urgent]="requete.priorite === 'URGENTE'">
+            {{ requete.priorite === 'URGENTE' ? 'Urgente' : 'Standard' }}
+          </span>
+        </div>
+        <span class="date">{{ requete.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+
+      <div class="card-body">
+        <div class="info-row">
+          <i class="bi bi-person"></i>
+          <span><strong>Étudiant:</strong> {{ requete.etudiant?.nom }} {{ requete.etudiant?.prenom }}</span>
+        </div>
+        <div class="info-row" *ngIf="requete.etudiant?.profil_etudiant?.matricule">
+          <i class="bi bi-card-text"></i>
+          <span><strong>Matricule:</strong> {{ requete.etudiant.profil_etudiant.matricule }}</span>
+        </div>
+        <div class="info-row">
+          <i class="bi bi-tag"></i>
+          <span><strong>Type:</strong> {{ requete.type_requete?.nom }}</span>
+        </div>
+        <div class="info-row">
+          <i class="bi bi-building"></i>
+          <span><strong>Service:</strong> {{ requete.type_requete?.service?.nom }}</span>
+        </div>
+        <div class="description">
+          <strong>Description:</strong>
+          <p>{{ requete.description }}</p>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button (click)="openRejectModal(requete)" class="btn btn-danger">
+          <i class="bi bi-x-circle"></i> Rejeter
+        </button>
+        <button (click)="approuver(requete)" class="btn btn-success">
+          <i class="bi bi-check-circle"></i> Approuver
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de rejet -->
+  <div *ngIf="showRejectModal" class="modal-overlay" (click)="closeRejectModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Rejeter la requête</h2>
+        <button (click)="closeRejectModal()" class="btn-close">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p><strong>Requête:</strong> {{ selectedRequete?.code_requete }}</p>
+        <div class="form-group">
+          <label for="motif">Motif du rejet <span class="required">*</span></label>
+          <textarea 
+            id="motif" 
+            [(ngModel)]="motifRejet" 
+            class="form-control"
+            rows="4"
+            placeholder="Expliquez la raison du rejet..."
+            required></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button (click)="closeRejectModal()" class="btn btn-secondary" [disabled]="submitting">
+          Annuler
+        </button>
+        <button (click)="rejeter()" class="btn btn-danger" [disabled]="submitting">
+          <span *ngIf="!submitting">
+            <i class="bi bi-x-circle"></i> Confirmer le rejet
+          </span>
+          <span *ngIf="submitting">
+            <span class="spinner-small"></span> Traitement...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

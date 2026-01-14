@@ -29,7 +29,7 @@ export class TypeRequetesService {
   }
 
   update(id: number, typeRequete: TypeRequete): Observable<TypeRequete> {
-    return this.http.put<TypeRequete>(`${this.apiUrl}/admin/types-requetes${id}`, typeRequete);
+    return this.http.put<TypeRequete>(`${this.apiUrl}/admin/types-requetes/${id}`, typeRequete);
   }
 
   delete(id: number): Observable<void> {

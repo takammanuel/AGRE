@@ -14,6 +14,7 @@ export interface TypeRequete {
     nom: string;
   };
   created_at?: string;
+  updated_at?: string;
 }
 
 export interface Etat {
