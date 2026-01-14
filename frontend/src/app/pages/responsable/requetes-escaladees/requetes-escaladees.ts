@@ -37,7 +37,9 @@ import { ResponsableService } from '../../../services/responsable.service';
               <td>{{ requete.code_requete }}</td>
               <td>{{ requete.etudiant?.nom }} {{ requete.etudiant?.prenom }}</td>
               <td>{{ requete.type_requete?.nom }}</td>
-              <td><span class="badge bg-danger">{{ requete.priorite }}</span></td>
+              <td><span [class]="requete.priorite === 'URGENTE' ? 'badge bg-danger' : 'badge bg-secondary'">
+                {{ requete.priorite }}
+              </span></td>
               <td>{{ requete.created_at | date: 'dd/MM/yyyy' }}</td>
               <td>
                 <a [routerLink]="['/responsable/requetes', requete.id]" class="btn btn-sm btn-primary">

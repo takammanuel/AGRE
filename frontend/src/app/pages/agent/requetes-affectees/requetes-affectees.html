@@ -19,7 +19,7 @@
           <td>{{ req.code_requete }}</td>
           <td>{{ req.type_requete?.nom }}</td>
           <td><span [class]="req.priorite === 'URGENTE' ? 'badge bg-danger' : 'badge bg-secondary'">{{ req.priorite | priority }}</span></td>
-          <td><span>{{ req.etat_actuel?.libelle | requestStatus }}</span></td>
+          <td><span>{{ req.historiques[req.historiques.length - 1].etat?.libelle | requestStatus }}</span></td>
           <td><button class="btn btn-sm btn-primary" (click)="viewDetails(req.id)">Voir</button></td>
         </tr>
       </tbody>

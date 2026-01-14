@@ -36,6 +36,7 @@ export class RequeteDetailComponent implements OnInit {
   loadRequete(id: number): void {
     this.requestService.getRequestById(id).subscribe({
       next: (response) => {
+        console.log("sddddd: " + JSON.stringify(response.data, null, 2));
         this.requete = response.data;
         this.historique = response.data.historiques || [];
         this.loading = false;
@@ -125,7 +126,9 @@ export class RequeteDetailComponent implements OnInit {
       'EN_ATTENTE': 'En attente',
       'EN_COURS': 'En cours',
       'TRAITEE': 'Traitée',
-      'REJETEE': 'Rejetée'
+      'REJETEE': 'Rejetée',
+      'AFFECTEE': 'Affectée',
+      'EN_ATTENTE_APPROBATION': 'En attentte d\'approbation',
     };
     return labelMap[statut] || statut;
   }

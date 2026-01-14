@@ -36,8 +36,8 @@
           <p class="type">{{ requete.type_requete?.nom }}</p>
         </div>
         <div class="badges">
-          <span class="badge" [ngClass]="getStatusClass(requete.historiques[requete.historiques.length - 1].etat?.libelle)">
-            {{ getStatusLabel(requete.historiques[requete.historiques.length - 1].etat?.libelle) }}
+          <span class="badge" [ngClass]="getStatusClass(requete.statut_actuel)">
+            {{ getStatusLabel(requete.statut_actuel) }}
           </span>
           <span *ngIf="requete.priorite === 'URGENTE'" class="badge badge-urgent">
             <i class="bi bi-flag-fill"></i> Urgente
@@ -103,14 +103,14 @@
 
       <!-- Actions -->
       <div class="card-actions">
-        <button
+        <!-- <button
           *ngIf="canPrendreEnCharge()"
           class="btn btn-primary"
           (click)="prendreEnCharge()"
           [disabled]="processing">
           <i class="bi bi-hand-thumbs-up"></i>
           Prendre en charge
-        </button>
+        </button> -->
 
         <button
           *ngIf="canTraiter()"
@@ -118,7 +118,7 @@
           (click)="openTraiterModal()"
           [disabled]="processing">
           <i class="bi bi-check-circle"></i>
-          Traiter
+          Approuver
         </button>
 
         <button
@@ -130,14 +130,14 @@
           Rejeter
         </button>
 
-        <button
+        <!-- <button
           *ngIf="canEscalader()"
           class="btn btn-warning"
           (click)="openEscaladerModal()"
           [disabled]="processing">
           <i class="bi bi-arrow-up-circle"></i>
           Escalader
-        </button>
+        </button> -->
 
         <button
           class="btn btn-outline"
@@ -171,7 +171,7 @@
   <div *ngIf="showTraiterModal" class="modal-overlay" (click)="closeTraiterModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>Traiter la requête</h3>
+        <h3>Approbation de la requête</h3>
         <button class="btn-close" (click)="closeTraiterModal()">
           <i class="bi bi-x-lg"></i>
         </button>
@@ -200,7 +200,7 @@
           <div class="modal-actions">
             <button type="submit" class="btn btn-success" [disabled]="processing">
               <i class="bi bi-check-circle"></i>
-              {{ processing ? 'Traitement...' : 'Valider le traitement' }}
+              {{ processing ? 'Traitement...' : 'Approuver' }}
             </button>
             <button type="button" class="btn btn-outline" (click)="closeTraiterModal()" [disabled]="processing">
               Annuler
@@ -282,7 +282,7 @@
   </div>
 
   <!-- Modal Escalader -->
-  <div *ngIf="showEscaladerModal" class="modal-overlay" (click)="closeEscaladerModal()">
+  <!-- <div *ngIf="showEscaladerModal" class="modal-overlay" (click)="closeEscaladerModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>Escalader la requête</h3>
@@ -318,5 +318,5 @@
         </form>
       </div>
     </div>
-  </div>
+  </div> -->
 </div>

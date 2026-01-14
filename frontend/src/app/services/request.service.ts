@@ -34,6 +34,7 @@ export interface HistoriqueRequete {
   etat_id: number;
   requete_id: number;
   utilisateur_id?: number;
+  commentaire: string;
   etat?: Etat;
   utilisateur?: any;
   duree?: string;

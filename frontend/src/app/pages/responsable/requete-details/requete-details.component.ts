@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DashboardAgentService } from '../../../services/dashboard-agent.service';
 import { FileService } from '../../../services/file.service';
+import { ResponsableService } from '../../../services/responsable.service';
 
 @Component({
   selector: 'app-requete-details',
@@ -12,10 +13,10 @@ import { FileService } from '../../../services/file.service';
   templateUrl: './requete-details.component.html',
   styleUrls: ['./requete-details.component.scss']
 })
-export class RequeteDetailsComponent implements OnInit {
+export class ResponsableRequeteDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private dashboardService = inject(DashboardAgentService);
+  private responsableService = inject(ResponsableService);
    private fileService = inject(FileService);
 
   requete: any = null;
@@ -58,43 +59,15 @@ export class RequeteDetailsComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.dashboardService.getRequeteDetails(id).subscribe({
+    this.responsableService.getRequete(id).subscribe({
       next: (response) => {
         this.requete = response.data;
-        console.log(this.requete)
-        // Debug: afficher les informations pour l'escalade
-        console.log('Statut actuel de la requête:', this.requete?.statut_actuel);
-        console.log('Type de requête:', this.requete?.type_requete);
-        console.log('Nécessite approbation:', this.requete?.type_requete?.necessite_approbation);
-        console.log('Peut escalader?', this.canEscalader());
         this.loading = false;
       },
       error: (err) => {
         console.error('Erreur lors du chargement:', err);
         this.error = 'Impossible de charger les détails de la requête';
         this.loading = false;
-      }
-    });
-  }
-
-  prendreEnCharge(): void {
-    if (!confirm('Voulez-vous prendre en charge cette requête ?')) return;
-
-    this.processing = true;
-    this.error = null;
-
-    this.dashboardService.prendreEnCharge(this.requete.id).subscribe({
-      next: (response) => {
-        this.success = response.message;
-        this.processing = false;
-        this.loadRequeteDetails(this.requete.id);
-
-        setTimeout(() => this.success = null, 3000);
-      },
-      error: (err) => {
-        console.error('Erreur:', err);
-        this.error = err.error?.message || 'Erreur lors de la prise en charge';
-        this.processing = false;
       }
     });
   }
@@ -119,12 +92,12 @@ export class RequeteDetailsComponent implements OnInit {
 
     console.log('Traitement de la requête avec:', this.traiterForm);
 
-    this.dashboardService.traiterRequete(this.requete.id, this.traiterForm).subscribe({
+    this.responsableService.approuverRequete(this.requete.id).subscribe({
       next: (response) => {
         console.log('Réponse du serveur:', response);
         this.success = response.message;
         this.processing = false;
-        this.closeTraiterModal();
+        this.showTraiterModal = false;
         this.loadRequeteDetails(this.requete.id);
 
         setTimeout(() => this.success = null, 3000);
@@ -155,7 +128,7 @@ export class RequeteDetailsComponent implements OnInit {
     this.processing = true;
     this.error = null;
 
-    this.dashboardService.rejeterRequete(this.requete.id, this.rejeterForm.motif).subscribe({
+    this.responsableService.rejeterRequete(this.requete.id, this.rejeterForm.motif).subscribe({
       next: (response) => {
         this.success = response.message;
         this.processing = false;
@@ -190,7 +163,7 @@ export class RequeteDetailsComponent implements OnInit {
     this.processing = true;
     this.error = null;
 
-    this.dashboardService.ajouterCommentaire(this.requete.id, this.commentaireForm.commentaire).subscribe({
+    this.responsableService.ajouterCommentaire(this.requete.id, this.commentaireForm.commentaire).subscribe({
       next: (response) => {
         this.success = response.message;
         this.processing = false;
@@ -223,11 +196,11 @@ export class RequeteDetailsComponent implements OnInit {
   getStatusLabel(statut: string): string {
     const labelMap: { [key: string]: string } = {
       'EN_ATTENTE': 'En attente',
-      'AFFECTEE': 'Affectée',
-      'EN_ATTENTE_APPROBATION': 'En attentte d\'approbation',
       'EN_COURS': 'En cours',
       'TRAITEE': 'Traitée',
-      'REJETEE': 'Rejetée'
+      'REJETEE': 'Rejetée',
+      'AFFECTEE': 'Affectée',
+      'EN_ATTENTE_APPROBATION': 'En attentte d\'approbation',
     };
     return labelMap[statut] || statut;
   }
@@ -237,11 +210,11 @@ export class RequeteDetailsComponent implements OnInit {
   }
 
   canTraiter(): boolean {
-    return this.requete?.statut_actuel === 'EN_COURS' || this.requete?.statut_actuel === 'EN_ATTENTE' || this.requete?.statut_actuel === 'AFFECTEE';
+    return this.requete?.statut_actuel === 'EN_COURS' || this.requete?.statut_actuel === 'EN_ATTENTE' || this.requete?.statut_actuel === 'AFFECTEE' || this.requete?.statut_actuel === 'EN_ATTENTE_APPROBATION';
   }
 
   canRejeter(): boolean {
-    return this.requete?.statut_actuel !== 'TRAITEE' && this.requete?.statut_actuel !== 'REJETEE' && this.requete?.statut_actuel !== 'EN_ATTENTE_APPROBATION';
+    return this.requete?.statut_actuel !== 'TRAITEE' && this.requete?.statut_actuel !== 'REJETEE';
   }
 
   canEscalader(): boolean {
@@ -282,26 +255,26 @@ export class RequeteDetailsComponent implements OnInit {
     this.showEscaladerModal = false;
   }
 
-  escalader(): void {
-    this.processing = true;
-    this.error = null;
+  // escalader(): void {
+  //   this.processing = true;
+  //   this.error = null;
 
-    this.dashboardService.escaladerRequete(this.requete.id, this.escaladerForm.commentaire).subscribe({
-      next: (response) => {
-        this.success = response.message || 'Requête escaladée avec succès';
-        this.processing = false;
-        this.closeEscaladerModal();
-        this.loadRequeteDetails(this.requete.id);
+  //   this.dashboardService.escaladerRequete(this.requete.id, this.escaladerForm.commentaire).subscribe({
+  //     next: (response) => {
+  //       this.success = response.message || 'Requête escaladée avec succès';
+  //       this.processing = false;
+  //       this.closeEscaladerModal();
+  //       this.loadRequeteDetails(this.requete.id);
 
-        setTimeout(() => this.success = null, 3000);
-      },
-      error: (err) => {
-        console.error('Erreur:', err);
-        this.error = err.error?.message || 'Erreur lors de l\'escalade';
-        this.processing = false;
-      }
-    });
-  }
+  //       setTimeout(() => this.success = null, 3000);
+  //     },
+  //     error: (err) => {
+  //       console.error('Erreur:', err);
+  //       this.error = err.error?.message || 'Erreur lors de l\'escalade';
+  //       this.processing = false;
+  //     }
+  //   });
+  // }
 
   downloadFile(attachment: any): void {
     this.fileService.downloadAttachment(attachment.id).subscribe({

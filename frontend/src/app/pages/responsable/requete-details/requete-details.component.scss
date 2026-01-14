@@ -178,6 +178,18 @@
     background: #ffebee;
     color: #d32f2f;
   }
+
+  &.status-info {
+    background: #34a0ba;
+  }
+
+  &.status-approbation {
+    background: #484407;
+  }
+
+  &.status-warning {
+    background: #e3a40f;
+  }
 }
 
 .card-body {
@@ -410,18 +422,6 @@
 
   &.status-progress {
     background: #1976d2;
-  }
-
-  &.status-info {
-    background: #34a0ba;
-  }
-
-  &.status-approbation {
-    background: #484407;
-  }
-
-  &.status-warning {
-    background: #e3a40f;
   }
 
   &.status-completed {

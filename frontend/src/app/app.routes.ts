@@ -212,7 +212,7 @@ export const routes: Routes = [
       },
       {
         path: 'requetes/:id',
-        loadComponent: () => import('./pages/responsable/requete-details/requete-details').then(m => m.ResponsableRequeteDetailsComponent)
+        loadComponent: () => import('./pages/responsable/requete-details/requete-details.component').then(m => m.ResponsableRequeteDetailsComponent)
       },
       {
         path: 'recherche',

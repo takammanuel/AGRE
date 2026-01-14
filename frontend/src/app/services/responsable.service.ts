@@ -72,4 +72,8 @@ export class ResponsableService {
   getStatistiques(): Observable<any> {
     return this.http.get<any>(`${API_URL}/responsable/statistiques`);
   }
+
+  ajouterCommentaire(id: number, commentaire: string): Observable<any> {
+      return this.http.post<any>(`${API_URL}/requetes/${id}/commentaire`, { commentaire });
+    }
 }

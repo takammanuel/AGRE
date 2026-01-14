@@ -28,7 +28,7 @@ class RequeteResponsableController extends Controller
                 $q->whereHas('etat', fn($eq) => $eq->where('libelle', 'TRAITEE'));
             })->count(),
         ];
-        
+
         return response()->json([
             'success' => true,
             'data' => $stats
@@ -101,7 +101,7 @@ class RequeteResponsableController extends Controller
     public function search(Request $request): JsonResponse
     {
         $searchTerm = $request->query('q');
-        
+
         if (!$searchTerm) {
             return response()->json([
                 'success' => false,
@@ -178,9 +178,9 @@ class RequeteResponsableController extends Controller
     public function approuver(Request $request, int $id): JsonResponse
     {
         $requete = Requete::findOrFail($id);
-        
-        $etatEnCours = \App\Models\Etat::where('libelle', 'EN_COURS')->first();
-        
+
+        $etatEnCours = \App\Models\Etat::where('libelle', 'TRAITEE')->first();
+
         if ($etatEnCours) {
             DB::table('historique_requetes')->insert([
                 'requete_id' => $requete->id,
@@ -217,9 +217,9 @@ class RequeteResponsableController extends Controller
         ]);
 
         $requete = Requete::findOrFail($id);
-        
+
         $etatRejetee = \App\Models\Etat::where('libelle', 'REJETEE')->first();
-        
+
         if ($etatRejetee) {
             DB::table('historique_requetes')->insert([
                 'requete_id' => $requete->id,
@@ -257,10 +257,8 @@ class RequeteResponsableController extends Controller
             'agent',
             'historiques.etat'
         ])
-        ->where('priorite', 'URGENTE')
-        ->orWhereHas('historiques', function($q) {
-            $q->whereHas('etat', fn($eq) => $eq->where('libelle', 'EN_ATTENTE'))
-              ->where('date_etat', '<', now()->subDays(7));
+        ->WhereHas('historiques', function($q) {
+            $q->whereHas('etat', fn($eq) => $eq->where('libelle', 'EN_ATTENTE_APPROBATION'));
         })
         ->orderBy('created_at', 'asc')
         ->paginate(15);
@@ -351,7 +349,7 @@ class RequeteResponsableController extends Controller
         for ($i = 6; $i >= 0; $i--) {
             $date = now()->subDays($i);
             $count = Requete::whereDate('created_at', $date)->count();
-            
+
             $evolution[] = [
                 'date' => $date->format('Y-m-d'),
                 'label' => $date->format('d/m'),

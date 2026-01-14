@@ -30,10 +30,10 @@ export class DashboardAgentService {
    * Récupérer les requêtes affectées
    */
   getRequetes(filter?: string): Observable<any> {
-    const url = filter 
+    const url = filter
       ? `${API_URL}/agent/requetes?filter=${filter}`
       : `${API_URL}/agent/requetes`;
-    
+
     return this.http.get<any>(url);
   }
 
@@ -63,17 +63,17 @@ export class DashboardAgentService {
    */
   traiterRequete(id: number, data: { commentaire?: string; pieces_jointes?: File[] }): Observable<any> {
     const formData = new FormData();
-    
+
     if (data.commentaire) {
       formData.append('commentaire', data.commentaire);
     }
-    
+
     if (data.pieces_jointes) {
       data.pieces_jointes.forEach((file, index) => {
         formData.append(`pieces_jointes[${index}]`, file);
       });
     }
-    
+
     return this.http.post<any>(`${API_URL}/agent/requetes/${id}/traiter`, formData);
   }
 
@@ -88,7 +88,7 @@ export class DashboardAgentService {
    * Ajouter un commentaire
    */
   ajouterCommentaire(id: number, commentaire: string): Observable<any> {
-    return this.http.post<any>(`${API_URL}/agent/requetes/${id}/commentaire`, { commentaire });
+    return this.http.post<any>(`${API_URL}/requetes/${id}/commentaire`, { commentaire });
   }
 
   /**

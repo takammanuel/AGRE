@@ -21,37 +21,44 @@ class TypeRequeteSeeder extends Seeder
             [
                 'nom' => 'Certificat de scolarité',
                 'description' => 'Demande de certificat scolaire',
-                'service_id' => $serviceScolarite ? $serviceScolarite->id : null
+                'service_id' => $serviceScolarite ? $serviceScolarite->id : null,
+                'necessite_approbation' => true
             ],
             [
                 'nom' => 'Rélevé de notes',
                 'description' => 'Demande de relevé de notes',
-                'service_id' => $serviceExamens ? $serviceExamens->id : null
+                'service_id' => $serviceExamens ? $serviceExamens->id : null,
+                'necessite_approbation' => true
             ],
             [
                 'nom' => 'Attestation de stages',
                 'description' => 'Demande d\'attestation de stage',
-                'service_id' => $serviceScolarite ? $serviceScolarite->id : null
+                'service_id' => $serviceScolarite ? $serviceScolarite->id : null,
+                'necessite_approbation' => false
             ],
             [
                 'nom' => 'Demande de bourse',
                 'description' => 'Demande de bourse',
-                'service_id' => Service::where('nom', 'Service des Bourses et Aides Sociales')->first()->id ?? null
+                'service_id' => Service::where('nom', 'Service des Bourses et Aides Sociales')->first()->id ?? null,
+                'necessite_approbation' => true
             ],
             [
                 'nom' => 'Certificat du diplôme',
                 'description' => 'Demande de certificat de diplôme',
-                'service_id' => $serviceScolarite ? $serviceScolarite->id : null
+                'service_id' => $serviceScolarite ? $serviceScolarite->id : null,
+                'necessite_approbation' => true
             ],
             [
                 'nom' => 'Changement de filière',
                 'description' => 'Demande de changement de filière',
-                'service_id' => $serviceScolarite ? $serviceScolarite->id : null
+                'service_id' => $serviceScolarite ? $serviceScolarite->id : null,
+                'necessite_approbation' => false
             ],
             [
                 'nom' => 'Réévaluation de note',
                 'description' => 'Demande de réévaluation de note',
-                'service_id' => $serviceExamens ? $serviceExamens->id : null
+                'service_id' => $serviceExamens ? $serviceExamens->id : null,
+                'necessite_approbation' => true
             ],
         ]);
     }
