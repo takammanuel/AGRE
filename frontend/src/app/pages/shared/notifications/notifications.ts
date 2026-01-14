@@ -1,8 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { NotificationService } from '../../../services/notification.service';
 import { AuthService } from '../../../services/auth.service';
+import { DashboardConfigService } from '../../../services/dashboard-config.service';
 
 @Component({
   selector: 'app-notifications',
@@ -14,6 +15,8 @@ import { AuthService } from '../../../services/auth.service';
 export class NotificationsComponent implements OnInit {
   private notificationService = inject(NotificationService);
   private authService = inject(AuthService);
+  private router = inject(Router);
+  private dashboardConfigService = inject(DashboardConfigService);
 
   notifications: any[] = [];
   loading = true;
@@ -47,6 +50,32 @@ export class NotificationsComponent implements OnInit {
         notification.is_read = true;
         this.notificationService.refreshCount();
       });
+    }
+  }
+
+  goToConversation(notification: any): void {
+    // Marquer comme lu
+    if (!notification.is_read) {
+      this.notificationService.markAsRead(notification.id).subscribe(() => {
+        notification.is_read = true;
+        this.notificationService.refreshCount();
+      });
+    }
+    
+    // Rediriger vers la messagerie si requete_id existe
+    if (notification.requete_id) {
+      const role = this.getRolePrefix();
+      this.router.navigate([`/${role}/messagerie`, notification.requete_id]);
+    }
+  }
+
+  private getRolePrefix(): string {
+    const config = this.dashboardConfigService.getDashboardConfig();
+    switch (config.role) {
+      case 'ADMINISTRATEUR': return 'admin';
+      case 'AGENT_ACADEMIQUE': return 'agent';
+      case 'RESPONSABLE_PEDAGOGIQUE': return 'responsable';
+      default: return 'etudiant';
     }
   }
 

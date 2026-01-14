@@ -63,9 +63,9 @@
             <ng-container *ngIf="notifications.length > 0; else noNotifications">
               <a
                 *ngFor="let notif of notifications"
-                class="notification-item"
+                class="notification-item clickable"
                 [class.unread]="!notif.is_read"
-                (click)="markAsRead(notif)"
+                (click)="goToNotificationDetail(notif)"
               >
                 <div class="notification-icon" [ngClass]="getNotificationBgClass(notif.type)">
                   <i class="bi" [ngClass]="getNotificationIcon(notif.type)"></i>
@@ -75,6 +75,7 @@
                   <p class="notification-text">{{ notif.message }}</p>
                   <span class="notification-time">{{ formatTimeAgo(notif.created_at) }}</span>
                 </div>
+                <i class="bi bi-chevron-right notification-arrow"></i>
               </a>
             </ng-container>
 

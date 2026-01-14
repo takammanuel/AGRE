@@ -92,6 +92,24 @@ export class HeaderDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
+  goToNotificationDetail(notification: any): void {
+    // Marquer comme lu
+    if (!notification.is_read) {
+      this.notificationService.markAsRead(notification.id).subscribe(() => {
+        notification.is_read = true;
+        this.notificationService.refreshCount();
+      });
+    }
+    
+    // Rediriger vers la messagerie de la requête si c'est une notification de type CHAT
+    if (notification.requete_id) {
+      const role = this.getRolePrefix();
+      this.router.navigate([`/${role}/messagerie`, notification.requete_id]);
+    }
+    
+    this.closeMenus();
+  }
+
   getNotificationIcon(type: string): string {
     switch (type) {
       case 'CHAT': return 'bi-chat-dots text-primary';

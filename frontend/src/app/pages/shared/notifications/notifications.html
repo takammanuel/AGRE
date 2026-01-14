@@ -41,7 +41,7 @@
           *ngFor="let notif of notifications"
           class="list-group-item list-group-item-action d-flex align-items-start gap-3 py-3"
           [class.bg-light]="!notif.is_read"
-          (click)="markAsRead(notif)"
+          (click)="goToConversation(notif)"
           style="cursor: pointer;"
         >
           <!-- Icône -->
@@ -66,17 +66,15 @@
             <!-- Badge non lu -->
             <span *ngIf="!notif.is_read" class="badge bg-primary">Nouveau</span>
             
-            <!-- Lien vers la requête si disponible -->
-            <a 
-              *ngIf="notif.requete_id"
-              [routerLink]="['../messagerie', notif.requete_id]"
-              class="btn btn-sm btn-outline-primary mt-2"
-              (click)="$event.stopPropagation()"
-            >
+            <!-- Indicateur cliquable -->
+            <span *ngIf="notif.requete_id" class="text-primary small ms-2">
               <i class="bi bi-chat-dots me-1"></i>
-              Voir la conversation
-            </a>
+              Cliquez pour voir la conversation
+            </span>
           </div>
+          
+          <!-- Flèche indicatrice -->
+          <i *ngIf="notif.requete_id" class="bi bi-chevron-right text-muted align-self-center"></i>
         </div>
       </div>
     </div>
