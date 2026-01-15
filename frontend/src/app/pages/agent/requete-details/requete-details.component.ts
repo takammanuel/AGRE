@@ -28,6 +28,7 @@ export class RequeteDetailsComponent implements OnInit {
   showRejeterModal = false;
   showCommentaireModal = false;
   showEscaladerModal = false;
+  showConfirmPriseEnChargeModal = false;
 
   // Formulaires
   traiterForm = {
@@ -78,7 +79,6 @@ export class RequeteDetailsComponent implements OnInit {
   }
 
   prendreEnCharge(): void {
-    if (!confirm('Voulez-vous prendre en charge cette requête ?')) return;
 
     this.processing = true;
     this.error = null;
@@ -88,6 +88,7 @@ export class RequeteDetailsComponent implements OnInit {
         this.success = response.message;
         this.processing = false;
         this.loadRequeteDetails(this.requete.id);
+        this.showConfirmPriseEnChargeModal = false;
 
         setTimeout(() => this.success = null, 3000);
       },
@@ -97,6 +98,14 @@ export class RequeteDetailsComponent implements OnInit {
         this.processing = false;
       }
     });
+  }
+
+  openConfirmPriseEnChargeModal(): void {
+    this.showConfirmPriseEnChargeModal = true;
+  }
+
+  closeConfirmPriseEnChargeModal(): void {
+    this.showConfirmPriseEnChargeModal = false;
   }
 
   openTraiterModal(): void {

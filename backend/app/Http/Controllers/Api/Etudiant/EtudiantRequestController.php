@@ -119,7 +119,7 @@ class EtudiantRequestController extends Controller
 
             // Affectation automatique au service
             if ($typeRequete->service_id) {
-                $requete->changerEtat('AFFECTEE', null);
+                $requete->changerEtat('AFFECTEE', $user->id);
                 $agent = ProfilAgentAdministratif::where('service_id', $typeRequete->service_id)->first();
                 if ($agent) {
                     $requete->agent_id = $agent->utilisateur_id;

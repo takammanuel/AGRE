@@ -20,35 +20,35 @@ class RequeteEtudiantController extends Controller
     public function dashboard(Request $request): JsonResponse
     {
         $user = $request->user();
-        
+
         $stats = [
             'total' => Requete::where('etudiant_id', $user->id)->count(),
-            
+
             'en_attente' => Requete::where('etudiant_id', $user->id)
                 ->whereHas('historiques', function($q) {
                     $q->whereHas('etat', fn($eq) => $eq->where('libelle', 'EN_ATTENTE'));
                 })
                 ->count(),
-            
+
             'en_cours' => Requete::where('etudiant_id', $user->id)
                 ->whereHas('historiques', function($q) {
                     $q->whereHas('etat', fn($eq) => $eq->where('libelle', 'EN_COURS'));
                 })
                 ->count(),
-            
+
             'traitees' => Requete::where('etudiant_id', $user->id)
                 ->whereHas('historiques', function($q) {
                     $q->whereHas('etat', fn($eq) => $eq->where('libelle', 'TRAITEE'));
                 })
                 ->count(),
         ];
-        
+
         return response()->json([
             'success' => true,
             'data' => $stats
         ]);
     }
-    
+
     /**
      * Liste des requêtes de l'étudiant
      * GET /api/etudiant/requetes
@@ -56,7 +56,7 @@ class RequeteEtudiantController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        
+
         $requetes = Requete::with([
             'typeRequete.service',
             'agent',
@@ -67,7 +67,7 @@ class RequeteEtudiantController extends Controller
         ->where('etudiant_id', $user->id)
         ->orderBy('created_at', 'desc')
         ->paginate(15);
-        
+
         // Ajouter le dernier statut à chaque requête
         $requetes->getCollection()->transform(function($requete) {
             $dernierHistorique = $requete->historiques->first();
@@ -75,13 +75,13 @@ class RequeteEtudiantController extends Controller
             $requete->date_statut = $dernierHistorique?->date_etat ?? null;
             return $requete;
         });
-        
+
         return response()->json([
             'success' => true,
             'data' => $requetes
         ]);
     }
-    
+
     /**
      * Détails d'une requête
      * GET /api/etudiant/requetes/{id}
@@ -89,7 +89,7 @@ class RequeteEtudiantController extends Controller
     public function show(Request $request, int $id): JsonResponse
     {
         $user = $request->user();
-        
+
         $requete = Requete::with([
             'typeRequete.service',
             'agent',
@@ -98,21 +98,21 @@ class RequeteEtudiantController extends Controller
         ])
         ->where('etudiant_id', $user->id)
         ->findOrFail($id);
-        
+
         // Trier les historiques
         $requete->historiques = $requete->historiques->sortByDesc('date_etat')->values();
-        
+
         // Ajouter le statut actuel
         $dernierHistorique = $requete->historiques->first();
         $requete->statut_actuel = $dernierHistorique?->etat->libelle ?? 'N/A';
         $requete->date_statut = $dernierHistorique?->date_etat ?? null;
-        
+
         return response()->json([
             'success' => true,
             'data' => $requete
         ]);
     }
-    
+
     /**
      * Créer une nouvelle requête
      * POST /api/etudiant/requetes
@@ -127,12 +127,12 @@ class RequeteEtudiantController extends Controller
                 'pieces_jointes' => 'nullable|array',
                 'pieces_jointes.*' => 'nullable|file|max:10240'
             ]);
-            
+
             $user = $request->user();
-            
+
             // Générer un code unique
             $codeRequete = 'REQ-' . date('Y') . '-' . str_pad(Requete::count() + 1, 5, '0', STR_PAD_LEFT);
-            
+
             // Créer la requête
             $requete = Requete::create([
                 'code_requete' => $codeRequete,
@@ -141,10 +141,10 @@ class RequeteEtudiantController extends Controller
                 'etudiant_id' => $user->id,
                 'type_requete_id' => $validated['type_requete_id'],
             ]);
-            
+
             // Créer l'historique initial (EN_ATTENTE)
-            $etatEnAttente = Etat::where('libelle', 'EN_ATTENTE')->first();
-            
+            $etatEnAttente = Etat::where('libelle', 'AFFECTEE')->first();
+
             if ($etatEnAttente) {
                 DB::table('historique_requetes')->insert([
                     'requete_id' => $requete->id,
@@ -154,13 +154,13 @@ class RequeteEtudiantController extends Controller
                     'updated_at' => now(),
                 ]);
             }
-            
+
             // Gérer les pièces jointes
             if ($request->hasFile('pieces_jointes')) {
                 foreach ($request->file('pieces_jointes') as $file) {
                     if ($file && $file->isValid()) {
                         $path = $file->store('pieces_jointes', 'public');
-                        
+
                         DB::table('piece_jointes')->insert([
                             'requete_id' => $requete->id,
                             'nom' => $file->getClientOriginalName(),
@@ -171,7 +171,7 @@ class RequeteEtudiantController extends Controller
                     }
                 }
             }
-            
+
             // Créer une notification pour l'étudiant
             Notification::create([
                 'titre' => 'Requête créée',
@@ -179,13 +179,13 @@ class RequeteEtudiantController extends Controller
                 'requete_id' => $requete->id,
                 'utilisateur_id' => $user->id
             ]);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Requête créée avec succès',
                 'data' => $requete
             ], 201);
-            
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -200,7 +200,7 @@ class RequeteEtudiantController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Liste des types de requêtes disponibles
      * GET /api/etudiant/types-requetes
@@ -211,7 +211,7 @@ class RequeteEtudiantController extends Controller
             ->where('est_actif', true)
             ->orderBy('nom')
             ->get();
-        
+
         return response()->json([
             'success' => true,
             'data' => $types
@@ -226,7 +226,7 @@ class RequeteEtudiantController extends Controller
     {
         $searchTerm = $request->query('q');
         $user = $request->user();
-        
+
         if (!$searchTerm) {
             return response()->json([
                 'success' => false,

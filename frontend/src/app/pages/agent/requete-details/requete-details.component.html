@@ -106,7 +106,7 @@
         <button
           *ngIf="canPrendreEnCharge()"
           class="btn btn-primary"
-          (click)="prendreEnCharge()"
+          (click)="openConfirmPriseEnChargeModal()"
           [disabled]="processing">
           <i class="bi bi-hand-thumbs-up"></i>
           Prendre en charge
@@ -166,6 +166,51 @@
       </div>
     </div>
   </div>
+
+
+  <!-- Modal Confirmation Prise en charge -->
+<div *ngIf="showConfirmPriseEnChargeModal"
+     class="modal-overlay"
+     (click)="closeConfirmPriseEnChargeModal()">
+
+  <div class="modal-content" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h3>Confirmation</h3>
+      <button class="btn-close" (click)="closeConfirmPriseEnChargeModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <p>
+        Êtes-vous sûr de vouloir <strong>prendre en charge cette requête</strong> ?
+      </p>
+      <p class="text-muted">
+        Cette action vous rendra responsable de son traitement.
+      </p>
+
+      <div class="modal-actions">
+      <button
+        class="btn btn-primary"
+        (click)="prendreEnCharge()"
+        [disabled]="processing">
+        <i class="bi bi-hand-thumbs-up"></i>
+        {{ processing ? 'Traitement...' : 'Confirmer' }}
+      </button>
+
+      <button
+        class="btn btn-outline"
+        (click)="closeConfirmPriseEnChargeModal()"
+        [disabled]="processing">
+        Annuler
+      </button>
+    </div>
+    </div>
+
+  </div>
+</div>
+
 
   <!-- Modal Traiter -->
   <div *ngIf="showTraiterModal" class="modal-overlay" (click)="closeTraiterModal()">
