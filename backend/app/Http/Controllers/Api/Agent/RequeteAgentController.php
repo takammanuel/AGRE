@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Agent;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use App\Models\Requete;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -195,10 +196,12 @@ class RequeteAgentController extends Controller
             $user = $request->user();
 
             $requete = Requete::with([
-                'etudiant',
+                'etudiant.profilEtudiant',
                 'typeRequete.service',
                 'historiques.etat',
-                'piecesJointes'
+                'historiques.utilisateur',
+                'piecesJointes',
+                'messages.emetteur'
             ])
             ->where('agent_id', $user->id)
             ->findOrFail($id);
@@ -257,9 +260,20 @@ class RequeteAgentController extends Controller
         DB::table('historique_requetes')->insert([
             'requete_id' => $requete->id,
             'etat_id' => $etatEnCours->id,
+            'utilisateur_id' => $user->id,
             'date_etat' => now(),
             'created_at' => now(),
             'updated_at' => now(),
+        ]);
+
+        // Notifier l'étudiant que sa requête est en cours
+        Notification::create([
+            'utilisateur_id' => $requete->etudiant_id,
+            'titre' => 'Requête prise en charge',
+            'message' => "Votre requête {$requete->code_requete} est maintenant en cours de traitement.",
+            'type' => 'REQUETE',
+            'requete_id' => $requete->id,
+            'is_read' => false,
         ]);
 
         return response()->json([
@@ -299,11 +313,38 @@ class RequeteAgentController extends Controller
             DB::table('historique_requetes')->insert([
                 'requete_id' => $requete->id,
                 'etat_id' => $etatTraitee->id,
+                'utilisateur_id' => $user->id,
                 'date_etat' => now(),
                 'commentaire' => $validated['commentaire'] ?? null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            // Notifier l'étudiant que sa requête a été traitée
+            Notification::create([
+                'utilisateur_id' => $requete->etudiant_id,
+                'titre' => 'Requête traitée',
+                'message' => "Votre requête {$requete->code_requete} a été traitée avec succès.",
+                'type' => 'SUCCESS',
+                'requete_id' => $requete->id,
+                'is_read' => false,
+            ]);
+
+            // Notifier les responsables pédagogiques
+            $responsables = \App\Models\Utilisateur::whereHas('roles', function($q) {
+                $q->where('nom', 'Responsable Pédagogique');
+            })->get();
+
+            foreach ($responsables as $responsable) {
+                Notification::create([
+                    'utilisateur_id' => $responsable->id,
+                    'titre' => 'Requête traitée par un agent',
+                    'message' => "La requête {$requete->code_requete} a été traitée par l'agent.",
+                    'type' => 'SUCCESS',
+                    'requete_id' => $requete->id,
+                    'is_read' => false,
+                ]);
+            }
 
             // Gérer les pièces jointes si présentes
             if ($request->hasFile('pieces_jointes')) {
@@ -363,11 +404,38 @@ class RequeteAgentController extends Controller
         DB::table('historique_requetes')->insert([
             'requete_id' => $requete->id,
             'etat_id' => $etatRejetee->id,
+            'utilisateur_id' => $user->id,
             'date_etat' => now(),
             'commentaire' => $validated['motif'],
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // Notifier l'étudiant que sa requête a été rejetée
+        Notification::create([
+            'utilisateur_id' => $requete->etudiant_id,
+            'titre' => 'Requête rejetée',
+            'message' => "Votre requête {$requete->code_requete} a été rejetée. Motif : {$validated['motif']}",
+            'type' => 'URGENT',
+            'requete_id' => $requete->id,
+            'is_read' => false,
+        ]);
+
+        // Notifier les responsables pédagogiques
+        $responsables = \App\Models\Utilisateur::whereHas('roles', function($q) {
+            $q->where('nom', 'Responsable Pédagogique');
+        })->get();
+
+        foreach ($responsables as $responsable) {
+            Notification::create([
+                'utilisateur_id' => $responsable->id,
+                'titre' => 'Requête rejetée par un agent',
+                'message' => "La requête {$requete->code_requete} a été rejetée par l'agent. Motif : {$validated['motif']}",
+                'type' => 'URGENT',
+                'requete_id' => $requete->id,
+                'is_read' => false,
+            ]);
+        }
 
         return response()->json([
             'success' => true,
@@ -449,11 +517,38 @@ class RequeteAgentController extends Controller
         DB::table('historique_requetes')->insert([
             'requete_id' => $requete->id,
             'etat_id' => $etatEnAttenteApprobation->id,
+            'utilisateur_id' => $user->id,
             'date_etat' => now(),
             'commentaire' => $validated['commentaire'] ?? 'Requête escaladée au responsable pédagogique',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // Notifier l'étudiant que sa requête est en attente d'approbation
+        Notification::create([
+            'utilisateur_id' => $requete->etudiant_id,
+            'titre' => 'Requête en attente d\'approbation',
+            'message' => "Votre requête {$requete->code_requete} a été escaladée et est en attente d'approbation.",
+            'type' => 'REQUETE',
+            'requete_id' => $requete->id,
+            'is_read' => false,
+        ]);
+
+        // Notifier les responsables pédagogiques
+        $responsables = \App\Models\Utilisateur::whereHas('roles', function($q) {
+            $q->where('nom', 'Responsable Pédagogique');
+        })->get();
+
+        foreach ($responsables as $responsable) {
+            Notification::create([
+                'utilisateur_id' => $responsable->id,
+                'titre' => 'Nouvelle requête à approuver',
+                'message' => "La requête {$requete->code_requete} nécessite votre approbation.",
+                'type' => 'URGENT',
+                'requete_id' => $requete->id,
+                'is_read' => false,
+            ]);
+        }
 
         // TODO: Notifier le responsable pédagogique
 

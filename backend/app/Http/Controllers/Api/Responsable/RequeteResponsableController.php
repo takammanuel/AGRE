@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Responsable;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use App\Models\Requete;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -77,7 +78,9 @@ class RequeteResponsableController extends Controller
             'typeRequete.service',
             'agent',
             'historiques.etat',
-            'piecesJointes'
+            'historiques.utilisateur',
+            'piecesJointes',
+            'messages.emetteur'
         ])->findOrFail($id);
 
         // Trier les historiques
@@ -177,27 +180,43 @@ class RequeteResponsableController extends Controller
      */
     public function approuver(Request $request, int $id): JsonResponse
     {
+        $user = $request->user();
         $requete = Requete::findOrFail($id);
 
-        $etatEnCours = \App\Models\Etat::where('libelle', 'TRAITEE')->first();
+        $etatTraitee = \App\Models\Etat::where('libelle', 'TRAITEE')->first();
 
-        if ($etatEnCours) {
+        if ($etatTraitee) {
             DB::table('historique_requetes')->insert([
                 'requete_id' => $requete->id,
-                'etat_id' => $etatEnCours->id,
+                'etat_id' => $etatTraitee->id,
+                'utilisateur_id' => $user->id,
                 'date_etat' => now(),
                 'commentaire' => 'Approuvé par le responsable pédagogique',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            // Notification à l'étudiant
-            \App\Models\Notification::create([
-                'titre' => 'Requête approuvée',
-                'message' => "Votre requête {$requete->code_requete} a été approuvée par le responsable pédagogique.",
-                'requete_id' => $requete->id,
+            // Notifier l'étudiant
+            Notification::create([
                 'utilisateur_id' => $requete->etudiant_id,
+                'titre' => 'Requête approuvée et traitée',
+                'message' => "Votre requête {$requete->code_requete} a été approuvée et traitée par le responsable pédagogique.",
+                'type' => 'SUCCESS',
+                'requete_id' => $requete->id,
+                'is_read' => false,
             ]);
+
+            // Notifier l'agent si présent
+            if ($requete->agent_id) {
+                Notification::create([
+                    'utilisateur_id' => $requete->agent_id,
+                    'titre' => 'Requête approuvée',
+                    'message' => "La requête {$requete->code_requete} a été approuvée par le responsable pédagogique.",
+                    'type' => 'SUCCESS',
+                    'requete_id' => $requete->id,
+                    'is_read' => false,
+                ]);
+            }
         }
 
         return response()->json([
@@ -216,6 +235,7 @@ class RequeteResponsableController extends Controller
             'motif' => 'required|string|max:500'
         ]);
 
+        $user = $request->user();
         $requete = Requete::findOrFail($id);
 
         $etatRejetee = \App\Models\Etat::where('libelle', 'REJETEE')->first();
@@ -224,19 +244,34 @@ class RequeteResponsableController extends Controller
             DB::table('historique_requetes')->insert([
                 'requete_id' => $requete->id,
                 'etat_id' => $etatRejetee->id,
+                'utilisateur_id' => $user->id,
                 'date_etat' => now(),
                 'commentaire' => 'Rejeté par le responsable pédagogique: ' . $validated['motif'],
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            // Notification à l'étudiant
-            \App\Models\Notification::create([
-                'titre' => 'Requête rejetée',
-                'message' => "Votre requête {$requete->code_requete} a été rejetée. Motif: {$validated['motif']}",
-                'requete_id' => $requete->id,
+            // Notifier l'étudiant
+            Notification::create([
                 'utilisateur_id' => $requete->etudiant_id,
+                'titre' => 'Requête rejetée',
+                'message' => "Votre requête {$requete->code_requete} a été rejetée par le responsable pédagogique. Motif: {$validated['motif']}",
+                'type' => 'URGENT',
+                'requete_id' => $requete->id,
+                'is_read' => false,
             ]);
+
+            // Notifier l'agent si présent
+            if ($requete->agent_id) {
+                Notification::create([
+                    'utilisateur_id' => $requete->agent_id,
+                    'titre' => 'Requête rejetée par le responsable',
+                    'message' => "La requête {$requete->code_requete} a été rejetée par le responsable pédagogique.",
+                    'type' => 'URGENT',
+                    'requete_id' => $requete->id,
+                    'is_read' => false,
+                ]);
+            }
         }
 
         return response()->json([
@@ -251,17 +286,29 @@ class RequeteResponsableController extends Controller
      */
     public function requetesEscaladees(Request $request): JsonResponse
     {
+        // Récupérer l'ID de l'état EN_ATTENTE_APPROBATION
+        $etatId = \App\Models\Etat::where('libelle', 'EN_ATTENTE_APPROBATION')->value('id');
+
         $requetes = Requete::with([
             'etudiant.profilEtudiant',
             'typeRequete.service',
             'agent',
             'historiques.etat'
         ])
-        ->WhereHas('historiques', function($q) {
-            $q->whereHas('etat', fn($eq) => $eq->where('libelle', 'EN_ATTENTE_APPROBATION'));
+        ->whereHas('historiques', function($q) use ($etatId) {
+            $q->where('etat_id', $etatId)
+              ->whereRaw('date_etat = (SELECT MAX(date_etat) FROM historique_requetes WHERE requete_id = requetes.id)');
         })
-        ->orderBy('created_at', 'asc')
+        ->orderBy('created_at', 'desc')
         ->paginate(15);
+
+        // Ajouter le statut actuel
+        $requetes->getCollection()->transform(function($requete) {
+            $dernierHistorique = $requete->historiques->sortByDesc('date_etat')->first();
+            $requete->statut_actuel = $dernierHistorique?->etat->libelle ?? 'N/A';
+            $requete->date_statut = $dernierHistorique?->date_etat ?? null;
+            return $requete;
+        });
 
         return response()->json([
             'success' => true,

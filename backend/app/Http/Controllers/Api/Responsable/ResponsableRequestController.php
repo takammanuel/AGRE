@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Responsable;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Responsable\ApproveRequestRequest;
 use App\Models\Etat;
+use App\Models\Notification;
 use App\Models\Requete;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -134,8 +135,31 @@ class ResponsableRequestController extends Controller
                         $requete->save();
                     }
                     
-                    $requete->changerEtat('EN_COURS', $user->id);
-                    $message = 'Requête approuvée. Retour à l\'agent pour finalisation.';
+                    $requete->changerEtat('TRAITEE', $user->id);
+                    
+                    // Notifier l'étudiant
+                    Notification::create([
+                        'utilisateur_id' => $requete->etudiant_id,
+                        'titre' => 'Requête approuvée et traitée',
+                        'message' => "Votre requête {$requete->code_requete} a été approuvée et traitée.",
+                        'type' => 'SUCCESS',
+                        'requete_id' => $requete->id,
+                        'is_read' => false,
+                    ]);
+
+                    // Notifier l'agent
+                    if ($requete->agent_id) {
+                        Notification::create([
+                            'utilisateur_id' => $requete->agent_id,
+                            'titre' => 'Requête approuvée',
+                            'message' => "La requête {$requete->code_requete} a été approuvée par le responsable.",
+                            'type' => 'SUCCESS',
+                            'requete_id' => $requete->id,
+                            'is_read' => false,
+                        ]);
+                    }
+                    
+                    $message = 'Requête approuvée et traitée.';
                     break;
 
                 case 'reject':
@@ -147,6 +171,29 @@ class ResponsableRequestController extends Controller
                     $requete->save();
                     
                     $requete->changerEtat('REJETEE', $user->id);
+                    
+                    // Notifier l'étudiant
+                    Notification::create([
+                        'utilisateur_id' => $requete->etudiant_id,
+                        'titre' => 'Requête rejetée',
+                        'message' => "Votre requête {$requete->code_requete} a été rejetée. Motif : {$request->commentaire}",
+                        'type' => 'URGENT',
+                        'requete_id' => $requete->id,
+                        'is_read' => false,
+                    ]);
+
+                    // Notifier l'agent
+                    if ($requete->agent_id) {
+                        Notification::create([
+                            'utilisateur_id' => $requete->agent_id,
+                            'titre' => 'Requête rejetée par le responsable',
+                            'message' => "La requête {$requete->code_requete} a été rejetée par le responsable.",
+                            'type' => 'URGENT',
+                            'requete_id' => $requete->id,
+                            'is_read' => false,
+                        ]);
+                    }
+                    
                     $message = 'Requête rejetée.';
                     break;
 
