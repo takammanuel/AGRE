@@ -76,6 +76,7 @@ class Requete extends Model
         HistoriqueRequete::create([
             'requete_id' => $this->id,
             'etat_id' => $etat->id,
+            'utilisateur_id' => $utilisateurId ?? $this->etudiant_id,
             'date_etat' => now(),
         ]);
 

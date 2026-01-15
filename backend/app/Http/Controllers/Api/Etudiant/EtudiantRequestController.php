@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Etudiant\StoreRequestRequest;
 use App\Http\Requests\Etudiant\UpdateRequestRequest;
 use App\Models\Etat;
+use App\Models\Notification;
 use App\Models\ProfilAgentAdministratif;
 use App\Models\Requete;
 use App\Models\TypeRequete;
@@ -95,6 +96,7 @@ class EtudiantRequestController extends Controller
                 'code_requete' => $codeRequete,
                 'type_requete_id' => $request->type_requete_id,
                 'etudiant_id' => $user->id,
+                'utilisateur_id' => $user->id,
                 'description' => $request->description,
                 'priorite' => $request->priorite,
             ]);
@@ -122,10 +124,17 @@ class EtudiantRequestController extends Controller
                 if ($agent) {
                     $requete->agent_id = $agent->utilisateur_id;
                     $requete->save();
-                }
 
-                // TODO: Déclencher notification aux agents du service
-                // Event::dispatch(new RequestAssigned($requete));
+                    // Notifier l'agent qu'une nouvelle requête lui a été affectée
+                    Notification::create([
+                        'utilisateur_id' => $agent->utilisateur_id,
+                        'titre' => 'Nouvelle requête affectée',
+                        'message' => "Une nouvelle requête ({$codeRequete}) vous a été affectée.",
+                        'type' => 'REQUETE',
+                        'requete_id' => $requete->id,
+                        'is_read' => false,
+                    ]);
+                }
             }
 
             DB::commit();

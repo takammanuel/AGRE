@@ -74,6 +74,7 @@ class RequeteController extends Controller
             'titre'           => $validated['titre'],
             'description'     => $validated['description'],
             'etudiant_id'     => $validated['utilisateur_id'],
+            'utilisateur_id'  => $validated['utilisateur_id'],
             'type_requete_id' => $validated['type_requete_id'] ?? 1,
             'statut'          => 'En attente',
             'priorite'        => 'Normale'

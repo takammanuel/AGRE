@@ -66,12 +66,15 @@ export class ResponsableRequetesEscaladeesComponent implements OnInit {
   ngOnInit(): void {
     this.responsableService.getRequetesEscaladees().subscribe({
       next: (response) => {
+        console.log('Réponse requêtes escaladées:', response);
         if (response.success) {
-          this.requetes = response.data.data || [];
+          // La réponse paginée a les données dans response.data.data
+          this.requetes = response.data?.data || response.data || [];
         }
         this.isLoading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('Erreur chargement requêtes escaladées:', err);
         this.isLoading = false;
       }
     });

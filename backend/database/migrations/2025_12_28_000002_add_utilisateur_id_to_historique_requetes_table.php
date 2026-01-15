@@ -12,11 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('historique_requetes', function (Blueprint $table) {
-            $table->foreignId('utilisateur_id')
-                ->nullable()
-                ->after('requete_id')
-                ->constrained('utilisateurs')
-                ->nullOnDelete();
+            if (!Schema::hasColumn('historique_requetes', 'utilisateur_id')) {
+                $table->foreignId('utilisateur_id')
+                    ->nullable()
+                    ->after('requete_id')
+                    ->constrained('utilisateurs')
+                    ->nullOnDelete();
+            }
         });
     }
 
