@@ -30,8 +30,22 @@ export class TypeRequeteModalComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(_changes: SimpleChanges): void {
-    if (this.typeRequete) {
-      this.formData = { ...this.typeRequete };
+    if (this.typeRequete && this.isEdit) {
+      // En mode édition, copier toutes les données du type de requête
+      this.formData = {
+        nom: this.typeRequete.nom || '',
+        description: this.typeRequete.description || '',
+        service_id: this.typeRequete.service_id || null
+      };
+      console.log('Mode édition - formData initialisé:', this.formData);
+    } else {
+      // En mode création, réinitialiser le formulaire
+      this.formData = {
+        nom: '',
+        description: '',
+        service_id: null
+      };
+      console.log('Mode création - formData réinitialisé');
     }
   }
 
@@ -39,23 +53,58 @@ export class TypeRequeteModalComponent implements OnInit, OnChanges {
     this.loadingServices = true;
     this.typeRequetesService.getServices().subscribe({
       next: (response: any) => {
-        this.services = response?.services?.data || response?.services || [];
+        console.log('Services reçus:', response);
+        // Le backend retourne { success: true, services: { data: [...], ...pagination } }
+        this.services = response?.services?.data || response?.data || response?.services || [];
+        console.log('Services chargés:', this.services);
         this.loadingServices = false;
       },
       error: (error: any) => {
-        console.error('Erreur:', error);
+        console.error('Erreur chargement services:', error);
         this.loadingServices = false;
       }
     });
   }
 
-  open(): void { this.showModal = true; this.submitted = false; }
+  open(): void {
+    this.showModal = true;
+    this.submitted = false;
+    
+    // Réinitialiser ou charger les données selon le mode
+    if (this.isEdit && this.typeRequete) {
+      this.formData = {
+        nom: this.typeRequete.nom || '',
+        description: this.typeRequete.description || '',
+        service_id: this.typeRequete.service_id || null
+      };
+      console.log('Modal ouvert en mode édition:', this.formData);
+    } else {
+      this.formData = {
+        nom: '',
+        description: '',
+        service_id: null
+      };
+      console.log('Modal ouvert en mode création');
+    }
+  }
   close(): void { this.showModal = false; }
 
   onSubmit(): void {
     this.submitted = true;
+    console.log('=== SOUMISSION FORMULAIRE ===');
+    console.log('Mode:', this.isEdit ? 'Édition' : 'Création');
+    console.log('formData:', this.formData);
+    console.log('Validation - nom:', this.formData.nom);
+    console.log('Validation - description:', this.formData.description);
+    console.log('Validation - service_id:', this.formData.service_id);
+    
     if (this.formData.nom && this.formData.description) {
+      console.log('✓ Formulaire valide, émission de l\'événement save');
       this.save.emit(this.formData);
+    } else {
+      console.log('❌ Formulaire invalide');
+      if (!this.formData.nom) console.log('  - Nom manquant');
+      if (!this.formData.description) console.log('  - Description manquante');
     }
   }
 

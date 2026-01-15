@@ -13,9 +13,11 @@ class UpdateTypeRequeteRequest extends FormRequest
 
     public function rules(): array
     {
+        $typeRequeteId = $this->route('types_requete');
+        
         return [
-            'nom' => ['sometimes', 'string', 'max:255'],
-            'description' => ['sometimes', 'string'],
+            'nom' => ['required', 'string', 'max:255', 'unique:type_requetes,nom,' . $typeRequeteId],
+            'description' => ['required', 'string'],
             'service_id' => ['nullable', 'exists:services,id'],
         ];
     }

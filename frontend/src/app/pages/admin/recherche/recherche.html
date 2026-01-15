@@ -43,7 +43,8 @@
       <h5>{{ requetes.length }} résultat(s) trouvé(s)</h5>
     </div>
 
-    <div class="table-responsive">
+    <!-- Vue Desktop: Table -->
+    <div class="table-responsive desktop-view">
       <table class="table table-hover">
         <thead>
           <tr>
@@ -103,6 +104,68 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Vue Mobile: Cards -->
+    <div class="mobile-view">
+      <div class="mobile-card" *ngFor="let requete of requetes">
+        <div class="mobile-card-header">
+          <div>
+            <div class="mobile-card-code">{{ requete.code_requete }}</div>
+            <small class="text-muted">{{ requete.created_at | date: 'dd/MM/yyyy HH:mm' }}</small>
+          </div>
+          <span [class]="getStatutClass(requete.statut_actuel)">
+            {{ getStatutLabel(requete.statut_actuel) }}
+          </span>
+        </div>
+
+        <div class="mobile-card-body">
+          <div class="mobile-info-row">
+            <span class="mobile-info-label">Étudiant:</span>
+            <div class="mobile-info-value">
+              <strong>{{ requete.etudiant?.nom }} {{ requete.etudiant?.prenom }}</strong>
+              <small class="text-muted d-block">{{ requete.etudiant?.email }}</small>
+            </div>
+          </div>
+
+          <div class="mobile-info-row">
+            <span class="mobile-info-label">Matricule:</span>
+            <span class="mobile-info-value">
+              <span class="badge bg-light text-dark">
+                {{ requete.etudiant?.profil_etudiant?.matricule || 'N/A' }}
+              </span>
+            </span>
+          </div>
+
+          <div class="mobile-info-row">
+            <span class="mobile-info-label">Type:</span>
+            <span class="mobile-info-value">{{ requete.type_requete?.nom }}</span>
+          </div>
+
+          <div class="mobile-info-row">
+            <span class="mobile-info-label">Service:</span>
+            <span class="mobile-info-value">{{ requete.type_requete?.service?.nom }}</span>
+          </div>
+
+          <div class="mobile-info-row">
+            <span class="mobile-info-label">Priorité:</span>
+            <span class="mobile-info-value">
+              <span [class]="getPrioriteClass(requete.priorite)">
+                {{ requete.priorite }}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div class="mobile-card-actions">
+          <a
+            [routerLink]="['/admin/requetes', requete.id]"
+            class="btn btn-primary btn-sm"
+          >
+            <i class="bi bi-eye"></i> Voir les détails
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </div>

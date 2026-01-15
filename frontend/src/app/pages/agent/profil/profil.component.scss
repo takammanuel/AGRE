@@ -29,10 +29,11 @@
 }
 
 .profile-header {
-  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  background: linear-gradient(135deg, var(--agent-color) 0%, var(--agent-dark) 100%);
   padding: 2rem;
   text-align: center;
   color: white;
+  box-shadow: var(--shadow-lg);
 
   .profile-avatar {
     width: 100px;
@@ -111,10 +112,11 @@
   border: none;
 
   .card-header {
-    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    background: linear-gradient(135deg, var(--agent-color) 0%, var(--agent-dark) 100%);
     color: white;
     border-radius: 12px 12px 0 0 !important;
     padding: 1rem 1.5rem;
+    box-shadow: var(--shadow-lg);
 
     h5 {
       margin: 0;

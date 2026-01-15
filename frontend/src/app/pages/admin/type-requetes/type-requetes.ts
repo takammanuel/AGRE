@@ -5,6 +5,8 @@ import { TypeRequeteModalComponent } from '../../modals/type-requetes/type-reque
 import { ConfirmModalComponent } from '../../modals/confirm-modal/confirm-modal';
 import { TypeRequeteDetailModalComponent } from '../../modals/type-requetes/type-requete-detail-modal/type-requete-detail-modal';
 import { TypeRequetesService } from '../../../services/type-requetes.service';
+import { ToastService } from '../../../services/toast.service';
+import { ToastComponent } from '../../../components/toast/toast.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TypeRequete } from '../../../services/request.service';
 
@@ -16,7 +18,8 @@ import { TypeRequete } from '../../../services/request.service';
     FormsModule,
     TypeRequeteModalComponent,
     ConfirmModalComponent,
-    TypeRequeteDetailModalComponent
+    TypeRequeteDetailModalComponent,
+    ToastComponent
   ],
   templateUrl: './type-requetes.html',
   styleUrls: ['./type-requetes.css']
@@ -38,6 +41,7 @@ export class TypeRequetesComponent implements OnInit {
 
   constructor(
     private typeRequetesService: TypeRequetesService,
+    private toastService: ToastService,
     private route: ActivatedRoute,
     private router: Router,
   ) {}
@@ -55,7 +59,12 @@ export class TypeRequetesComponent implements OnInit {
     this.loading = true;
     this.typeRequetesService.getAll(page, this.perPage).subscribe({
       next: (response) => {
+        console.log('=== TYPES REQUÊTES REÇUS ===');
+        console.log('Réponse complète:', response);
         this.typeRequetes = response.types_requetes.data;
+        if (this.typeRequetes.length > 0) {
+          console.log('Premier type:', this.typeRequetes[0]);
+        }
         this.pagination = response.types_requetes;
         this.currentPage = response.types_requetes.current_page;
         this.loading = false;
@@ -134,26 +143,47 @@ export class TypeRequetesComponent implements OnInit {
   onTypeRequeteSaved(typeRequeteData: TypeRequete): void {
     if (this.isEditMode && this.selectedTypeRequete && this.selectedTypeRequete.id) {
       // Mode édition
+      console.log('=== MODIFICATION TYPE REQUÊTE ===');
+      console.log('ID:', this.selectedTypeRequete.id);
+      console.log('Données envoyées:', typeRequeteData);
+      console.log('URL:', `${this.typeRequetesService['apiUrl']}/admin/types-requetes/${this.selectedTypeRequete.id}`);
+      
       this.typeRequetesService.update(this.selectedTypeRequete.id, typeRequeteData).subscribe({
-        next: () => {
-          this.loadTypeRequetes();
+        next: (response) => {
+          console.log('✓ Réponse modification:', response);
+          this.toastService.success('Type de requête modifié avec succès !');
+          this.loadTypeRequetes(this.currentPage);
           this.typeRequeteModal.close();
         },
         error: (error) => {
-          console.error('Erreur lors de la modification:', error);
-          this.error = 'Erreur lors de la modification';
+          console.error('❌ Erreur modification complète:', error);
+          console.error('Status:', error.status);
+          console.error('Message:', error.message);
+          console.error('Error body:', error.error);
+          const message = error.error?.message || 'Erreur lors de la modification';
+          this.toastService.error(message);
         }
       });
     } else {
       // Mode création
+      console.log('=== CRÉATION TYPE REQUÊTE ===');
+      console.log('Données envoyées:', typeRequeteData);
+      console.log('URL:', `${this.typeRequetesService['apiUrl']}/admin/types-requetes`);
+      
       this.typeRequetesService.create(typeRequeteData).subscribe({
-        next: () => {
-          this.loadTypeRequetes();
+        next: (response) => {
+          console.log('✓ Réponse création:', response);
+          this.toastService.success('Type de requête créé avec succès !');
+          this.loadTypeRequetes(this.currentPage);
           this.typeRequeteModal.close();
         },
         error: (error) => {
-          console.error('Erreur lors de la création:', error);
-          this.error = 'Erreur lors de la création';
+          console.error('❌ Erreur création complète:', error);
+          console.error('Status:', error.status);
+          console.error('Message:', error.message);
+          console.error('Error body:', error.error);
+          const message = error.error?.message || 'Erreur lors de la création';
+          this.toastService.error(message);
         }
       });
     }
@@ -161,14 +191,26 @@ export class TypeRequetesComponent implements OnInit {
 
   onDeleteConfirmed(): void {
     if (this.selectedTypeRequete && this.selectedTypeRequete.id) {
+      console.log('=== SUPPRESSION TYPE REQUÊTE ===');
+      console.log('ID:', this.selectedTypeRequete.id);
+      console.log('URL:', `${this.typeRequetesService['apiUrl']}/admin/types-requetes/${this.selectedTypeRequete.id}`);
+      
       this.typeRequetesService.delete(this.selectedTypeRequete.id).subscribe({
-        next: () => {
-          this.loadTypeRequetes();
+        next: (response) => {
+          console.log('✓ Réponse suppression:', response);
+          this.toastService.success('Type de requête supprimé avec succès !');
+          this.loadTypeRequetes(this.currentPage);
           this.confirmModal.close();
           this.selectedTypeRequete = null;
         },
         error: (error) => {
-          console.error('Erreur lors de la suppression:', error);
+          console.error('❌ Erreur suppression complète:', error);
+          console.error('Status:', error.status);
+          console.error('Message:', error.message);
+          console.error('Error body:', error.error);
+          const message = error.error?.message || 'Erreur lors de la suppression';
+          this.toastService.error(message);
+          this.confirmModal.close();
         }
       });
     }

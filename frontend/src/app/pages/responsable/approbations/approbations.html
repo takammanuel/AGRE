@@ -2,31 +2,34 @@
 
 <div class="approbations-container">
   <div class="page-header">
-    <h1><i class="bi bi-check-circle"></i> Approbations</h1>
-    <span class="badge badge-count">{{ approbations.length }} en attente</span>
+    <div>
+      <h1><i class="bi bi-check-circle"></i> Approbations</h1>
+      <p class="subtitle">{{ requetes.length }} requête(s) en attente</p>
+    </div>
   </div>
 
   <!-- Loading -->
-  <div *ngIf="loading" class="loading-state">
+  <div *ngIf="isLoading" class="loading-state">
     <div class="spinner"></div>
     <p>Chargement...</p>
   </div>
 
   <!-- Error -->
-  <div *ngIf="error && !loading" class="error-state">
+  <div *ngIf="error && !isLoading" class="error-state">
     <i class="bi bi-exclamation-triangle"></i>
     <p>{{ error }}</p>
     <button (click)="loadApprobations()" class="btn btn-primary">Réessayer</button>
   </div>
 
   <!-- Liste -->
-  <div *ngIf="!loading && !error" class="approbations-list">
-    <div *ngIf="approbations.length === 0" class="empty-state">
+  <div *ngIf="!isLoading && !error" class="approbations-list">
+    <div *ngIf="requetes.length === 0" class="empty-state">
       <i class="bi bi-check-all"></i>
       <p>Aucune approbation en attente</p>
+      <small>Les requêtes nécessitant votre approbation apparaîtront ici</small>
     </div>
 
-    <div *ngFor="let requete of approbations" class="approbation-card">
+    <div *ngFor="let requete of requetes" class="approbation-card">
       <div class="card-header">
         <div>
           <h3>{{ requete.code_requete }}</h3>
@@ -41,6 +44,10 @@
         <div class="info-row">
           <i class="bi bi-person"></i>
           <span><strong>Étudiant:</strong> {{ requete.etudiant?.nom }} {{ requete.etudiant?.prenom }}</span>
+        </div>
+        <div class="info-row" *ngIf="requete.etudiant?.profil_etudiant?.matricule">
+          <i class="bi bi-card-text"></i>
+          <span><strong>Matricule:</strong> {{ requete.etudiant.profil_etudiant.matricule }}</span>
         </div>
         <div class="info-row">
           <i class="bi bi-tag"></i>

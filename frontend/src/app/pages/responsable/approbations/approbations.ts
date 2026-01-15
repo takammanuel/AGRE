@@ -1,105 +1,119 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ResponsableService } from '../../../services/responsable.service';
+import { ToastService } from '../../../services/toast.service';
+import { ToastComponent } from '../../../components/toast/toast.component';
 
 @Component({
   selector: 'app-responsable-approbations',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="container py-4">
-      <h2><i class="bi bi-check-circle"></i> Approbations</h2>
-      <p class="text-muted">Gérez les approbations de requêtes</p>
-
-      <div *ngIf="isLoading" class="text-center py-5">
-        <div class="spinner-border" role="status"></div>
-      </div>
-
-      <div *ngIf="!isLoading && requetes.length === 0" class="alert alert-info">
-        Aucune requête en attente d'approbation
-      </div>
-
-      <div *ngIf="!isLoading && requetes.length > 0" class="table-responsive">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Étudiant</th>
-              <th>Type</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let requete of requetes">
-              <td>{{ requete.code_requete }}</td>
-              <td>{{ requete.etudiant?.nom }} {{ requete.etudiant?.prenom }}</td>
-              <td>{{ requete.type_requete?.nom }}</td>
-              <td>{{ requete.created_at | date: 'dd/MM/yyyy' }}</td>
-              <td>
-                <button (click)="approuver(requete.id)" class="btn btn-sm btn-success me-2">
-                  <i class="bi bi-check"></i> Approuver
-                </button>
-                <button (click)="rejeter(requete.id)" class="btn btn-sm btn-danger">
-                  <i class="bi bi-x"></i> Rejeter
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .container { max-width: 1200px; }
-    h2 i { color: var(--responsable-color, #6f42c1); margin-right: 0.5rem; }
-  `]
+  imports: [CommonModule, FormsModule, ToastComponent],
+  templateUrl: './approbations.html',
+  styleUrls: ['./approbations.scss']
 })
 export class ResponsableApprobationsComponent implements OnInit {
   private responsableService = inject(ResponsableService);
+  private toastService = inject(ToastService);
 
   requetes: any[] = [];
   isLoading = true;
+  error: string | null = null;
+  
+  // Modal de rejet
+  showRejectModal = false;
+  selectedRequete: any = null;
+  motifRejet = '';
+  submitting = false;
 
   ngOnInit(): void {
     this.loadApprobations();
   }
 
   loadApprobations(): void {
+    this.isLoading = true;
+    this.error = null;
+    
+    console.log('=== CHARGEMENT APPROBATIONS RESPONSABLE ===');
+    
     this.responsableService.getApprobations().subscribe({
       next: (response) => {
-        if (response.success) {
-          this.requetes = response.data.data || [];
+        console.log('Réponse API:', response);
+        
+        // Gérer la pagination Laravel
+        if (response.data && response.data.data) {
+          this.requetes = response.data.data;
+        } else if (response.data && Array.isArray(response.data)) {
+          this.requetes = response.data;
+        } else {
+          this.requetes = [];
         }
+        
+        console.log('Approbations chargées:', this.requetes.length);
         this.isLoading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('Erreur:', err);
+        this.error = 'Impossible de charger les approbations';
         this.isLoading = false;
       }
     });
   }
 
-  approuver(id: number): void {
-    if (confirm('Approuver cette requête?')) {
-      this.responsableService.approuverRequete(id).subscribe({
-        next: () => {
-          alert('Requête approuvée');
+  approuver(requete: any): void {
+    if (confirm(`Voulez-vous approuver la requête ${requete.code_requete} ?`)) {
+      this.responsableService.approuverRequete(requete.id).subscribe({
+        next: (response) => {
+          this.toastService.success(
+            `Requête ${requete.code_requete} approuvée avec succès !`
+          );
           this.loadApprobations();
+        },
+        error: (err) => {
+          console.error('Erreur:', err);
+          const message = err.error?.message || 'Erreur lors de l\'approbation';
+          this.toastService.error(message);
         }
       });
     }
   }
 
-  rejeter(id: number): void {
-    const motif = prompt('Motif du rejet:');
-    if (motif) {
-      this.responsableService.rejeterRequete(id, motif).subscribe({
-        next: () => {
-          alert('Requête rejetée');
-          this.loadApprobations();
-        }
-      });
+  openRejectModal(requete: any): void {
+    this.selectedRequete = requete;
+    this.motifRejet = '';
+    this.showRejectModal = true;
+  }
+
+  closeRejectModal(): void {
+    this.showRejectModal = false;
+    this.selectedRequete = null;
+    this.motifRejet = '';
+  }
+
+  rejeter(): void {
+    if (!this.motifRejet.trim()) {
+      this.toastService.warning('Veuillez saisir un motif de rejet');
+      return;
     }
+
+    this.submitting = true;
+    
+    this.responsableService.rejeterRequete(this.selectedRequete.id, this.motifRejet).subscribe({
+      next: (response) => {
+        this.toastService.success(
+          `Requête ${this.selectedRequete.code_requete} rejetée avec succès`
+        );
+        this.submitting = false;
+        this.closeRejectModal();
+        this.loadApprobations();
+      },
+      error: (err) => {
+        console.error('Erreur:', err);
+        const message = err.error?.message || 'Erreur lors du rejet';
+        this.toastService.error(message);
+        this.submitting = false;
+      }
+    });
   }
 }
