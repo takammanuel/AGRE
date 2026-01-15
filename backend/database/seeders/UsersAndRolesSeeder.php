@@ -17,9 +17,9 @@ class UsersAndRolesSeeder extends Seeder
     {
         $users = [
             [
-                'nom' => 'DUPONT',
-                'prenom' => 'Alice',
-                'email' => 'alice@test.com',
+                'nom' => 'TETCHOUP',
+                'prenom' => 'Steve',
+                'email' => 'tetchoup@gmail.com',
                 'password' => Hash::make('password123'),
                 'telephone' => '697932976',
                 'email_verified_at' => now(),
@@ -32,24 +32,37 @@ class UsersAndRolesSeeder extends Seeder
                 ]
             ],
             [
-                'nom' => 'MARTIN',
-                'prenom' => 'Bob',
-                'email' => 'bob@test.com',
+                'nom' => 'TAKAM',
+                'prenom' => 'Manuel',
+                'email' => 'takam@gmail.com',
                 'password' => Hash::make('password123'),
-                'telephone' => '697932977',
+                'telephone' => '697932978',
                 'email_verified_at' => now(),
                 'is_active' => true,
-                'role' => 'ETUDIANT',
+                'role' => 'AGENT_ACADEMIQUE',
                 'profil_data' => [
-                    'matricule' => 'ETU2024002',
-                    'filiere' => 'Génie Civil',
-                    'niveau' => 2,
+                    'poste' => 'Agent de Scolarité',
+                    'service' => 'Service de la Scolarité',
                 ]
             ],
             [
-                'nom' => 'DURAND',
-                'prenom' => 'Charlie',
-                'email' => 'charlie@test.com',
+                'nom' => 'AMINA',
+                'prenom' => 'Sandrine',
+                'email' => 'amina@gmail.com',
+                'password' => Hash::make('password123'),
+                'telephone' => '697932978',
+                'email_verified_at' => now(),
+                'is_active' => true,
+                'role' => 'AGENT_ACADEMIQUE',
+                'profil_data' => [
+                    'poste' => 'Agent des Examens',
+                    'service' => 'Service des Examens et Concours',
+                ]
+            ],
+            [
+                'nom' => 'AMINA',
+                'prenom' => 'sandrine',
+                'email' => 'amina@gmail.com',
                 'password' => Hash::make('password123'),
                 'telephone' => '697932978',
                 'email_verified_at' => now(),
@@ -60,9 +73,9 @@ class UsersAndRolesSeeder extends Seeder
                 ]
             ],
             [
-                'nom' => 'LECLERC',
-                'prenom' => 'David',
-                'email' => 'david@test.com',
+                'nom' => 'NGUETSOP',
+                'prenom' => 'Richnelle',
+                'email' => 'nguetsop@gmail.com',
                 'password' => Hash::make('password123'),
                 'telephone' => '697932979',
                 'email_verified_at' => now(),
@@ -73,9 +86,9 @@ class UsersAndRolesSeeder extends Seeder
                 ]
             ],
             [
-                'nom' => 'MOREAU',
-                'prenom' => 'Eva',
-                'email' => 'eva@test.com',
+                'nom' => 'SOBZE',
+                'prenom' => 'Lustrelle',
+                'email' => 'sobze@gmail.com',
                 'password' => Hash::make('password123'),
                 'telephone' => '697932980',
                 'email_verified_at' => now(),
@@ -121,10 +134,14 @@ class UsersAndRolesSeeder extends Seeder
                 break;
 
             case 'agent_academique':
-                $service = Service::where('nom', 'Service de la Scolarité')->first();
+                $service = Service::where('nom', $profilData['service'] ?? null)->first();
+
                 ProfilAgentAdministratif::updateOrCreate(
                     ['utilisateur_id' => $utilisateur->id],
-                    ['poste' => $profilData['poste'], 'service_id' => $service?->id]
+                    [
+                        'poste' => $profilData['poste'],
+                        'service_id' => $service?->id
+                    ]
                 );
                 break;
 
