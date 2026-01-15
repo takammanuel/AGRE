@@ -1,2 +1,6 @@
 /* Styles de base */
 
+.badge {
+  padding: 0.35em 0.65em;
+  border-radius: 50px;
+}

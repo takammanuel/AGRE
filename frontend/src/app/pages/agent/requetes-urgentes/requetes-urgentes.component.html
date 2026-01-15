@@ -102,35 +102,19 @@
       </div>
 
       <div class="card-footer" (click)="$event.stopPropagation()">
-        <button class="btn btn-outline" (click)="escaladerRequete(requete.id)">
+        <!-- <button class="btn btn-outline" (click)="escaladerRequete(requete.id)">
           <i class="bi bi-arrow-up-circle"></i>
           Escalader
-        </button>
-        <button class="btn btn-warning" [routerLink]="['/agent/messagerie']">
+        </button> -->
+        <button class="btn btn-warning" [routerLink]="['/agent/messagerie', requete.id]">
           <i class="bi bi-chat-dots"></i>
           Contacter l'étudiant
         </button>
-        <button class="btn btn-primary" [routerLink]="['/agent/requetes', requete.id]">
-          <i class="bi bi-check-circle"></i>
-          Traiter maintenant
+        <button class="btn btn-primary" [routerLink]="['/agent/requete', requete.id]">
+          <i class="bi bi-eye"></i>
+         voir
         </button>
       </div>
     </div>
-  </div>
-
-  <!-- Quick Actions -->
-  <div *ngIf="!loading && !error && requetes.length > 0" class="quick-actions-bar">
-    <button class="btn btn-outline" (click)="loadRequetesUrgentes()">
-      <i class="bi bi-arrow-clockwise"></i>
-      Actualiser
-    </button>
-    <a [routerLink]="['/agent/requetes']" class="btn btn-outline">
-      <i class="bi bi-inbox"></i>
-      Toutes les requêtes
-    </a>
-    <a [routerLink]="['/agent']" class="btn btn-outline">
-      <i class="bi bi-speedometer2"></i>
-      Tableau de bord
-    </a>
   </div>
 </div>

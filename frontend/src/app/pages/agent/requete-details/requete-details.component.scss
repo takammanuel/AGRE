@@ -110,11 +110,6 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  }
 }
 
 .card-header {
@@ -270,94 +265,75 @@
   }
 }
 
+/* Actions */
 .card-actions {
-  padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
+  padding: 1rem 1.5rem;
+  background: #fafafa;
   border-top: 1px solid var(--neutral-200);
+
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
+/* Base button */
 .btn {
-  padding: 0.875rem 1.75rem;
-  border-radius: 10px;
-  border: none;
-  font-weight: 600;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid transparent;
   cursor: pointer;
+
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.95rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  gap: 0.4rem;
+
+  background: white;
+  color: var(--text-primary);
 
   i {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-    transform: none !important;
-  }
-
-  &.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-
-    &:hover:not(:disabled) {
-      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    }
-  }
-
-  &.btn-success {
-    background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
-    color: white;
-
-    &:hover:not(:disabled) {
-      background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
-    }
-  }
-
-  &.btn-danger {
-    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
-    color: white;
-
-    &:hover:not(:disabled) {
-      background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
-    }
-  }
-
-  &.btn-warning {
-    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-    color: white;
-    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
-
-    &:hover:not(:disabled) {
-      background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
-      box-shadow: 0 6px 16px rgba(255, 152, 0, 0.4);
-      transform: translateY(-2px);
-    }
-  }
-
-  &.btn-outline {
-    background: white;
-    border: 2px solid var(--neutral-200);
-    color: var(--text-primary);
-
-    &:hover:not(:disabled) {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-    }
   }
 }
+
+/* Variantes sobres */
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.btn-success {
+  background: #2e7d32;
+  color: white;
+  border-color: #2e7d32;
+}
+
+.btn-danger {
+  background: #c62828;
+  color: white;
+  border-color: #c62828;
+}
+
+.btn-warning {
+  background: #ed6c02;
+  color: white;
+  border-color: #ed6c02;
+}
+
+/* Bouton secondaire */
+.btn-outline {
+  background: white;
+  color: var(--text-primary);
+  border: 1px solid var(--neutral-300);
+}
+
 
 .historique-card {
   padding: 2rem;

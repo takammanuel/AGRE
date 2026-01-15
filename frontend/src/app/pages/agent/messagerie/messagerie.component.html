@@ -32,17 +32,17 @@
 
       <!-- Liste des conversations -->
       <div class="conversations-list" *ngIf="!loading && !error && conversations.length > 0">
-        <div 
+        <div
           *ngFor="let conv of conversations"
           class="conversation-item"
           [class.active]="selectedUserId === conv.user_id"
           [class.unread]="conv.unread_count > 0"
           (click)="selectConversation(conv.user_id)">
-          
+
           <div class="conv-avatar">
             <i class="bi bi-person-circle"></i>
           </div>
-          
+
           <div class="conv-info">
             <div class="conv-header">
               <h4>{{ conv.user_prenom }} {{ conv.user_nom }}</h4>
@@ -97,12 +97,12 @@
           </div>
 
           <div *ngIf="!loadingMessages" class="messages-list">
-            <div 
+            <div
               *ngFor="let message of selectedConversation.messages"
               class="message"
               [class.message-sent]="isMyMessage(message)"
               [class.message-received]="!isMyMessage(message)">
-              
+
               <div class="message-bubble">
                 <p>{{ message.contenu }}</p>
                 <span class="message-time">{{ formatDate(message.created_at) }}</span>
@@ -119,8 +119,8 @@
             rows="3"
             (keydown.enter)="onEnterPress($any($event))"
             [disabled]="sending"></textarea>
-          
-          <button 
+
+          <button
             class="btn-send"
             (click)="sendMessage()"
             [disabled]="!newMessage.trim() || sending">
@@ -141,12 +141,12 @@
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
-      
+
       <div class="modal-body">
         <p>Sélectionnez un étudiant pour démarrer une conversation:</p>
-        
+
         <div class="etudiants-list">
-          <div 
+          <div
             *ngFor="let etudiant of etudiants"
             class="etudiant-item"
             (click)="selectEtudiantForNewMessage(etudiant.id)">

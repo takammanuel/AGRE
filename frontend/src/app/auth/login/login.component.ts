@@ -20,6 +20,8 @@ export class LoginComponent {
   isLoading = false;
   errorMessage = '';
   returnUrl = '';
+  submitted = false;
+  showPassword = false;
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -39,9 +41,14 @@ export class LoginComponent {
     return this.loginForm.get('password');
   }
 
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
   onSubmit(): void {
+    this.submitted = true;
+
     if (this.loginForm.invalid) {
-      this.markFormGroupTouched(this.loginForm);
       return;
     }
 
@@ -84,12 +91,6 @@ export class LoginComponent {
     } else {
       this.router.navigate(['/']);
     }
-  }
-
-  private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.values(formGroup.controls).forEach(control => {
-      control.markAsTouched();
-    });
   }
 
   goToRegister(): void {

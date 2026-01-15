@@ -30,7 +30,7 @@
         <h3>{{ stats.affectees_aujourdhui }}</h3>
         <p>Requêtes affectées aujourd'hui</p>
       </div>
-      <a [routerLink]="['/agent/requetes']" [queryParams]="{filter: 'today'}" class="card-link">
+      <a [routerLink]="['/agent/requetes-affectees']" [queryParams]="{filter: 'today'}" class="card-link">
         Voir <i class="bi bi-arrow-right"></i>
       </a>
     </div>
@@ -44,7 +44,7 @@
         <h3>{{ stats.affectees_semaine }}</h3>
         <p>Requêtes affectées cette semaine</p>
       </div>
-      <a [routerLink]="['/agent/requetes']" [queryParams]="{filter: 'week'}" class="card-link">
+      <a [routerLink]="['/agent/requetes-affectees']" [queryParams]="{filter: 'week'}" class="card-link">
         Voir <i class="bi bi-arrow-right"></i>
       </a>
     </div>
@@ -58,7 +58,7 @@
         <h3>{{ stats.urgentes }}</h3>
         <p>Requêtes urgentes</p>
       </div>
-      <a [routerLink]="['/agent/requetes']" [queryParams]="{filter: 'urgent'}" class="card-link">
+      <a [routerLink]="['/agent/urgentes']" [queryParams]="{filter: 'urgent'}" class="card-link">
         Voir <i class="bi bi-arrow-right"></i>
       </a>
     </div>
@@ -72,7 +72,7 @@
         <h3>{{ stats.total_affectees }}</h3>
         <p>Total requêtes affectées</p>
       </div>
-      <a [routerLink]="['/agent/requetes']" class="card-link">
+      <a [routerLink]="['/agent/requetes-affectees']" class="card-link">
         Voir tout <i class="bi bi-arrow-right"></i>
       </a>
     </div>
@@ -82,7 +82,7 @@
   <div *ngIf="stats && !loading" class="quick-actions">
     <h2>Actions rapides</h2>
     <div class="actions-grid">
-      <a [routerLink]="['/agent/requetes']" class="action-card">
+      <a [routerLink]="['/agent/requetes-affectees']" class="action-card">
         <i class="bi bi-inbox"></i>
         <span>Toutes les requêtes</span>
       </a>

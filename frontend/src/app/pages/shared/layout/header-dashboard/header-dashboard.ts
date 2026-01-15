@@ -100,13 +100,13 @@ export class HeaderDashboardComponent implements OnInit, OnDestroy {
         this.notificationService.refreshCount();
       });
     }
-    
+
     // Rediriger vers la messagerie de la requête si c'est une notification de type CHAT
     if (notification.requete_id) {
       const role = this.getRolePrefix();
       this.router.navigate([`/${role}/messagerie`, notification.requete_id]);
     }
-    
+
     this.closeMenus();
   }
 
@@ -183,7 +183,7 @@ export class HeaderDashboardComponent implements OnInit, OnDestroy {
         this.router.navigate(['/agent/requetes-affectees']);
         break;
       case 'RESPONSABLE_PEDAGOGIQUE':
-        this.router.navigate(['/responsable/requetes-en-attente']);
+        this.router.navigate(['/responsable/escaladees']);
         break;
       case 'ADMINISTRATEUR':
         this.router.navigate(['/admin/utilisateurs']);

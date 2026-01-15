@@ -1,24 +1,27 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { RequeteService } from '../../../services/requete.service';
 import { AuthService } from '../../../services/auth.service';
 import { MessageService } from '../../../services/message.service';
-import { NotificationService } from '../../../services/notification.service'; // AJOUTÉ
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-messagerie',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
-  templateUrl: './messagerie.html'
+  templateUrl: './messagerie.html',
+  styleUrls: ['./messagerie.css']
 })
-export class MessagerieComponent implements OnInit {
+export class MessagerieComponent implements OnInit, AfterViewChecked {
   private requeteService = inject(RequeteService);
   private messageService = inject(MessageService);
   public authService = inject(AuthService);
-  public notificationService = inject(NotificationService); // AJOUTÉ
+  public notificationService = inject(NotificationService);
   private route = inject(ActivatedRoute);
+
+  @ViewChild('chatBox') private chatBox?: ElementRef;
 
   public requetes: any[] = [];
   public messages: any[] = [];
@@ -26,6 +29,7 @@ export class MessagerieComponent implements OnInit {
   public currentRequete: any = null;
   public monId: number | null = null;
   public nouveauMessage: string = '';
+  private shouldScrollToBottom = false;
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
@@ -40,6 +44,13 @@ export class MessagerieComponent implements OnInit {
         this.chargerDiscussion(this.requeteId);
       }
     });
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.shouldScrollToBottom) {
+      this.scrollToBottom();
+      this.shouldScrollToBottom = false;
+    }
   }
 
   chargerListe(): void {
@@ -58,6 +69,7 @@ export class MessagerieComponent implements OnInit {
     this.messageService.getMessagesByRequete(id).subscribe({
       next: (res: any) => {
         this.messages = res.data || [];
+        this.shouldScrollToBottom = true;
       }
     });
   }
@@ -65,7 +77,6 @@ export class MessagerieComponent implements OnInit {
   envoyer(): void {
     if (!this.nouveauMessage.trim() || !this.requeteId) return;
 
-    // Déterminer le destinataire : l'agent assigné à la requête ou Charlie (ID 3) par défaut
     const recepteurId = this.currentRequete?.agent_id || this.currentRequete?.responsable_id || 3;
 
     const payload = {
@@ -79,9 +90,19 @@ export class MessagerieComponent implements OnInit {
       next: (res: any) => {
         this.messages.push(res.data);
         this.nouveauMessage = '';
-        // FORCE LA MISE À JOUR DU BADGE DE NOTIFICATION
+        this.shouldScrollToBottom = true;
         this.notificationService.refreshCount();
       }
     });
+  }
+
+  private scrollToBottom(): void {
+    if (this.chatBox) {
+      try {
+        this.chatBox.nativeElement.scrollTop = this.chatBox.nativeElement.scrollHeight;
+      } catch(err) {
+        console.error('Erreur lors du scroll:', err);
+      }
+    }
   }
 }

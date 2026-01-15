@@ -123,7 +123,7 @@ export class DashboardConfigService {
       menuItems: [
         { label: 'Tableau de bord', icon: 'bi-speedometer2', route: '/responsable', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
         { label: 'Recherche', icon: 'bi-search', route: '/responsable/recherche', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
-        { label: 'Approbations', icon: 'bi-check-circle', route: '/responsable/approbations', badge: 5, roles: ['RESPONSABLE_PEDAGOGIQUE'] },
+        // { label: 'Approbations', icon: 'bi-check-circle', route: '/responsable/approbations', badge: 5, roles: ['RESPONSABLE_PEDAGOGIQUE'] },
         { label: 'Requêtes escaladées', icon: 'bi-arrow-up-circle', route: '/responsable/escaladees', badge: 2, roles: ['RESPONSABLE_PEDAGOGIQUE'] },
         { label: 'Toutes les requêtes', icon: 'bi-list-ul', route: '/responsable/requetes', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
         { label: 'Historique', icon: 'bi-clock-history', route: '/responsable/historique', roles: ['RESPONSABLE_PEDAGOGIQUE'] },

@@ -32,10 +32,10 @@
             type="email"
             formControlName="email"
             class="form-control"
-            [class.is-invalid]="email?.invalid && (email?.touched || email?.dirty)"
+            [class.is-invalid]="email?.invalid && submitted"
             placeholder="votre@email.com"
           >
-          <div *ngIf="email?.invalid && (email?.touched || email?.dirty)" class="invalid-feedback">
+          <div *ngIf="email?.invalid && submitted" class="invalid-feedback">
             <div *ngIf="email?.errors?.['required']">Email requis</div>
             <div *ngIf="email?.errors?.['email']">Email invalide</div>
           </div>
@@ -49,14 +49,24 @@
               Mot de passe oublié ?
             </a>
           </div>
-          <input
-            type="password"
-            formControlName="password"
-            class="form-control"
-            [class.is-invalid]="password?.invalid && (password?.touched || password?.dirty)"
-            placeholder="Votre mot de passe"
-          >
-          <div *ngIf="password?.invalid && (password?.touched || password?.dirty)" class="invalid-feedback">
+          <div class="position-relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              class="form-control"
+              [class.is-invalid]="password?.invalid && submitted"
+              placeholder="Votre mot de passe"
+            >
+            <!-- <button
+              type="button"
+              class="btn btn-link position-absolute end-0 top-50 translate-middle-y text-neutral-600"
+              (click)="togglePasswordVisibility()"
+              style="text-decoration: none; padding: 0.375rem 0.75rem;"
+            >
+              <i [class]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button> -->
+          </div>
+          <div *ngIf="password?.invalid && submitted" class="invalid-feedback d-block">
             <div *ngIf="password?.errors?.['required']">Mot de passe requis</div>
             <div *ngIf="password?.errors?.['minlength']">Minimum 6 caractères</div>
           </div>
@@ -72,7 +82,7 @@
         <button
           type="submit"
           class="btn btn-primary-custom w-100 py-2 mb-3 fw-medium"
-          [disabled]="isLoading || loginForm.invalid"
+          [disabled]="isLoading"
         >
           <span *ngIf="!isLoading">
             Se connecter

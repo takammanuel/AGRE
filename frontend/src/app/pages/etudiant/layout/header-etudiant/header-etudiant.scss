@@ -145,8 +145,9 @@
   }
 
   .notifications-dropdown {
+    width: 380px;
     position: absolute;
-    left: -150px !important;
+    left: -200px !important;
     .notification-item {
       cursor: pointer;
       transition: background-color 0.2s;
