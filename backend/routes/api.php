@@ -144,7 +144,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [RequeteAgentController::class, 'dashboard']);
         Route::get('/statistiques', [RequeteAgentController::class, 'statistiques']);
         Route::get('/requetes', [RequeteAgentController::class, 'index']);
-        Route::get('/requetes/search', [RequeteAgentController::class, 'search']);
+        Route::get('/requetes/search', [RequeteAgentController::class, 'search']); // AVANT /{id}
         Route::get('/requetes/{id}', [RequeteAgentController::class, 'show']);
 
         // Actions sur les requêtes

@@ -177,8 +177,9 @@ class AgentController extends Controller
             DB::table('historique_requetes')->insert([
                 'requete_id' => $requete->id,
                 'etat_id' => $etatEnCours->id,
+                'utilisateur_id' => $agent->id,
                 'date_etat' => now(),
-                'commentaire' => 'Prise en charge par ' . $agent->nom_complet,
+                'commentaire' => 'Prise en charge par ' . $agent->nom . ' ' . $agent->prenom,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -225,8 +226,9 @@ class AgentController extends Controller
             DB::table('historique_requetes')->insert([
                 'requete_id' => $requete->id,
                 'etat_id' => $etatTraitee->id,
+                'utilisateur_id' => $agent->id,
                 'date_etat' => now(),
-                'commentaire' => $validated['commentaire'] ?? 'Requête traitée par ' . $agent->nom_complet,
+                'commentaire' => $validated['commentaire'] ?? 'Requête traitée par ' . $agent->nom . ' ' . $agent->prenom,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

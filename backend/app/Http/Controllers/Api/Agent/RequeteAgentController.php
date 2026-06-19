@@ -332,7 +332,7 @@ class RequeteAgentController extends Controller
 
             // Notifier les responsables pédagogiques
             $responsables = \App\Models\Utilisateur::whereHas('roles', function($q) {
-                $q->where('nom', 'Responsable Pédagogique');
+                $q->where('libelle', 'RESPONSABLE_PEDAGOGIQUE');
             })->get();
 
             foreach ($responsables as $responsable) {
@@ -423,7 +423,7 @@ class RequeteAgentController extends Controller
 
         // Notifier les responsables pédagogiques
         $responsables = \App\Models\Utilisateur::whereHas('roles', function($q) {
-            $q->where('nom', 'Responsable Pédagogique');
+            $q->where('libelle', 'RESPONSABLE_PEDAGOGIQUE');
         })->get();
 
         foreach ($responsables as $responsable) {
@@ -471,6 +471,7 @@ class RequeteAgentController extends Controller
         DB::table('historique_requetes')->insert([
             'requete_id' => $requete->id,
             'etat_id' => $dernierHistorique->etat_id,
+            'utilisateur_id' => $user->id,
             'date_etat' => now(),
             'commentaire' => $validated['commentaire'],
             'created_at' => now(),
@@ -536,7 +537,7 @@ class RequeteAgentController extends Controller
 
         // Notifier les responsables pédagogiques
         $responsables = \App\Models\Utilisateur::whereHas('roles', function($q) {
-            $q->where('nom', 'Responsable Pédagogique');
+            $q->where('libelle', 'RESPONSABLE_PEDAGOGIQUE');
         })->get();
 
         foreach ($responsables as $responsable) {
