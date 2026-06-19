@@ -1,0 +1,125 @@
+<div class="dashboard-home">
+  <div class="page-header">
+    <h1>Tableau de bord</h1>
+    <p class="subtitle">Bienvenue sur votre espace étudiant</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="loadDashboard()">
+      <i class="bi bi-arrow-clockwise"></i> Réessayer
+    </button>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="stats && !loading" class="dashboard-content">
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card card-total">
+        <div class="card-icon">
+          <i class="bi bi-file-earmark-text"></i>
+        </div>
+        <div class="card-content">
+          <h3>{{ stats.total }}</h3>
+          <p>Total de requêtes</p>
+        </div>
+        <a [routerLink]="['/etudiant/requetes']" class="card-link">
+          Voir tout <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="stat-card card-pending">
+        <div class="card-icon">
+          <i class="bi bi-clock"></i>
+        </div>
+        <div class="card-content">
+          <h3>{{ stats.en_attente }}</h3>
+          <p>En attente</p>
+        </div>
+        <a [routerLink]="['/etudiant/requetes']" class="card-link">
+          Voir <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="stat-card card-progress">
+        <div class="card-icon">
+          <i class="bi bi-arrow-repeat"></i>
+        </div>
+        <div class="card-content">
+          <h3>{{ stats.en_cours }}</h3>
+          <p>En cours</p>
+        </div>
+        <a [routerLink]="['/etudiant/requetes']" class="card-link">
+          Voir <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="stat-card card-completed">
+        <div class="card-icon">
+          <i class="bi bi-check-circle"></i>
+        </div>
+        <div class="card-content">
+          <h3>{{ stats.traitees }}</h3>
+          <p>Traitées</p>
+        </div>
+        <a [routerLink]="['/etudiant/requetes']" class="card-link">
+          Voir <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h2>Actions rapides</h2>
+      <div class="actions-grid">
+        <a [routerLink]="['/etudiant/nouvelle-requete']" class="action-card primary">
+          <i class="bi bi-plus-circle"></i>
+          <span>Nouvelle requête</span>
+        </a>
+        <a [routerLink]="['/etudiant/requetes']" class="action-card">
+          <i class="bi bi-file-earmark-text"></i>
+          <span>Mes requêtes</span>
+        </a>
+        <a [routerLink]="['/etudiant/messagerie']" class="action-card">
+          <i class="bi bi-chat-dots"></i>
+          <span>Ma messagerie</span>
+        </a>
+        <a [routerLink]="['/etudiant/profil']" class="action-card">
+          <i class="bi bi-person"></i>
+          <span>Mon profil</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recent Requests -->
+    <div *ngIf="requetesRecentes.length > 0" class="recent-requests">
+      <div class="section-header">
+        <h2>Requêtes récentes</h2>
+        <a [routerLink]="['/etudiant/requetes']" class="view-all">
+          Voir tout <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+      
+      <div class="requests-list">
+        <div *ngFor="let requete of requetesRecentes" class="request-item" [routerLink]="['/etudiant/requetes', requete.id]">
+          <div class="request-header">
+            <strong>{{ requete.code_requete }}</strong>
+            <span class="badge" [ngClass]="getStatusClass(requete.statut_actuel)">
+              {{ getStatusLabel(requete.statut_actuel) }}
+            </span>
+          </div>
+          <p class="request-type">{{ requete.type_requete?.nom }}</p>
+          <p class="request-date">{{ requete.created_at | date: 'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

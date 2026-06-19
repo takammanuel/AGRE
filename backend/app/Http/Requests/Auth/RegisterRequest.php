@@ -26,6 +26,8 @@ class RegisterRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'nom.required' => 'Le nom est requis.',
+            'prenom.required' => 'Le prénom est requis.',
             'email.unique' => 'Cet email est déjà utilisé.',
             'password.confirmed' => 'Les mots de passe ne correspondent pas.',
         ];

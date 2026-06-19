@@ -20,5 +20,5 @@ export class ServiceDetailModalComponent {
   close(): void {
     this.showModal = false;
   }
-  
+
 }

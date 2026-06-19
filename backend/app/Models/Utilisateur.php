@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class Utilisateur extends Authenticatable implements MustVerifyEmail
 {
@@ -26,7 +27,8 @@ class Utilisateur extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'two_factor_code',
         'two_factor_expires_at',
-        'is_active'
+        'is_active',
+        'last_login_at'
     ];
 
     protected $hidden = [
@@ -42,6 +44,7 @@ class Utilisateur extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'two_factor_expires_at' => 'datetime',
             'is_active' => 'boolean',
+            'last_login_at' => 'datetime',
         ];
     }
 
@@ -91,6 +94,7 @@ class Utilisateur extends Authenticatable implements MustVerifyEmail
          return $this->roles()
                     ->where(function($query) use ($roleName) {
                         $query->where('libelle', strtoupper($roleName))
+                              ->orWhere('nom', $roleName)
                               ->orWhere('nom', strtolower($roleName));
                     })
                     ->exists();
@@ -101,15 +105,29 @@ class Utilisateur extends Authenticatable implements MustVerifyEmail
      */
     public function assignRole(string $roleName): void
     {
-         $role = Role::where('libelle', strtoupper($roleName))->first();
+        // Chercher d'abord par libelle (ETUDIANT, AGENT_ACADEMIQUE, etc.)
+        $role = Role::where('libelle', strtoupper($roleName))->first();
 
-        // Alternative: rechercher par nom en minuscule
+        // Si pas trouvé, chercher par nom (Étudiant, Agent Académique, etc.)
+        if (!$role) {
+            $role = Role::where('nom', $roleName)->first();
+        }
+
+        // Si toujours pas trouvé, chercher par nom en minuscule
         if (!$role) {
             $role = Role::where('nom', strtolower($roleName))->first();
         }
 
-        if ($role && !$this->hasRole($roleName)) {
-            $this->roles()->attach($role->id);
+        if ($role) {
+            // Vérifier si le rôle n'est pas déjà assigné
+            $exists = DB::table('utilisateur_roles')
+                ->where('utilisateur_id', $this->id)
+                ->where('role_id', $role->id)
+                ->exists();
+            
+            if (!$exists) {
+                $this->roles()->attach($role->id);
+            }
         }
     }
 
@@ -215,5 +233,44 @@ class Utilisateur extends Authenticatable implements MustVerifyEmail
     public function scopeInactive($query)
     {
         return $query->where('is_active', false);
+    }
+
+    /**
+     * Scope pour rechercher des utilisateurs
+     */
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function($q) use ($search) {
+            $q->where('nom', 'like', "%{$search}%")
+              ->orWhere('prenom', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%")
+              ->orWhere('telephone', 'like', "%{$search}%");
+        });
+    }
+
+    /**
+     * Scope pour filtrer par rôle
+     */
+    public function scopeWithRole($query, $roleName)
+    {
+        return $query->whereHas('roles', function($q) use ($roleName) {
+            $q->where('nom', $roleName);
+        });
+    }
+
+    /**
+     * Scope pour les utilisateurs vérifiés
+     */
+    public function scopeVerified($query)
+    {
+        return $query->whereNotNull('email_verified_at');
+    }
+
+    /**
+     * Scope pour les utilisateurs non vérifiés
+     */
+    public function scopeUnverified($query)
+    {
+        return $query->whereNull('email_verified_at');
     }
 }

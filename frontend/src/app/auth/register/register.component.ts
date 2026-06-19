@@ -104,6 +104,7 @@ export class RegisterComponent {
           } else if (errors.password) {
             this.errorMessage = errors.password[0];
           } else {
+            console.log(errors);
             this.errorMessage = 'Veuillez vérifier les informations saisies.';
           }
         } else if (error.status === 400) {

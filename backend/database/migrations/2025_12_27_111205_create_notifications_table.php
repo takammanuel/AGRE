@@ -25,6 +25,7 @@ return new class extends Migration
                 ->constrained('utilisateurs')
                 ->cascadeOnDelete();
 
+            $table->boolean("is_read")->default(false); // état de lecture
             $table->timestamps();
         });
     }

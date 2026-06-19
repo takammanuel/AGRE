@@ -35,7 +35,9 @@
         >
           <i class="menu-icon bi {{ item.icon }}"></i>
           <span class="menu-label" *ngIf="!isSidebarCollapsed">{{ item.label }}</span>
-          <span class="badge-count" *ngIf="item.badge && !isSidebarCollapsed">{{ item.badge }}</span>
+          <span class="badge-count" *ngIf="getBadgeForRoute(item.route) && !isSidebarCollapsed">
+            {{ getBadgeForRoute(item.route) }}
+          </span>
         </a>
       </li>
     </ul>

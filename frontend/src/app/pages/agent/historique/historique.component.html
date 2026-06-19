@@ -1,0 +1,108 @@
+<div class="historique-page">
+  <div class="page-header">
+    <h1>Historique des requêtes</h1>
+    <p class="subtitle">Consultez toutes vos requêtes traitées</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <i class="bi bi-search"></i>
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Rechercher par code, étudiant, description...">
+    </div>
+
+    <div class="filter-group">
+      <select [(ngModel)]="selectedStatus" (ngModelChange)="onStatusChange()" class="filter-select">
+        <option *ngFor="let option of statusOptions" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+
+      <select [(ngModel)]="selectedPeriod" (ngModelChange)="onPeriodChange()" class="filter-select">
+        <option *ngFor="let option of periodOptions" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+
+      <button class="btn-reset" (click)="resetFilters()" *ngIf="searchTerm || selectedStatus !== 'all' || selectedPeriod !== 'all'">
+        <i class="bi bi-x-circle"></i>
+        Réinitialiser
+      </button>
+    </div>
+  </div>
+
+  <!-- Results Count -->
+  <div class="results-info" *ngIf="!loading && !error">
+    <p>{{ filteredRequetes.length }} résultat{{ filteredRequetes.length > 1 ? 's' : '' }} trouvé{{ filteredRequetes.length > 1 ? 's' : '' }}</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement de l'historique...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="loadHistorique()">
+      <i class="bi bi-arrow-clockwise"></i> Réessayer
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && filteredRequetes.length === 0" class="empty-state">
+    <i class="bi bi-inbox"></i>
+    <h3>Aucune requête trouvée</h3>
+    <p *ngIf="searchTerm || selectedStatus !== 'all' || selectedPeriod !== 'all'">
+      Essayez de modifier vos filtres de recherche
+    </p>
+    <p *ngIf="!searchTerm && selectedStatus === 'all' && selectedPeriod === 'all'">
+      Vous n'avez pas encore de requêtes dans votre historique
+    </p>
+  </div>
+
+  <!-- Historique List -->
+  <div *ngIf="!loading && !error && filteredRequetes.length > 0" class="historique-list">
+    <div class="historique-item" *ngFor="let requete of filteredRequetes" [routerLink]="['/agent/requete', requete.id]">
+      <div class="item-header">
+        <div class="item-info">
+          <h3 class="requete-code">{{ requete.code_requete }}</h3>
+          <span class="requete-type">{{ requete.type_requete?.nom }}</span>
+        </div>
+        <span class="badge" [ngClass]="getStatusClass(requete.statut_actuel)">
+          <i [class]="getStatusIcon(requete.statut_actuel)"></i>
+          {{ getStatusLabel(requete.statut_actuel) }}
+        </span>
+      </div>
+
+      <div class="item-body">
+        <!-- <p class="description">{{ requete.description }}</p> -->
+
+        <div class="item-meta">
+          <div class="meta-item">
+            <i class="bi bi-person"></i>
+            <span>{{ requete.etudiant?.nom }} {{ requete.etudiant?.prenom }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="bi bi-building"></i>
+            <span>{{ requete.type_requete?.service?.nom || 'N/A' }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="bi bi-calendar"></i>
+            <span>{{ requete.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="meta-item" *ngIf="requete.priorite === 'URGENTE'">
+            <i class="bi bi-flag-fill text-danger"></i>
+            <span>Urgente</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

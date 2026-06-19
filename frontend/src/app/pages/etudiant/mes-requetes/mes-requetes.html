@@ -1,0 +1,117 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Mes Requêtes</h2>
+    <button class="btn btn-primary" (click)="navigateToCreateRequest()">
+      <i class="bi bi-plus-circle"></i> Nouvelle Requête
+    </button>
+  </div>
+
+  <!-- Filtres -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Statut</label>
+          <select class="form-select" [(ngModel)]="filters.statut">
+            <option value="">Tous</option>
+            <option value="EN_ATTENTE">En attente</option>
+            <option value="AFFECTEE">Affectée</option>
+            <option value="EN_COURS">En cours</option>
+            <option value="TRAITEE">Traitée</option>
+            <option value="REJETEE">Rejetée</option>
+            <option value="INFORMATIONS_REQUISES">Informations requises</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Date début</label>
+          <input type="date" class="form-control" [(ngModel)]="filters.date_debut">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Date fin</label>
+          <input type="date" class="form-control" [(ngModel)]="filters.date_fin">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Recherche</label>
+          <input type="text" class="form-control" [(ngModel)]="filters.recherche" placeholder="Numéro de requête">
+        </div>
+        <div class="col-md-12">
+          <button class="btn btn-primary" (click)="applyFilters()">Filtrer</button>
+          <button class="btn btn-secondary ms-2" (click)="clearFilters()">Réinitialiser</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des requêtes -->
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && error" class="alert alert-danger">{{ error }}</div>
+
+  <div *ngIf="!loading && requetes.length === 0" class="alert alert-info">
+    Aucune requête trouvée.
+  </div>
+
+  <div *ngIf="!loading && requetes.length > 0">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Numéro</th>
+            <th>Type</th>
+            <th>Priorité</th>
+            <th>Statut</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let requete of requetes">
+            <td><strong>{{ requete.code_requete }}</strong></td>
+            <td>{{ requete.type_requete?.nom }}</td>
+            <td>
+              <span [class]="requete.priorite === 'URGENTE' ? 'badge bg-danger' : 'badge bg-secondary'">
+                {{ requete.priorite | priority }}
+              </span>
+            </td>
+            <td>
+              <span [class]="getStatusClass(requete.historiques[0].etat?.libelle || '')">
+                {{ requete.historiques[0]?.etat?.libelle | requestStatus }}
+              </span>
+            </td>
+            <td>{{ requete.created_at | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <button class="btn btn-sm btn-primary" (click)="viewDetails(requete.id)">
+                Voir détails
+              </button>
+              <a [routerLink]="['/etudiant/messagerie', requete.id]" class="btn btn-outline-primary btn-sm ms-1">
+                Voir la discussion
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <nav *ngIf="pagination.last_page > 1">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" (click)="goToPage(currentPage - 1)">Précédent</a>
+        </li>
+        <li *ngFor="let page of [].constructor(pagination.last_page); let i = index"
+            class="page-item"
+            [class.active]="currentPage === i + 1">
+          <a class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</a>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === pagination.last_page">
+          <a class="page-link" (click)="goToPage(currentPage + 1)">Suivant</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+

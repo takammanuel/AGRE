@@ -1,0 +1,88 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="mb-0">Nouvelle Requête</h3>
+        </div>
+        <div class="card-body">
+          <div *ngIf="error" class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+          <div *ngIf="success" class="alert alert-success" role="alert">
+            Requête soumise avec succès ! Redirection en cours...
+          </div>
+
+          <form [formGroup]="requestForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="type_requete_id" class="form-label">Type de requête <span class="text-danger">*</span></label>
+              <select class="form-select" id="type_requete_id" formControlName="type_requete_id">
+                <option value="">Sélectionnez un type</option>
+                <option *ngFor="let type of typesRequetes" [value]="type.id">
+                  {{ type.nom }}
+                </option>
+              </select>
+              <div *ngIf="requestForm.get('type_requete_id')?.invalid && requestForm.get('type_requete_id')?.touched" class="text-danger small">
+                Le type de requête est obligatoire
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="description" class="form-label">Description / Motif <span class="text-danger">*</span></label>
+              <textarea 
+                class="form-control" 
+                id="description" 
+                rows="5"
+                formControlName="description"
+                placeholder="Décrivez votre demande en détail..."></textarea>
+              <div *ngIf="requestForm.get('description')?.invalid && requestForm.get('description')?.touched" class="text-danger small">
+                La description doit contenir au moins 10 caractères
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="priorite" class="form-label">Priorité <span class="text-danger">*</span></label>
+              <select class="form-select" id="priorite" formControlName="priorite">
+                <option value="STANDARD">Standard</option>
+                <option value="URGENTE">Urgente</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="pieces_jointes" class="form-label">Pièces jointes (max 5 fichiers, PDF, JPG, PNG)</label>
+              <input 
+                type="file" 
+                class="form-control" 
+                id="pieces_jointes"
+                multiple
+                accept=".pdf,.jpg,.jpeg,.png"
+                (change)="onFileSelected($event)">
+              <small class="form-text text-muted">Taille maximale par fichier : 5 Mo</small>
+            </div>
+
+            <div *ngIf="selectedFiles.length > 0" class="mb-3">
+              <h6>Fichiers sélectionnés :</h6>
+              <ul class="list-group">
+                <li *ngFor="let file of selectedFiles; let i = index" class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>{{ file.name }} ({{ (file.size / 1024 / 1024).toFixed(2) }} Mo)</span>
+                  <button type="button" class="btn btn-sm btn-danger" (click)="removeFile(i)">Supprimer</button>
+                </li>
+              </ul>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <button type="button" class="btn btn-secondary" (click)="navigateToRequests()">
+                Annuler
+              </button>
+              <button type="submit" class="btn btn-primary" [disabled]="requestForm.invalid || loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                Soumettre la requête
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

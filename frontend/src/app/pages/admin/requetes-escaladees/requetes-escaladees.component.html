@@ -1,0 +1,152 @@
+<div class="escaladees-container">
+  <div class="page-header">
+    <div>
+      <h1><i class="bi bi-exclamation-triangle"></i> Requêtes Escaladées</h1>
+      <p class="subtitle">Requêtes urgentes ou en attente depuis plus de 7 jours</p>
+    </div>
+    <span class="badge badge-count">{{ requetes.length }} requête(s)</span>
+  </div>
+
+  <!-- Alertes -->
+  <div class="alert-section">
+    <div class="alert alert-warning">
+      <i class="bi bi-info-circle"></i>
+      <div>
+        <strong>Attention requise</strong>
+        <p>Ces requêtes nécessitent une action immédiate de votre part</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-state">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button (click)="loadRequetesEscaladees()" class="btn btn-primary">Réessayer</button>
+  </div>
+
+  <!-- Liste -->
+  <div *ngIf="!loading && !error" class="requetes-list">
+    <div *ngIf="requetes.length === 0" class="empty-state">
+      <i class="bi bi-check-circle"></i>
+      <p>Aucune requête escaladée</p>
+      <small>Toutes les requêtes sont traitées dans les délais</small>
+    </div>
+
+    <div *ngFor="let requete of requetes" class="requete-card">
+      <!-- Header avec alerte -->
+      <div class="card-alert">
+        <div class="alert-icon">
+          <i class="bi bi-exclamation-triangle"></i>
+        </div>
+        <div class="alert-content">
+          <strong *ngIf="requete.priorite === 'URGENTE'">Requête urgente</strong>
+          <strong *ngIf="requete.priorite !== 'URGENTE'">En attente depuis {{ getDelaiEnJours(requete.created_at) }} jours</strong>
+          <p *ngIf="requete.priorite === 'URGENTE'">Cette requête a été marquée comme urgente par l'étudiant</p>
+          <p *ngIf="requete.priorite !== 'URGENTE'">Cette requête dépasse le délai de traitement standard</p>
+        </div>
+        <span [class]="'delai-badge ' + getDelaiClass(getDelaiEnJours(requete.created_at))">
+          {{ getDelaiEnJours(requete.created_at) }} jours
+        </span>
+      </div>
+
+      <!-- Informations de la requête -->
+      <div class="card-body">
+        <div class="requete-header">
+          <div>
+            <h3>{{ requete.code_requete }}</h3>
+            <div class="badges">
+              <span [class]="'badge ' + getStatusClass(requete.statut_actuel)">
+                {{ getStatusLabel(requete.statut_actuel) }}
+              </span>
+              <span class="badge badge-priority" *ngIf="requete.priorite === 'URGENTE'">
+                <i class="bi bi-lightning-fill"></i> Urgente
+              </span>
+            </div>
+          </div>
+          <span class="date">{{ requete.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+
+        <div class="requete-details">
+          <div class="detail-row">
+            <i class="bi bi-person"></i>
+            <div>
+              <label>Étudiant:</label>
+              <span>{{ requete.etudiant?.nom }} {{ requete.etudiant?.prenom }}</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <i class="bi bi-tag"></i>
+            <div>
+              <label>Type:</label>
+              <span>{{ requete.type_requete?.nom }}</span>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <i class="bi bi-building"></i>
+            <div>
+              <label>Service:</label>
+              <span>{{ requete.type_requete?.service?.nom }}</span>
+            </div>
+          </div>
+
+          <div class="detail-row" *ngIf="requete.agent">
+            <i class="bi bi-person-badge"></i>
+            <div>
+              <label>Agent assigné:</label>
+              <span>{{ requete.agent.nom }} {{ requete.agent.prenom }}</span>
+            </div>
+          </div>
+
+          <div class="detail-row" *ngIf="!requete.agent">
+            <i class="bi bi-person-x"></i>
+            <div>
+              <label>Agent:</label>
+              <span class="text-danger">Non assigné</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="description-section">
+          <label>Description:</label>
+          <p>{{ requete.description }}</p>
+        </div>
+
+        <!-- Historique -->
+        <div class="historique-section" *ngIf="requete.historiques && requete.historiques.length > 0">
+          <label>Historique:</label>
+          <div class="timeline">
+            <div *ngFor="let hist of requete.historiques.slice(0, 3)" class="timeline-item">
+              <span [class]="'timeline-badge ' + getStatusClass(hist.etat?.libelle)"></span>
+              <div class="timeline-content">
+                <strong>{{ getStatusLabel(hist.etat?.libelle) }}</strong>
+                <span class="timeline-date">{{ hist.date_etat | date: 'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="card-actions">
+        <button *ngIf="!requete.agent" (click)="assignerAgent(requete)" class="btn btn-primary">
+          <i class="bi bi-person-plus"></i> Assigner un agent
+        </button>
+        <button (click)="escaladerVersResponsable(requete)" class="btn btn-warning">
+          <i class="bi bi-arrow-up-circle"></i> Escalader
+        </button>
+        <a [routerLink]="['/admin/approbations']" class="btn btn-success">
+          <i class="bi bi-check-circle"></i> Traiter
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

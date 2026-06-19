@@ -1,67 +1,77 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+
+// Chemins remontant à la racine de app/
 import { AuthService } from '../../../../services/auth.service';
+import { NotificationService } from '../../../../services/notification.service';
 
 @Component({
   selector: 'app-header-etudiant',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterModule],
   templateUrl: './header-etudiant.html',
   styleUrls: ['./header-etudiant.scss']
 })
 export class HeaderEtudiant implements OnInit {
-  private authService = inject(AuthService);
+  // Conservation du "as any" pour ton environnement
+  public notificationService = inject(NotificationService) as any;
+  public authService = inject(AuthService) as any;
   private router = inject(Router);
 
   currentUser: any = null;
-  showProfileMenu = false;
+  notifications: any[] = [];
   showNotifications = false;
-  notificationCount = 3; // À remplacer par vraies données
+  showProfileMenu = false;
   showMobileMenu = false;
 
   ngOnInit(): void {
-    this.loadCurrentUser();
-  }
-
-  loadCurrentUser(): void {
-    const user = this.authService.getCurrentUser();
-    if (user) {
-      this.currentUser = user;
+    this.currentUser = this.authService.getCurrentUser?.();
+    // Initialiser le compteur au chargement
+    if (this.currentUser?.id) {
+       this.notificationService.refreshCount();
     }
+    this.loadNotifications();
   }
 
-  toggleProfileMenu(): void {
-    this.showProfileMenu = !this.showProfileMenu;
-  if (this.showProfileMenu) {
-    this.showNotifications = false;
-    this.showMobileMenu = false;
-  }
+  loadNotifications(): void {
+    const userId = this.currentUser?.id || 1;
+    this.notificationService.getNotifications(userId).subscribe({
+      next: (res: any) => this.notifications = res.data || res,
+      error: (err: any) => console.error('Erreur notifications:', err)
+    });
   }
 
   toggleNotifications(): void {
     this.showNotifications = !this.showNotifications;
-  if (this.showNotifications) {
     this.showProfileMenu = false;
-    this.showMobileMenu = false;
+    if (this.showNotifications) this.loadNotifications();
   }
+
+  toggleProfileMenu(): void {
+    this.showProfileMenu = !this.showProfileMenu;
+    this.showNotifications = false;
   }
 
   closeMenus(): void {
-    this.showProfileMenu = false;
     this.showNotifications = false;
-    this.showMobileMenu = false;
+    this.showProfileMenu = false;
   }
 
-  logout(): void {
-    this.authService.logout().subscribe({
+  markAsRead(id: number): void {
+    // Trouver la notification pour savoir si c'est un chat
+    const notif = this.notifications.find(n => n.id === id);
+
+    this.notificationService.markAsRead(id).subscribe({
       next: () => {
-        this.router.navigate(['/login']);
-      },
-      error: (error) => {
-        console.error('Erreur lors de la déconnexion', error);
-        localStorage.removeItem('auth_token');
-        this.router.navigate(['/login']);
+        this.notificationService.refreshCount(); // Mise à jour du badge rouge
+        this.loadNotifications();
+
+        // Redirection si c'est une notification liée à un message
+        if (notif && notif.requete_id && (notif.type === 'CHAT' || notif.titre?.includes('message'))) {
+          this.router.navigate(['/etudiant/messagerie', notif.requete_id]);
+          this.closeMenus();
+        }
       }
     });
   }
@@ -76,9 +86,20 @@ export class HeaderEtudiant implements OnInit {
     this.closeMenus();
   }
 
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: (err: any) => {
+        console.error(err);
+        localStorage.removeItem('auth_token');
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+
   toggleMobileMenu(): void {
     this.showMobileMenu = !this.showMobileMenu;
   }
-
-
 }

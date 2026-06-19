@@ -1,0 +1,93 @@
+<div class="requetes-page">
+  <div class="page-header">
+    <h1>Requêtes affectées</h1>
+    <p class="subtitle">Gérez vos requêtes assignées</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <button 
+      *ngFor="let filter of filters"
+      class="filter-btn"
+      [class.active]="currentFilter === filter.value"
+      (click)="setFilter(filter.value)">
+      <i [class]="filter.icon"></i>
+      {{ filter.label }}
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement des requêtes...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="loadRequetes()">
+      <i class="bi bi-arrow-clockwise"></i> Réessayer
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && requetes.length === 0" class="empty-state">
+    <i class="bi bi-inbox"></i>
+    <h3>Aucune requête trouvée</h3>
+    <p>Il n'y a pas de requêtes correspondant à ce filtre.</p>
+  </div>
+
+  <!-- Requetes List -->
+  <div *ngIf="!loading && !error && requetes.length > 0" class="requetes-list">
+    <div class="requete-card" *ngFor="let requete of requetes" [routerLink]="['/agent/requetes', requete.id]">
+      <div class="card-header">
+        <div class="requete-info">
+          <h3 class="requete-code">{{ requete.code_requete }}</h3>
+          <span class="requete-type">{{ requete.type_requete?.nom }}</span>
+        </div>
+        <div class="badges">
+          <span class="badge" [ngClass]="getPriorityClass(requete.priorite)">
+            <i class="bi bi-flag-fill"></i>
+            {{ getPriorityLabel(requete.priorite) }}
+          </span>
+          <span class="badge" [ngClass]="getStatusClass(requete.statut_actuel)">
+            {{ getStatusLabel(requete.statut_actuel) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="requete-description">
+          <p>{{ requete.description }}</p>
+        </div>
+
+        <div class="requete-meta">
+          <div class="meta-item">
+            <i class="bi bi-person"></i>
+            <span>{{ requete.etudiant?.nom }} {{ requete.etudiant?.prenom }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="bi bi-building"></i>
+            <span>{{ requete.type_requete?.service?.nom || 'N/A' }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="bi bi-calendar"></i>
+            <span>{{ requete.created_at | date: 'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer" (click)="$event.stopPropagation()">
+        <button class="btn btn-outline" [routerLink]="['/agent/requetes', requete.id]">
+          <i class="bi bi-eye"></i>
+          Voir détails
+        </button>
+        <button class="btn btn-primary" [routerLink]="['/agent/requetes', requete.id]">
+          <i class="bi bi-check-circle"></i>
+          Traiter
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

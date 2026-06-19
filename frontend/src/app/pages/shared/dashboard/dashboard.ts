@@ -16,7 +16,7 @@ import { DashboardConfigService, DashboardConfig } from '../../../services/dashb
     SidebarDashboardComponent,
   ],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.scss']
+  styleUrls: ['./dashboard.css']
 })
 export class DashboardComponent implements OnInit {
   private dashboardConfigService = inject(DashboardConfigService);

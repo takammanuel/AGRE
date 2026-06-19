@@ -11,20 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('historique_requetes', function (Blueprint $table) {
-            $table->id();
-            $table->dateTime("date_etat");
+     Schema::create('historique_requetes', function (Blueprint $table) {
+    $table->id();
+    $table->dateTime("date_etat");
 
-            $table->foreignId('etat_id')
-                ->constrained('etats')
-                ->cascadeOnDelete();
+    $table->foreignId('etat_id')
+        ->constrained('etats')
+        ->cascadeOnDelete();
 
-            $table->foreignId('requete_id')
-                ->constrained('requetes')
-                ->cascadeOnDelete();
-                
-            $table->timestamps();
-        });
+    $table->foreignId('requete_id')
+        ->constrained('requetes')
+        ->cascadeOnDelete();
+
+    // $table->foreignId('utilisateur_id')
+    //     ->constrained('utilisateurs')
+    //     ->cascadeOnDelete();
+
+    $table->timestamps();
+});
+
     }
 
     /**

@@ -41,7 +41,10 @@ class LoginController extends Controller
         // 5. Créer le token Sanctum
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // 6. Retourner la réponse
+        // 6. Mettre à jour la date de dernière connexion
+        $user->update(['last_login_at' => now()]);
+
+        // 7. Retourner la réponse
         return response()->json([
             'message' => 'Connexion réussie.',
             'access_token' => $token,
@@ -52,7 +55,7 @@ class LoginController extends Controller
                 'prenom' => $user->prenom,
                 'email' => $user->email,
                 'telephone' => $user->telephone,
-                'roles' => $user->roles->pluck('libelle'),
+                'roles' => $user->roles->pluck('libelle')->toArray(),
                 'profil_type' => $user->isEtudiant() ? 'etudiant' :
                                ($user->isAgent() ? 'agent' :
                                ($user->isResponsable() ? 'responsable' :

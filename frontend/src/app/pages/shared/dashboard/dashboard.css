@@ -1,0 +1,70 @@
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--neutral-50);
+
+  /* Couleurs dynamiques selon le rôle */
+}
+
+.dashboard-layout[data-role="ADMINISTRATEUR"] {
+  --role-primary: var(--admin-color);
+  --role-bg: var(--admin-bg);
+}
+
+.dashboard-layout[data-role="AGENT_ACADEMIQUE"] {
+  --role-primary: var(--agent-color);
+  --role-bg: var(--agent-bg);
+}
+
+.dashboard-layout[data-role="RESPONSABLE_PEDAGOGIQUE"] {
+  --role-primary: var(--responsable-color);
+  --role-bg: var(--responsable-bg);
+}
+
+.dashboard-layout[data-role="ETUDIANT"] {
+  --role-primary: var(--etudiant-color);
+  --role-bg: var(--etudiant-bg);
+}
+
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Pour éviter le débordement */
+}
+
+.main-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-x: hidden;
+  margin-top: 50px;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
+}
+
+.sidebar-overlay.show {
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .dashboard-layout app-sidebar-dashboard {
+    position: fixed;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .dashboard-layout app-sidebar-dashboard.show {
+    transform: translateX(0);
+  }
+}

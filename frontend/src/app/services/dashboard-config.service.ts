@@ -1,5 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { AuthService } from './auth.service';
+import { BadgeCounterService } from './badge-counter.service';
+import { Observable, map } from 'rxjs';
 
 export interface DashboardConfig {
   role: string;
@@ -14,7 +16,7 @@ export interface MenuItem {
   label: string;
   icon: string;
   route: string;
-  badge?: number;
+  badge?: number | null;
   roles: string[];
 }
 
@@ -30,13 +32,11 @@ export interface WidgetConfig {
 })
 export class DashboardConfigService {
   private authService = inject(AuthService);
+  private badgeCounterService = inject(BadgeCounterService);
 
-  /**
-   * Récupérer la configuration du dashboard selon le rôle
-   */
   getDashboardConfig(): DashboardConfig {
     const user = this.authService.getCurrentUser();
-    const primaryRole = user?.roles[0] || '';
+    const primaryRole = user?.roles?.[0] || '';
 
     const configs: { [key: string]: DashboardConfig } = {
       'ADMINISTRATEUR': this.getAdminConfig(),
@@ -46,6 +46,20 @@ export class DashboardConfigService {
     };
 
     return configs[primaryRole] || this.getDefaultConfig();
+  }
+
+  /**
+   * Obtenir les compteurs de badges
+   */
+  getBadgeCounts(): Observable<any> {
+    return this.badgeCounterService.counts$;
+  }
+
+  /**
+   * Rafraîchir les compteurs
+   */
+  refreshBadges(): void {
+    this.badgeCounterService.refreshCounts();
   }
 
   /**
@@ -59,11 +73,15 @@ export class DashboardConfigService {
       backgroundColor: 'var(--admin-bg)',
       menuItems: [
         { label: 'Tableau de bord', icon: 'bi-speedometer2', route: '/admin', roles: ['ADMINISTRATEUR'] },
-        { label: 'Utilisateurs', icon: 'bi-people', route: '/admin/utilisateurs', badge: 45, roles: ['ADMINISTRATEUR'] },
+        { label: 'Recherche', icon: 'bi-search', route: '/admin/recherche', roles: ['ADMINISTRATEUR'] },
+        { label: 'Approbations', icon: 'bi-check-circle', route: '/admin/approbations', roles: ['ADMINISTRATEUR'] },
+        { label: 'Requêtes escaladées', icon: 'bi-exclamation-triangle', route: '/admin/requetes-escaladees', roles: ['ADMINISTRATEUR'] },
+        { label: 'Utilisateurs', icon: 'bi-people', route: '/admin/utilisateurs', roles: ['ADMINISTRATEUR'] },
         { label: 'Services', icon: 'bi-building', route: '/admin/services', roles: ['ADMINISTRATEUR'] },
         { label: 'Types de requêtes', icon: 'bi-file-earmark-text', route: '/admin/types-requetes', roles: ['ADMINISTRATEUR'] },
+        { label: 'Historique', icon: 'bi-clock-history', route: '/admin/historique', roles: ['ADMINISTRATEUR'] },
         { label: 'Statistiques', icon: 'bi-graph-up', route: '/admin/statistiques', roles: ['ADMINISTRATEUR'] },
-        { label: 'Paramètres', icon: 'bi-gear', route: '/admin/parametres', roles: ['ADMINISTRATEUR'] },
+        { label: 'Mon profil', icon: 'bi-person', route: '/admin/profil', roles: ['ADMINISTRATEUR'] },
       ],
       widgets: [
         { type: 'stats', title: 'Vue d\'ensemble', roles: ['ADMINISTRATEUR'] },
@@ -73,9 +91,6 @@ export class DashboardConfigService {
     };
   }
 
-  /**
-   * Configuration Agent
-   */
   private getAgentConfig(): DashboardConfig {
     return {
       role: 'AGENT_ACADEMIQUE',
@@ -84,8 +99,8 @@ export class DashboardConfigService {
       backgroundColor: 'var(--agent-bg)',
       menuItems: [
         { label: 'Tableau de bord', icon: 'bi-speedometer2', route: '/agent', roles: ['AGENT_ACADEMIQUE'] },
-        { label: 'Requêtes affectées', icon: 'bi-inbox', route: '/agent/requetes', badge: 12, roles: ['AGENT_ACADEMIQUE'] },
-        { label: 'Requêtes urgentes', icon: 'bi-exclamation-triangle', route: '/agent/urgentes', badge: 3, roles: ['AGENT_ACADEMIQUE'] },
+        { label: 'Requêtes affectées', icon: 'bi-inbox', route: '/agent/requetes-affectees', badge: null, roles: ['AGENT_ACADEMIQUE'] },
+        { label: 'Requêtes urgentes', icon: 'bi-exclamation-triangle', route: '/agent/urgentes', badge: null, roles: ['AGENT_ACADEMIQUE'] },
         { label: 'Ma messagerie', icon: 'bi-envelope', route: '/agent/messagerie', roles: ['AGENT_ACADEMIQUE'] },
         { label: 'Historique', icon: 'bi-clock-history', route: '/agent/historique', roles: ['AGENT_ACADEMIQUE'] },
         { label: 'Statistiques', icon: 'bi-graph-up', route: '/agent/statistiques', roles: ['AGENT_ACADEMIQUE'] },
@@ -99,9 +114,6 @@ export class DashboardConfigService {
     };
   }
 
-  /**
-   * Configuration Responsable Pédagogique
-   */
   private getResponsableConfig(): DashboardConfig {
     return {
       role: 'RESPONSABLE_PEDAGOGIQUE',
@@ -110,8 +122,10 @@ export class DashboardConfigService {
       backgroundColor: 'var(--responsable-bg)',
       menuItems: [
         { label: 'Tableau de bord', icon: 'bi-speedometer2', route: '/responsable', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
-        { label: 'Approbations', icon: 'bi-check-circle', route: '/responsable/approbations', badge: 5, roles: ['RESPONSABLE_PEDAGOGIQUE'] },
+        { label: 'Recherche', icon: 'bi-search', route: '/responsable/recherche', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
+        // { label: 'Approbations', icon: 'bi-check-circle', route: '/responsable/approbations', badge: 5, roles: ['RESPONSABLE_PEDAGOGIQUE'] },
         { label: 'Requêtes escaladées', icon: 'bi-arrow-up-circle', route: '/responsable/escaladees', badge: 2, roles: ['RESPONSABLE_PEDAGOGIQUE'] },
+        { label: 'Toutes les requêtes', icon: 'bi-list-ul', route: '/responsable/requetes', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
         { label: 'Historique', icon: 'bi-clock-history', route: '/responsable/historique', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
         { label: 'Statistiques', icon: 'bi-graph-up', route: '/responsable/statistiques', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
         { label: 'Mon profil', icon: 'bi-person', route: '/responsable/profil', roles: ['RESPONSABLE_PEDAGOGIQUE'] },
@@ -124,9 +138,6 @@ export class DashboardConfigService {
     };
   }
 
-  /**
-   * Configuration Étudiant
-   */
   private getEtudiantConfig(): DashboardConfig {
     return {
       role: 'ETUDIANT',
@@ -135,7 +146,7 @@ export class DashboardConfigService {
       backgroundColor: 'var(--etudiant-bg)',
       menuItems: [
         { label: 'Accueil', icon: 'bi-house', route: '/etudiant', roles: ['ETUDIANT'] },
-        { label: 'Mes requêtes', icon: 'bi-file-earmark-text', route: '/etudiant/requetes', roles: ['ETUDIANT'] },
+        { label: 'Mes requêtes', icon: 'bi-file-earmark-text', route: '/etudiant/mes-requetes', roles: ['ETUDIANT'] },
         { label: 'Nouvelle requête', icon: 'bi-plus-circle', route: '/etudiant/nouvelle-requete', roles: ['ETUDIANT'] },
         { label: 'Notifications', icon: 'bi-bell', route: '/etudiant/notifications', badge: 3, roles: ['ETUDIANT'] },
         { label: 'Mon profil', icon: 'bi-person', route: '/etudiant/profil', roles: ['ETUDIANT'] },
@@ -149,9 +160,6 @@ export class DashboardConfigService {
     };
   }
 
-  /**
-   * Configuration par défaut
-   */
   private getDefaultConfig(): DashboardConfig {
     return {
       role: '',

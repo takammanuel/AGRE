@@ -1,0 +1,120 @@
+<div class="requetes-urgentes-page">
+  <!-- <div class="page-header">
+    <div class="header-content">
+      <div class="header-icon">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <div>
+        <h1>Requêtes Urgentes</h1>
+        <p class="subtitle">Requêtes nécessitant une attention immédiate</p>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="stat-badge critical">
+        <i class="bi bi-exclamation-circle-fill"></i>
+        <span>{{ requetes.length }} requête{{ requetes.length > 1 ? 's' : '' }} urgente{{ requetes.length > 1 ? 's' : '' }}</span>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement des requêtes urgentes...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="loadRequetesUrgentes()">
+      <i class="bi bi-arrow-clockwise"></i> Réessayer
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && requetes.length === 0" class="empty-state">
+    <i class="bi bi-check-circle"></i>
+    <h3>Aucune requête urgente</h3>
+    <p>Toutes les requêtes urgentes ont été traitées. Excellent travail!</p>
+    <a [routerLink]="['/agent/requetes']" class="btn btn-outline">
+      <i class="bi bi-inbox"></i>
+      Voir toutes les requêtes
+    </a>
+  </div>
+
+  <!-- Requetes List -->
+  <div *ngIf="!loading && !error && requetes.length > 0" class="requetes-list">
+    <div class="requete-card urgent-card" *ngFor="let requete of requetes" [routerLink]="['/agent/requetes', requete.id]">
+      <!-- Urgency Indicator -->
+      <div class="urgency-indicator" [ngClass]="'urgency-' + getUrgencyLevel(requete.created_at)">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+
+      <div class="card-header">
+        <div class="requete-info">
+          <h3 class="requete-code">
+            <i class="bi bi-flag-fill text-danger"></i>
+            {{ requete.code_requete }}
+          </h3>
+          <span class="requete-type">{{ requete.type_requete?.nom }}</span>
+        </div>
+        <div class="badges">
+          <span class="badge urgency-badge" [ngClass]="'urgency-' + getUrgencyLevel(requete.created_at)">
+            <i class="bi bi-clock-fill"></i>
+            {{ getUrgencyLabel(getUrgencyLevel(requete.created_at)) }}
+          </span>
+          <span class="badge" [ngClass]="getStatusClass(requete.statut_actuel)">
+            {{ getStatusLabel(requete.statut_actuel) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <!-- Time Alert -->
+        <div class="time-alert" [ngClass]="'alert-' + getUrgencyLevel(requete.created_at)">
+          <i class="bi bi-clock-history"></i>
+          <span>{{ getTimeElapsed(requete.created_at) }}</span>
+        </div>
+
+        <div class="requete-description">
+          <p>{{ requete.description }}</p>
+        </div>
+
+        <div class="requete-meta">
+          <div class="meta-item">
+            <i class="bi bi-person"></i>
+            <span>{{ requete.etudiant?.nom }} {{ requete.etudiant?.prenom }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="bi bi-envelope"></i>
+            <span>{{ requete.etudiant?.email }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="bi bi-building"></i>
+            <span>{{ requete.type_requete?.service?.nom || 'N/A' }}</span>
+          </div>
+          <div class="meta-item">
+            <i class="bi bi-calendar"></i>
+            <span>Créée le {{ requete.created_at | date: 'dd/MM/yyyy à HH:mm' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer" (click)="$event.stopPropagation()">
+        <!-- <button class="btn btn-outline" (click)="escaladerRequete(requete.id)">
+          <i class="bi bi-arrow-up-circle"></i>
+          Escalader
+        </button> -->
+        <button class="btn btn-warning" [routerLink]="['/agent/messagerie', requete.id]">
+          <i class="bi bi-chat-dots"></i>
+          Contacter l'étudiant
+        </button>
+        <button class="btn btn-primary" [routerLink]="['/agent/requete', requete.id]">
+          <i class="bi bi-eye"></i>
+         voir
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

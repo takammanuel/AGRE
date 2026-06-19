@@ -54,15 +54,19 @@
   /* ========= COULEURS PAR RÔLE ========= */
   --etudiant-color: #3b82f6;      /* Bleu */
   --etudiant-dark: #2563eb;
+  --etudiant-bg: rgba(59, 130, 246, 0.1);
 
   --agent-color: #10b981;         /* Vert */
   --agent-dark: #059669;
+  --agent-bg: rgba(16, 185, 129, 0.1);
 
   --responsable-color: #8b5cf6;   /* Violet */
   --responsable-dark: #7c3aed;
+  --responsable-bg: rgba(139, 92, 246, 0.1);
 
   --admin-color: #ef4444;         /* Rouge */
   --admin-dark: #dc2626;
+  --admin-bg: rgba(239, 68, 68, 0.1);
 
   /* ========= COULEURS DE STATUT REQUÊTE ========= */
   --status-pending: #f59e0b;      /* En attente */

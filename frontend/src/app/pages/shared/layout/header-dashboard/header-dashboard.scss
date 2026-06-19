@@ -241,11 +241,28 @@
       padding: 1rem 1.25rem;
       border-bottom: 1px solid var(--neutral-100);
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
       text-decoration: none;
+      align-items: center;
 
       &:hover {
         background: var(--neutral-50);
+        
+        .notification-arrow {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .notification-arrow {
+        color: var(--neutral-400);
+        opacity: 0;
+        transform: translateX(-5px);
+        transition: all 0.2s;
+      }
+
+      &.clickable {
+        cursor: pointer;
       }
 
       .notification-icon {
@@ -296,6 +313,19 @@
           color: var(--neutral-400);
         }
       }
+
+      &.unread {
+        background-color: var(--neutral-50);
+        border-left: 3px solid var(--primary-color);
+      }
+    }
+
+    .bg-primary-light {
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .bg-secondary-light {
+      background: rgba(108, 117, 125, 0.1);
     }
 
     .dropdown-footer {

@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-footer-dashboard',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './footer-dashboard.html',
-  styleUrl: './footer-dashboard.css',
+  styleUrls: ['./footer-dashboard.css']
 })
-export class FooterDashboard {
-
+export class FooterDashboardComponent {
+  currentYear = new Date().getFullYear();
 }

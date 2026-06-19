@@ -43,17 +43,12 @@ export class ProfileComponent implements OnInit {
   loadProfile(): void {
     this.loading = true;
     this.profileService.getProfile().subscribe({
-      next: (response) => {
-        this.profile = response.data;
+      next: (response: any) => {
+        this.profile = response.data || response;
         console.log('Profil chargé:', this.profile);
         this.loading = false;
-
-        // Si c'est un agent, charger les services pour le select
-        // if (this.hasRole('AGENT') || this.hasRole('ADMINISTRATEUR')) {
-        //   // this.loadServices();
-        // }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Erreur chargement profil:', error);
         this.error = 'Erreur lors du chargement du profil';
         this.loading = false;
@@ -61,24 +56,9 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // loadServices(): void {
-  //   this.profileService.getServices().subscribe({
-  //     next: (data) => {
-  //       if (Array.isArray(data)) {
-  //         this.services = data;
-  //       } else if (data && data.data) {
-  //         this.services = data.data;
-  //       }
-  //     },
-  //     error: (error) => {
-  //       console.error('Erreur chargement services:', error);
-  //     }
-  //   });
-  // }
-
   // Vérifier les rôles
   hasRole(role: string): boolean {
-    return this.profile?.roles?.includes(role) || false;
+    return this.profile?.roles?.includes(role) || this.profile?.role === role || false;
   }
 
   isEtudiant(): boolean {
@@ -129,8 +109,8 @@ export class ProfileComponent implements OnInit {
 
     this.saving = true;
     this.profileService.updatePhoto(this.selectedPhoto).subscribe({
-      next: (response) => {
-        this.success = response.message;
+      next: (response: any) => {
+        this.success = response.message || 'Photo mise à jour avec succès';
         this.selectedPhoto = null;
         this.photoPreview = null;
         this.saving = false;
@@ -138,7 +118,7 @@ export class ProfileComponent implements OnInit {
         // Recharger le profil
         this.loadProfile();
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Erreur upload photo:', error);
         this.error = 'Erreur lors du téléchargement de la photo';
         this.saving = false;
@@ -190,8 +170,8 @@ export class ProfileComponent implements OnInit {
 
     this.saving = true;
     this.profileService.updateProfile(this.formData).subscribe({
-      next: (response) => {
-        this.success = response.message;
+      next: (response: any) => {
+        this.success = response.message || 'Profil mis à jour avec succès';
         this.editMode = false;
         this.saving = false;
 
@@ -206,7 +186,7 @@ export class ProfileComponent implements OnInit {
           roles: this.profile?.roles || []
         });
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Erreur mise à jour profil:', error);
         this.error = error.error?.message || 'Erreur lors de la mise à jour';
         this.saving = false;

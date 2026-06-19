@@ -27,6 +27,23 @@
   --bs-box-shadow: var(--shadow-md);
   --bs-box-shadow-sm: var(--shadow-sm);
   --bs-box-shadow-lg: var(--shadow-lg);
+
+   --urgent-critical: #c62828;
+  --urgent-high: #b26a00;
+  --urgent-medium: #6d6d6d;
+
+  --primary: #5b6cff;          /* bleu pro */
+  --primary-soft: #eef0ff;
+  --warning: #f59e0b;
+  --warning-soft: #fff7ed;
+  --info: #0ea5e9;
+  --info-soft: #e0f2fe;
+  --success: #22c55e;
+  --success-soft: #ecfdf5;
+
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --border-soft: #e5e7eb;
 }
 
 /* Réappliquer les couleurs Bootstrap */

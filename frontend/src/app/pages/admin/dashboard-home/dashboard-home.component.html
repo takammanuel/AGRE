@@ -1,0 +1,140 @@
+<div class="admin-dashboard">
+  <div class="page-header">
+    <h1><i class="bi bi-speedometer2"></i> Tableau de bord</h1>
+    <p class="subtitle">Vue d'ensemble du système</p>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-state">
+    <i class="bi bi-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button (click)="loadDashboard()" class="btn btn-primary">Réessayer</button>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="stats && !loading" class="dashboard-content">
+    <!-- Statistiques Requêtes -->
+    <div class="stats-section">
+      <h2>Requêtes</h2>
+      <div class="stats-grid">
+        <div class="stat-card card-total">
+          <div class="card-icon"><i class="bi bi-file-earmark-text"></i></div>
+          <div class="card-content">
+            <h3>{{ stats.requetes.total }}</h3>
+            <p>Total</p>
+          </div>
+        </div>
+
+        <div class="stat-card card-pending">
+          <div class="card-icon"><i class="bi bi-clock"></i></div>
+          <div class="card-content">
+            <h3>{{ stats.requetes.en_attente }}</h3>
+            <p>En attente</p>
+          </div>
+          <a [routerLink]="['/admin/approbations']" class="card-link">Voir <i class="bi bi-arrow-right"></i></a>
+        </div>
+
+        <div class="stat-card card-progress">
+          <div class="card-icon"><i class="bi bi-arrow-repeat"></i></div>
+          <div class="card-content">
+            <h3>{{ stats.requetes.en_cours }}</h3>
+            <p>En cours</p>
+          </div>
+        </div>
+
+        <div class="stat-card card-completed">
+          <div class="card-icon"><i class="bi bi-check-circle"></i></div>
+          <div class="card-content">
+            <h3>{{ stats.requetes.traitees }}</h3>
+            <p>Traitées</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistiques Utilisateurs -->
+    <div class="stats-section">
+      <h2>Utilisateurs</h2>
+      <div class="stats-grid">
+        <div class="stat-card card-users">
+          <div class="card-icon"><i class="bi bi-people"></i></div>
+          <div class="card-content">
+            <h3>{{ stats.utilisateurs.total }}</h3>
+            <p>Total utilisateurs</p>
+          </div>
+        </div>
+
+        <div class="stat-card card-students">
+          <div class="card-icon"><i class="bi bi-mortarboard"></i></div>
+          <div class="card-content">
+            <h3>{{ stats.utilisateurs.etudiants }}</h3>
+            <p>Étudiants</p>
+          </div>
+        </div>
+
+        <div class="stat-card card-agents">
+          <div class="card-icon"><i class="bi bi-person-badge"></i></div>
+          <div class="card-content">
+            <h3>{{ stats.utilisateurs.agents }}</h3>
+            <p>Agents</p>
+          </div>
+        </div>
+
+        <div class="stat-card card-active">
+          <div class="card-icon"><i class="bi bi-check-circle"></i></div>
+          <div class="card-content">
+            <h3>{{ stats.utilisateurs.actifs }}</h3>
+            <p>Actifs</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Requêtes récentes -->
+    <div class="recent-section">
+      <div class="section-header">
+        <h2>Requêtes récentes</h2>
+        <a [routerLink]="['/admin/historique']" class="view-all">
+          Voir tout <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Étudiant</th>
+              <th>Type</th>
+              <th>Service</th>
+              <th>Agent</th>
+              <th>Statut</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let requete of requetesRecentes">
+              <td><strong>{{ requete.code_requete }}</strong></td>
+              <td>{{ requete.etudiant?.nom }} {{ requete.etudiant?.prenom }}</td>
+              <td>{{ requete.type_requete?.nom }}</td>
+              <td>{{ requete.type_requete?.service?.nom }}</td>
+              <td>{{ requete.agent ? (requete.agent.nom + ' ' + requete.agent.prenom) : '-' }}</td>
+              <td>
+                <span [class]="'badge ' + getStatusClass(requete.statut_actuel)">
+                  {{ getStatusLabel(requete.statut_actuel) }}
+                </span>
+              </td>
+              <td>{{ requete.created_at | date: 'dd/MM/yyyy' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

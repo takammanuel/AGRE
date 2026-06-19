@@ -57,5 +57,5 @@ export class ServiceModalComponent {
   get modalTitle(): string {
     return this.isEdit ? 'Modifier le service' : 'Ajouter un service';
   }
-  
+
 }
