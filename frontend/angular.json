@@ -18,7 +18,6 @@
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
-            "outputPath": "dist",
             "assets": [
               {
                 "glob": "**/*",
